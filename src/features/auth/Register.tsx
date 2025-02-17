@@ -4,77 +4,105 @@ import { FaArrowRight } from "react-icons/fa6";
 import login1 from "../../assets/login1.jpeg";
 import login2 from "../../assets/login2.jpeg";
 import login3 from "../../assets/login3.jpeg";
+
 const images = [login1, login2, login3];
 
 const Register = () => {
-    const [bgImage, setBgImage] = useState(login1);
-      useEffect(() => {
-        const interval = setInterval(() => {
-          setBgImage((prev) => {
-            const currentIndex = images.indexOf(prev);
-            return images[(currentIndex + 1) % images.length];
-          });
-        }, 10000);
-    
-        return () => clearInterval(interval);
-      }, []);
-  return(
+  const [bgImage, setBgImage] = useState(login1);
+  const [fade, setFade] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+
+      setTimeout(() => {
+        setActiveIndex((prevIndex) => {
+          const nextIndex = (prevIndex + 1) % images.length;
+          setBgImage(images[nextIndex]); // Ensures correct image update
+          return nextIndex; // Updates active index properly
+        });
+
+        setFade(true);
+      }, 400);
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array ensures this effect runs only once
+
+  return (
     <main className="relative flex flex-col lg:flex-row p-5 h-screen">
       {/* Content */}
-      <div className="relative flex-1 flex flex-col items-center text-white p-5 rounded-xl h-full justify-between  overflow-hidden">
+      <div className="relative hidden lg:flex flex-1 flex-col items-center text-white p-5 rounded-xl h-full justify-between overflow-hidden">
         <div
-          className="absolute inset-0 transition-all duration-1000 z-0"
+          className={`absolute inset-0 transition-opacity duration-500 ${
+            fade ? "opacity-100" : "opacity-30"
+          }`}
           style={{
             backgroundImage: `url(${bgImage})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         />
-        <div className="flex items-center gap-2 justify-between w-full z-1">
+        <div className="flex items-center gap-2 justify-between w-full z-10">
           <img src={logo} alt="Logo" className="w-8" />
           <button className="flex items-center gap-2 bg-white/30 px-3 py-1 rounded-full">
             Back to website <FaArrowRight />
           </button>
         </div>
-        <span className="text-2xl font-semibold mt-4 text-center z-1">
-          Capturing Moments, <br /> Creating Memories
-        </span>
+        <div className="z-10 items-center justify-center text-center flex flex-col">
+          <span className="text-3xl font-normal my-4 text-center z-10">
+            Capturing Moments, <br /> Creating Memories
+          </span>
+          <div className="flex gap-2 my-6 m-auto ">
+            {images.map((_, index) => (
+              <div
+                key={index}
+                className={`h-1 w-10 rounded-full transition-all duration-500 ${
+                  activeIndex === index ? "bg-white w-16" : "bg-white/30"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Right Section */}
       <div className="relative z-10 flex-1 flex justify-center items-center p-10 h-full">
         <div className="w-full max-w-md space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900">Get Started</h2>
+          <h2 className="text-5xl font-medium text-gray-900">
+            Create an account
+          </h2>
 
           <form className="space-y-4">
+            <div className="flex flex-col lg:flex-row gap-3">
+              <input
+                type="fname"
+                id="fname"
+                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
+                placeholder="First name"
+              />
+              <input
+                type="lname"
+                id="lname"
+                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
+                placeholder="Last name"
+              />
+            </div>
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email
-              </label>
               <input
                 type="email"
                 id="email"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-          focus:border-blue-500 focus:ring-blue-500 p-2.5"
+                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
                 placeholder="Enter your email"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
               <input
                 type="password"
                 id="password"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-          focus:border-blue-500 focus:ring-blue-500 p-2.5"
+                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
                 placeholder="Enter your password"
               />
             </div>
@@ -99,10 +127,10 @@ const Register = () => {
             <button
               type="submit"
               className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md 
-        shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
+        text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Create Account
+              Login
             </button>
           </form>
 
@@ -119,7 +147,7 @@ const Register = () => {
 
           <button
             className="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 border 
-      border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 
+      border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 
       hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -156,6 +184,6 @@ const Register = () => {
       </div>
     </main>
   );
-}
+};
 
-export default Register
+export default Register;

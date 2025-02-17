@@ -10,30 +10,33 @@ const images = [login1, login2, login3];
 const Login = () => {
   const [bgImage, setBgImage] = useState(login1);
   const [fade, setFade] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFade(false); // Start fade out
+      setFade(false);
 
       setTimeout(() => {
-        setBgImage((prev) => {
-          const currentIndex = images.indexOf(prev);
-          return images[(currentIndex + 1) % images.length];
+        setActiveIndex((prevIndex) => {
+          const nextIndex = (prevIndex + 1) % images.length;
+          setBgImage(images[nextIndex]); // Ensures correct image update
+          return nextIndex; // Updates active index properly
         });
-        setFade(true); // Start fade in
-      }, 400); // Time to wait before changing image
+
+        setFade(true);
+      }, 400);
     }, 8000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Empty dependency array ensures this effect runs only once
 
   return (
     <main className="relative flex flex-col lg:flex-row p-5 h-screen">
       {/* Content */}
-      <div className="relative flex-1 flex flex-col items-center text-white p-5 rounded-xl h-full justify-between overflow-hidden">
+      <div className="relative hidden lg:flex flex-1 flex-col items-center text-white p-5 rounded-xl h-full justify-between overflow-hidden">
         <div
           className={`absolute inset-0 transition-opacity duration-500 ${
-            fade ? "opacity-100" : "opacity-60"
+            fade ? "opacity-100" : "opacity-30"
           }`}
           style={{
             backgroundImage: `url(${bgImage})`,
@@ -47,24 +50,30 @@ const Login = () => {
             Back to website <FaArrowRight />
           </button>
         </div>
-        <span className="text-2xl font-semibold mt-4 text-center z-10">
-          Capturing Moments, <br /> Creating Memories
-        </span>
+        <div className="z-10 items-center justify-center text-center flex flex-col">
+          <span className="text-3xl font-normal my-4 text-center z-10">
+            Capturing Moments, <br /> Creating Memories
+          </span>
+          <div className="flex gap-2 my-6 m-auto ">
+            {images.map((_, index) => (
+              <div
+                key={index}
+                className={`h-1 w-10 rounded-full transition-all duration-500 ${
+                  activeIndex === index ? "bg-white w-16" : "bg-white/30"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Right Section */}
       <div className="relative z-10 flex-1 flex justify-center items-center p-10 h-full">
         <div className="w-full max-w-md space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900">Log in</h2>
+          <h2 className="text-5xl font-medium text-gray-900">Log in</h2>
 
           <form className="space-y-4">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email
-              </label>
               <input
                 type="email"
                 id="email"
@@ -74,12 +83,6 @@ const Login = () => {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
               <input
                 type="password"
                 id="password"
