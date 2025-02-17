@@ -9,12 +9,12 @@ const DashboardLayout = () => {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-2.5">
         {/* Navbar */}
         <Navbar />
-        
+
         {/* Dynamic Page Content */}
-        <div className="p-6 flex-1 overflow-auto">
+        <div className=" flex-1 overflow-none">
           <Outlet />
         </div>
       </div>

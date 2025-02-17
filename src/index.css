@@ -4,3 +4,9 @@
 body {
   font-family: "Inter", sans-serif;
 }
+.dashboard-home{
+  background: linear-gradient(90deg, #2CD9BF 0%, #756CDF 100%);
+background-clip: text;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}

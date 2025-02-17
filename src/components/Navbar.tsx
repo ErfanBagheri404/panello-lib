@@ -1,10 +1,7 @@
 const Navbar = () => {
   return (
-    <nav className="bg-white shadow-md p-4 flex justify-between">
+    <nav className="bg-white px-6 py-4 flex justify-between border border-black/30 rounded-2xl items-center">
       <h1 className="text-xl font-bold">Dashboard</h1>
-      <div>
-        <button className="bg-gray-200 px-4 py-2 rounded">Logout</button>
-      </div>
     </nav>
   );
 };
