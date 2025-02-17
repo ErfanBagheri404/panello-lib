@@ -11,11 +11,11 @@ import members from "../assets/Sidebar/Users.svg";
 
 const menuItems = [
   { icon: home, label: "Home" },
-  { icon: calendar, label: "Calendar" },
-  { icon: messages, label: "Messages" },
-  { icon: chart, label: "Analytics" },
   { icon: ai, label: "AI Tools" },
   { icon: members, label: "Members" },
+  { icon: chart, label: "Analytics" },
+  { icon: calendar, label: "Calendar" },
+  { icon: messages, label: "Messages" },
   { icon: settings, label: "Settings" },
 ];
 
@@ -30,9 +30,7 @@ const Sidebar = () => {
     >
       {/* Logo */}
       <div
-        className={`flex items-center gap-2 font-bold w-full transition-all duration-300 ${
-          isOpen ? "p-4 mb-5" : "p-2 mb-3"
-        }`}
+        className={`flex items-center gap-4 font-bold w-full transition-all duration-300  mb-5 p-2 `}
       >
         <img src={logo} alt="Logo" className="min-w-[32px]" />
         <span

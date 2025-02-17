@@ -6,15 +6,17 @@ const DashboardLayout = () => {
   return (
     <div className="flex h-screen p-2.5">
       {/* Sidebar */}
-      <Sidebar />
+      <div className="h-full">
+        <Sidebar />
+      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col ml-2.5">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col ml-2.5 h-full">
         {/* Navbar */}
         <Navbar />
 
-        {/* Dynamic Page Content */}
-        <div className=" flex-1 overflow-none">
+        {/* Scrollable Content (Hides scrollbar) */}
+        <div className="flex-1 min-h-0 overflow-auto scrollbar-hide">
           <Outlet />
         </div>
       </div>

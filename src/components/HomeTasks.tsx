@@ -1,8 +1,11 @@
+import { MdOutlineTaskAlt } from "react-icons/md";
 
 const HomeTasks = () => {
   return (
     <div className="p-5 bg-white rounded-xl border border-black/30">
-      <h2 className="text-xl font-semibold mb-5">My Tasks</h2>
+      <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
+        <MdOutlineTaskAlt className="text-green-500"></MdOutlineTaskAlt>My Tasks
+      </h2>
       <div className="grid grid-cols-2 gap-6">
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3">

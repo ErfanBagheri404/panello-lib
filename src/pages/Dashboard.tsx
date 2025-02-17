@@ -1,10 +1,42 @@
 import spark from "../assets/Sidebar/Sparkling.svg";
 import grid from "../assets/Grid.svg";
 import HomeTasks from "../components/HomeTasks";
+import HomeReminder from "../components/HomeReminder";
+import HomeIncome from "../components/HomeIncome";
+import HomeCalendar from "../components/HomeCalendar";
+import HomeGraph from "../components/HomeGraph";
 
 const Dashboard = () => {
+  const formatDate = () => {
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const now = new Date();
+    return `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+  };
   return (
-    <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden">
+    <main className="relative border border-black/30 h-screen my-2.5 rounded-2xl overflow-auto">
       {/* Background Grid Wrapper */}
       <div className="absolute inset-0">
         <img
@@ -16,7 +48,8 @@ const Dashboard = () => {
       </div>
 
       <div className="relative p-6">
-        {new Date().getDay()}, {new Date().getMonth()} {new Date().getDate()}
+        <p>{formatDate()}</p>
+
         <h1 className="text-3xl font-semibold mt-4 z-10">
           Welcome Back, Erfan
         </h1>
@@ -42,10 +75,15 @@ const Dashboard = () => {
           </button>
         </div>
         <div className="flex mt-10 gap-5">
-          <div className="w-1/2">
+          <div className="flex flex-col w-1/2 gap-5">
             <HomeTasks></HomeTasks>
+            <HomeIncome></HomeIncome>
+            <HomeGraph></HomeGraph>
           </div>
-          <div className="w-1/2"></div>
+          <div className="flex flex-col w-1/2 gap-5">
+            <HomeReminder></HomeReminder>
+            <HomeCalendar></HomeCalendar>
+          </div>
         </div>
       </div>
     </main>
