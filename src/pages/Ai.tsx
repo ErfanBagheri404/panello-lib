@@ -2,6 +2,10 @@ import { useState, useRef, useEffect, FormEvent } from "react";
 import grid from "../assets/Grid.svg";
 import { fetchAIResponse } from "../api/openrouter";
 import { IoSend } from "react-icons/io5";
+import { FaRegCopy } from "react-icons/fa"; // Copy icon
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 type Message = {
   role: "user" | "ai";
@@ -9,18 +13,20 @@ type Message = {
 };
 
 const FREE_MODELS = [
-  "mistralai/mistral-7b-instruct:free",
-  "deepseek-ai/deepseek-coder-33b-instruct:free",
+  "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
+  "deepseek/deepseek-r1:free",
+  "deepseek/deepseek-chat:free",
 ];
-
-const SELECTED_MODEL = FREE_MODELS[0];
 
 const Ai = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>("");
   const [pendingAiContent, setPendingAiContent] = useState<string>("");
   const [isTyping, setIsTyping] = useState(false);
+  const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  const currentModel = FREE_MODELS[currentModelIndex];
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -65,16 +71,98 @@ const Ai = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
 
-    const aiResponse = await fetchAIResponse(SELECTED_MODEL, input);
-    const aiMessage: Message = { role: "ai", content: "" };
+    try {
+      const aiResponse = await fetchAIResponse(currentModel, input);
+      const aiMessage: Message = { role: "ai", content: "" };
 
-    setMessages((prev) => [...prev, aiMessage]);
-    setPendingAiContent(aiResponse);
+      setMessages((prev) => [...prev, aiMessage]);
+      setPendingAiContent(aiResponse);
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+      const nextModelIndex = (currentModelIndex + 1) % FREE_MODELS.length;
+      setCurrentModelIndex(nextModelIndex);
+      const fallbackMessage: Message = {
+        role: "ai",
+        content: `Switched to ${FREE_MODELS[nextModelIndex]} due to an error. Please try again.`,
+      };
+
+      setMessages((prev) => [...prev, fallbackMessage]);
+    }
+  };
+
+  // Function to render formatted message with Markdown support
+  const renderMessage = (msg: Message) => {
+    return (
+      <ReactMarkdown
+        className="markdown"
+        components={{
+          code({ node, inline, className, children, ...props }: any) {
+            const match = /language-(\w+)/.exec(className || "");
+
+            return !inline ? (
+              <div className="relative bg-gray-900 text-white p-3 rounded-lg mt-2">
+                <button
+                  className="absolute top-1 right-1 p-1 bg-gray-700 rounded hover:bg-gray-600"
+                  onClick={() =>
+                    navigator.clipboard.writeText(String(children).trim())
+                  }
+                >
+                  <FaRegCopy className="text-white text-sm" />
+                </button>
+                <SyntaxHighlighter
+                  style={vscDarkPlus}
+                  language={match ? match[1] : "plaintext"}
+                  PreTag="div"
+                  {...props}
+                >
+                  {String(children).trim()}
+                </SyntaxHighlighter>
+              </div>
+            ) : (
+              <code className="bg-gray-200 text-black px-1 py-0.5 rounded">
+                {children}
+              </code>
+            );
+          },
+
+          blockquote({ children }) {
+            return (
+              <blockquote className="border-l-4 border-gray-500 pl-3 italic text-gray-600">
+                {children}
+              </blockquote>
+            );
+          },
+          a({ children, ...props }) {
+            return (
+              <a className="text-blue-500 underline" {...props}>
+                {children}
+              </a>
+            );
+          },
+          ul({ children }) {
+            return <ul className="list-disc list-inside">{children}</ul>;
+          },
+          ol({ children }) {
+            return <ol className="list-decimal list-inside">{children}</ol>;
+          },
+          h1({ children }) {
+            return <h1 className="text-2xl font-bold">{children}</h1>;
+          },
+          h2({ children }) {
+            return <h2 className="text-xl font-bold">{children}</h2>;
+          },
+          h3({ children }) {
+            return <h3 className="text-lg font-semibold">{children}</h3>;
+          },
+        }}
+      >
+        {msg.content}
+      </ReactMarkdown>
+    );
   };
 
   return (
     <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide">
-      {/* Background Grid Wrapper */}
       <div className="absolute inset-0 z-0">
         <img
           className="w-full h-full object-cover"
@@ -95,10 +183,7 @@ const Ai = () => {
                 : "bg-gray-200 text-black self-start rounded-tl-none"
             }`}
           >
-            {msg.content}
-            {msg.role === "ai" && index === messages.length - 1 && isTyping && (
-              <span className="ml-1 inline-block align-middle w-2 h-4 bg-gray-400 animate-blink"></span>
-            )}
+            {renderMessage(msg)}
           </div>
         ))}
         <div ref={chatEndRef}></div>
@@ -115,15 +200,30 @@ const Ai = () => {
           onChange={(e) => setInput(e.target.value)}
           className="flex-1 p-2 border rounded-lg focus:outline-none"
           placeholder="Ask something..."
-          disabled={isTyping}
+          disabled={isTyping} // Disable input if AI is responding
         />
-        <button
-          type="submit"
-          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50"
-          disabled={isTyping}
-        >
-          <IoSend />
-        </button>
+
+        {/* Conditionally render Pause or Send button */}
+        {isTyping ? (
+          <button
+            type="button"
+            className="ml-2 px-4 py-2 bg-red-500 text-white rounded-lg"
+            onClick={() => {
+              setPendingAiContent(""); // Stop AI response
+              setIsTyping(false); // Reset UI for new input
+            }}
+          >
+            ⏸ Pause
+          </button>
+        ) : (
+          <button
+            type="submit"
+            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50"
+            disabled={isTyping}
+          >
+            <IoSend />
+          </button>
+        )}
       </form>
     </main>
   );

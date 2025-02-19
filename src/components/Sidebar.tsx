@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import logo from "../assets/Logo2.svg";
 import calendar from "../assets/Sidebar/Calendar.svg";
 import messages from "../assets/Sidebar/chat_bubble.svg";
@@ -9,18 +10,32 @@ import sidebar from "../assets/Sidebar/Sidebar.svg";
 import ai from "../assets/Sidebar/Sparkling.svg";
 import members from "../assets/Sidebar/Users.svg";
 
-const menuItems = [
-  { icon: home, label: "Home" },
-  { icon: ai, label: "AI Tools" },
-  { icon: members, label: "Members" },
-  { icon: chart, label: "Analytics" },
-  { icon: calendar, label: "Calendar" },
-  { icon: messages, label: "Messages" },
-  { icon: settings, label: "Settings" },
+// Define the type for menu items
+type MenuItem = {
+  icon: string;
+  label: string;
+  path: string;
+};
+
+const menuItems: MenuItem[] = [
+  { icon: home, label: "Home", path: "/" },
+  { icon: ai, label: "AI Tools", path: "/ai" },
+  { icon: members, label: "Members", path: "/members" },
+  { icon: chart, label: "Analytics", path: "/graphs" },
+  { icon: calendar, label: "Calendar", path: "/calendar" },
+  { icon: messages, label: "Messages", path: "/messages" },
+  { icon: settings, label: "Settings", path: "/settings" },
 ];
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<string>(menuItems[0].path); // Track selected item
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const handleMenuItemClick = (path: string) => {
+    setSelectedItem(path); // Set the selected item
+    navigate(path); // Navigate to the route
+  };
 
   return (
     <aside
@@ -30,7 +45,7 @@ const Sidebar = () => {
     >
       {/* Logo */}
       <div
-        className={`flex items-center gap-4 font-bold w-full transition-all duration-300  mb-5 p-2 `}
+        className={`flex items-center gap-4 font-bold w-full transition-all duration-300 mb-5 p-2`}
       >
         <img src={logo} alt="Logo" className="min-w-[32px]" />
         <span
@@ -53,17 +68,31 @@ const Sidebar = () => {
         {menuItems.map((item, index) => (
           <div
             key={index}
+            onClick={() => handleMenuItemClick(item.path)} // Handle click
             className={`flex items-center gap-2 p-3 rounded-lg hover:bg-gray-100 cursor-pointer w-full ${
               !isOpen && "justify-center"
             }`}
           >
-            <img src={item.icon} alt={item.label} className="min-w-[24px]" />
+            <img
+              src={item.icon}
+              alt={item.label}
+              className="min-w-[24px]"
+              style={{
+                filter:
+                  selectedItem === item.path
+                    ? "brightness(0) saturate(100%) invert(39%) sepia(87%) saturate(667%) hue-rotate(220deg) brightness(85%) contrast(91%)" // Convert to #756CDF
+                    : "none",
+              }}
+            />
             <span
               className={`text-sm font-medium transition-all duration-300 ${
                 isOpen
                   ? "opacity-100 max-w-full"
                   : "opacity-0 max-w-0 overflow-hidden hidden"
               }`}
+              style={{
+                color: selectedItem === item.path ? "#756CDF" : "black",
+              }}
             >
               {item.label}
             </span>
