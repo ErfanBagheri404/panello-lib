@@ -70,12 +70,16 @@ const Ai = () => {
     const userMessage: Message = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setIsTyping(true);
 
     try {
+      setMessages((prev) => [...prev, { role: "ai", content: "..." }]); // Add typing animation
       const aiResponse = await fetchAIResponse(currentModel, input);
-      const aiMessage: Message = { role: "ai", content: "" };
-
-      setMessages((prev) => [...prev, aiMessage]);
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        newMessages[newMessages.length - 1] = { role: "ai", content: "" }; // Replace "..." with real message
+        return newMessages;
+      });
       setPendingAiContent(aiResponse);
     } catch (error) {
       console.error("Error fetching AI response:", error);
@@ -87,6 +91,7 @@ const Ai = () => {
       };
 
       setMessages((prev) => [...prev, fallbackMessage]);
+      setIsTyping(false);
     }
   };
 
@@ -200,30 +205,17 @@ const Ai = () => {
           onChange={(e) => setInput(e.target.value)}
           className="flex-1 p-2 border rounded-lg focus:outline-none"
           placeholder="Ask something..."
-          disabled={isTyping} // Disable input if AI is responding
+          disabled={isTyping} // Disable input while AI is responding
         />
 
-        {/* Conditionally render Pause or Send button */}
-        {isTyping ? (
-          <button
-            type="button"
-            className="ml-2 px-4 py-2 bg-red-500 text-white rounded-lg"
-            onClick={() => {
-              setPendingAiContent(""); // Stop AI response
-              setIsTyping(false); // Reset UI for new input
-            }}
-          >
-            ⏸ Pause
-          </button>
-        ) : (
-          <button
-            type="submit"
-            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50"
-            disabled={isTyping}
-          >
-            <IoSend />
-          </button>
-        )}
+        {/* Send Button - Disabled when AI is responding */}
+        <button
+          type="submit"
+          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50"
+          disabled={isTyping}
+        >
+          <IoSend />
+        </button>
       </form>
     </main>
   );
