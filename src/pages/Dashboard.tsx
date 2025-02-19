@@ -36,7 +36,7 @@ const Dashboard = () => {
     return `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
   };
   return (
-    <main className="relative border border-black/30 h-screen my-2.5 rounded-2xl overflow-auto">
+    <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-auto">
       {/* Background Grid Wrapper */}
       <div className="absolute inset-0">
         <img
