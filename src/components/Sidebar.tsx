@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
 import logo from "../assets/Logo2.svg";
 import calendar from "../assets/Sidebar/Calendar.svg";
 import messages from "../assets/Sidebar/chat_bubble.svg";
@@ -10,7 +10,6 @@ import sidebar from "../assets/Sidebar/Sidebar.svg";
 import ai from "../assets/Sidebar/Sparkling.svg";
 import members from "../assets/Sidebar/Users.svg";
 
-// Define the type for menu items
 type MenuItem = {
   icon: string;
   label: string;
@@ -29,12 +28,18 @@ const menuItems: MenuItem[] = [
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<string>(menuItems[0].path); // Track selected item
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [selectedItem, setSelectedItem] = useState<string>("");
+  const navigate = useNavigate();
+  const location = useLocation(); // Get current URL path
+
+  // Sync selectedItem with URL path on refresh or route change
+  useEffect(() => {
+    setSelectedItem(location.pathname);
+  }, [location.pathname]);
 
   const handleMenuItemClick = (path: string) => {
-    setSelectedItem(path); // Set the selected item
-    navigate(path); // Navigate to the route
+    setSelectedItem(path);
+    navigate(path);
   };
 
   return (
@@ -44,9 +49,7 @@ const Sidebar = () => {
       }`}
     >
       {/* Logo */}
-      <div
-        className={`flex items-center gap-4 font-bold w-full transition-all duration-300 mb-5 p-2`}
-      >
+      <div className={`flex items-center gap-4 font-bold w-full mb-5 p-2`}>
         <img src={logo} alt="Logo" className="min-w-[32px]" />
         <span
           className={`text-xl transition-all duration-300 ${
@@ -68,7 +71,7 @@ const Sidebar = () => {
         {menuItems.map((item, index) => (
           <div
             key={index}
-            onClick={() => handleMenuItemClick(item.path)} // Handle click
+            onClick={() => handleMenuItemClick(item.path)}
             className={`flex items-center gap-2 p-3 rounded-lg hover:bg-gray-100 cursor-pointer w-full ${
               !isOpen && "justify-center"
             }`}
@@ -80,7 +83,7 @@ const Sidebar = () => {
               style={{
                 filter:
                   selectedItem === item.path
-                    ? "brightness(0) saturate(100%) invert(39%) sepia(87%) saturate(667%) hue-rotate(220deg) brightness(85%) contrast(91%)" // Convert to #756CDF
+                    ? "brightness(0) saturate(100%) invert(39%) sepia(87%) saturate(667%) hue-rotate(220deg) brightness(85%) contrast(91%)"
                     : "none",
               }}
             />
