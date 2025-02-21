@@ -19,9 +19,11 @@ type Message = {
 };
 
 const FREE_MODELS = [
+  "deepseek/deepseek-r1-distill-llama-70b:free",
   "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
   "deepseek/deepseek-r1:free",
   "deepseek/deepseek-chat:free",
+  "qwen/qwen2.5-vl-72b-instruct:free",
 ];
 
 const Ai = () => {
@@ -304,7 +306,7 @@ const Ai = () => {
           onChange={(e) => setInput(e.target.value)}
           className="flex-1 p-2 border rounded-lg focus:outline-none"
           placeholder="Ask something..."
-          disabled={isTyping} // Disable input while AI is responding
+          disabled={isTyping && !isPaused} // Disable input while AI is responding unless paused
         />
         {/* Send/Pause Button - Disabled when AI is responding */}
         <button
@@ -315,7 +317,6 @@ const Ai = () => {
               : "bg-blue-500 hover:bg-blue-600"
           }  text-white disabled:opacity-50`}
           onClick={isTyping ? handlePause : handleSend}
-          disabled={isPaused}
         >
           {isTyping ? (
             <IoPause className="text-white" />
