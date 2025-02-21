@@ -1,7 +1,13 @@
 import { useState, useRef, useEffect, FormEvent } from "react";
 import grid from "../assets/Grid.svg";
 import { fetchAIResponse } from "../api/openrouter";
-import { IoSend } from "react-icons/io5";
+import {
+  IoSend,
+  IoPause,
+  IoHappyOutline,
+  IoSunnyOutline,
+  IoBookOutline,
+} from "react-icons/io5";
 import { FaRegCopy } from "react-icons/fa"; // Copy icon
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -20,25 +26,24 @@ const FREE_MODELS = [
 
 const Ai = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState<string>("");
-  const [pendingAiContent, setPendingAiContent] = useState<string>("");
+  const [input, setInput] = useState("");
+  const [pendingAiContent, setPendingAiContent] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
-
   const currentModel = FREE_MODELS[currentModelIndex];
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+  }, [messages, isTyping, isPaused]);
 
   useEffect(() => {
-    if (!pendingAiContent) return;
-
+    if (!pendingAiContent || isPaused) return;
     setIsTyping(true);
     const lastMessageIndex = messages.length - 1;
     let i = 0;
-
     const interval = setInterval(() => {
       if (i < pendingAiContent.length) {
         setMessages((prev) => {
@@ -56,25 +61,32 @@ const Ai = () => {
         setIsTyping(false);
       }
     }, 20);
-
+    setIntervalId(interval);
     return () => {
       clearInterval(interval);
       setIsTyping(false);
     };
-  }, [pendingAiContent]);
+  }, [pendingAiContent, isPaused]);
 
-  const handleSend = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMessage: Message = { role: "user", content: input };
+  const handleSend = async (e?: FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    if (!input.trim() && messages.length === 0) return;
+    const userMessage: Message = {
+      role: "user",
+      content: input || messages[messages.length - 1].content,
+    };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsTyping(true);
-
+    setIsPaused(false);
     try {
       setMessages((prev) => [...prev, { role: "ai", content: "..." }]); // Add typing animation
-      const aiResponse = await fetchAIResponse(currentModel, input);
+      const aiResponse = await fetchAIResponse(
+        currentModel,
+        userMessage.content
+      );
       setMessages((prev) => {
         const newMessages = [...prev];
         newMessages[newMessages.length - 1] = { role: "ai", content: "" }; // Replace "..." with real message
@@ -89,9 +101,17 @@ const Ai = () => {
         role: "ai",
         content: `Switched to ${FREE_MODELS[nextModelIndex]} due to an error. Please try again.`,
       };
-
       setMessages((prev) => [...prev, fallbackMessage]);
       setIsTyping(false);
+    }
+  };
+
+  const handlePause = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setPendingAiContent(""); // Clear pending AI content
+      setIsTyping(false);
+      setIsPaused(true);
     }
   };
 
@@ -103,7 +123,6 @@ const Ai = () => {
         components={{
           code({ node, inline, className, children, ...props }: any) {
             const match = /language-(\w+)/.exec(className || "");
-
             return !inline ? (
               <div className="relative bg-gray-900 text-white p-3 rounded-lg mt-2">
                 <button
@@ -129,7 +148,6 @@ const Ai = () => {
               </code>
             );
           },
-
           blockquote({ children }) {
             return (
               <blockquote className="border-l-4 border-gray-500 pl-3 italic text-gray-600">
@@ -166,6 +184,56 @@ const Ai = () => {
     );
   };
 
+  // Function to handle box selection and start a conversation
+  const handleBoxSelect = async (commands: string[]) => {
+    const selectedCommand =
+      commands[Math.floor(Math.random() * commands.length)];
+    const userMessage: Message = { role: "user", content: selectedCommand };
+    setMessages((prev) => [...prev, userMessage]);
+    setIsTyping(true);
+    setIsPaused(false);
+
+    try {
+      setMessages((prev) => [...prev, { role: "ai", content: "..." }]); // Typing animation
+      const aiResponse = await fetchAIResponse(currentModel, selectedCommand);
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        newMessages[newMessages.length - 1] = { role: "ai", content: "" }; // Clear placeholder
+        return newMessages;
+      });
+      setPendingAiContent(aiResponse);
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+      const nextModelIndex = (currentModelIndex + 1) % FREE_MODELS.length;
+      setCurrentModelIndex(nextModelIndex);
+      const fallbackMessage: Message = {
+        role: "ai",
+        content: `Switched to ${FREE_MODELS[nextModelIndex]} due to an error. Please try again.`,
+      };
+      setMessages((prev) => [...prev, fallbackMessage]);
+      setIsTyping(false);
+    }
+  };
+
+  // Define commands for each box
+  const boxCommands = [
+    [
+      "Tell me a joke!",
+      "Why don't scientists trust atoms?",
+      "What has keys but can't open locks?",
+    ],
+    [
+      "What's the weather like today?",
+      "Is it going to rain tomorrow?",
+      "Can you describe the weather in New York?",
+    ],
+    [
+      "Recommend a book for me.",
+      "What's a good book to read?",
+      "Can you suggest a science fiction book?",
+    ],
+  ];
+
   return (
     <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide">
       <div className="absolute inset-0 z-0">
@@ -176,24 +244,55 @@ const Ai = () => {
           alt=""
         />
       </div>
-
       {/* Chat Messages */}
       <div className="flex-1 flex flex-col p-4 overflow-y-auto z-10 scrollbar-hide">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-3 p-3 rounded-lg w-fit ${
-              msg.role === "user"
-                ? "bg-blue-500 text-white self-end rounded-tr-none"
-                : "bg-gray-200 text-black self-start rounded-tl-none"
-            }`}
-          >
-            {renderMessage(msg)}
+        {messages.length === 0 ? (
+          // Render boxes if no messages have been sent
+          <div className="flex flex-col items-center justify-center text-center flex-1">
+            <h2 className="text-lg font-semibold mb-4">Start a Conversation</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
+              <div
+                className="p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
+                onClick={() => handleBoxSelect(boxCommands[0])}
+              >
+                <IoHappyOutline className="text-3xl mb-2 text-blue-500" />
+                <h3 className="text-md font-semibold">Humor</h3>
+              </div>
+              <div
+                className="p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
+                onClick={() => handleBoxSelect(boxCommands[1])}
+              >
+                <IoSunnyOutline className="text-3xl mb-2 text-yellow-500" />
+                <h3 className="text-md font-semibold">Weather</h3>
+              </div>
+              <div
+                className="p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
+                onClick={() => handleBoxSelect(boxCommands[2])}
+              >
+                <IoBookOutline className="text-3xl mb-2 text-green-500" />
+                <h3 className="text-md font-semibold">Books</h3>
+              </div>
+            </div>
           </div>
-        ))}
-        <div ref={chatEndRef}></div>
+        ) : (
+          // Render messages if there are any
+          <>
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`mb-3 p-3 rounded-lg w-fit ${
+                  msg.role === "user"
+                    ? "bg-blue-500 text-white self-end rounded-tr-none"
+                    : "bg-gray-200 text-black self-start rounded-tl-none"
+                }`}
+              >
+                {renderMessage(msg)}
+              </div>
+            ))}
+            <div ref={chatEndRef}></div>
+          </>
+        )}
       </div>
-
       {/* Input Field */}
       <form
         onSubmit={handleSend}
@@ -207,14 +306,22 @@ const Ai = () => {
           placeholder="Ask something..."
           disabled={isTyping} // Disable input while AI is responding
         />
-
-        {/* Send Button - Disabled when AI is responding */}
+        {/* Send/Pause Button - Disabled when AI is responding */}
         <button
-          type="submit"
-          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50"
-          disabled={isTyping}
+          type="button"
+          className={`ml-2 px-4 py-2 rounded-lg ${
+            isTyping
+              ? "bg-red-500 hover:bg-red-600"
+              : "bg-blue-500 hover:bg-blue-600"
+          }  text-white disabled:opacity-50`}
+          onClick={isTyping ? handlePause : handleSend}
+          disabled={isPaused}
         >
-          <IoSend />
+          {isTyping ? (
+            <IoPause className="text-white" />
+          ) : (
+            <IoSend className="text-white" />
+          )}
         </button>
       </form>
     </main>

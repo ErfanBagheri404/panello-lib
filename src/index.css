@@ -1,21 +1,46 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import "tailwindcss";
 
-
 body {
   font-family: "Inter", sans-serif;
 }
-.dashboard-home{
-  background: linear-gradient(90deg, #2CD9BF 0%, #756CDF 100%);
-background-clip: text;
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
+.dashboard-home {
+  background: linear-gradient(90deg, #2cd9bf 0%, #756cdf 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 /* Hide scrollbar but keep scrolling */
+/* Calendar.css */
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;
+  display: none; /* Hide scrollbar in WebKit-based browsers */
 }
 
 .scrollbar-hide {
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+  overflow: auto; /* Allow overflow but hide scrollbars */
+}
+
+.fc-scroller {
+  overflow: auto; /* Allow overflow but hide scrollbars */
+}
+
+.fc-scroller::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in WebKit-based browsers */
+}
+
+.fc-scroller {
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+.fc-timegrid-slots {
+  overflow: auto; /* Allow overflow but hide scrollbars */
+}
+
+.fc-timegrid-slots::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in WebKit-based browsers */
+}
+
+.fc-timegrid-slots {
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
 }

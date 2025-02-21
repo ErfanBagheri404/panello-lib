@@ -9,10 +9,8 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { useRef } from "react";
 
 const Calendar = () => {
-  const calendarRef = useRef<FullCalendar | null>(null); // ✅ FIX: Explicitly type useRef
-
+  const calendarRef = useRef<FullCalendar | null>(null);
   const events = [{ title: "Client Meeting", start: new Date() }];
-
   const formatDate = () => {
     const months = [
       "January",
@@ -32,9 +30,8 @@ const Calendar = () => {
     return `${months[now.getMonth()]} ${now.getFullYear()}`;
   };
 
-  // 📌 Function to navigate calendar views
   const handleNav = (direction: "prev" | "next" | "today") => {
-    const calendarApi = calendarRef.current?.getApi(); // ✅ FIX: Optional chaining to prevent errors
+    const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
       if (direction === "prev") calendarApi.prev();
       if (direction === "next") calendarApi.next();
@@ -53,7 +50,6 @@ const Calendar = () => {
         />
       </div>
       <div className="flex items-center justify-between z-10">
-        {/* 📌 Moved arrows to the left */}
         <div className="flex gap-5 items-center">
           <p className="font-medium text-xl">{formatDate()}</p>
           <button
@@ -63,7 +59,6 @@ const Calendar = () => {
             Today
           </button>
         </div>
-
         <div className="flex items-center gap-5">
           <div className="rounded-md border border-black/30 overflow-hidden bg-gray-200">
             <button className="px-3 py-1">Day</button>
@@ -77,12 +72,9 @@ const Calendar = () => {
           <button className="flex items-center text-lg gap-2 border border-black/30 rounded-md p-1.5 bg-white">
             <HiDotsHorizontal />
           </button>
-          {/* 📌 "Today" functionality added to this button */}
         </div>
       </div>
-
       <div className="bg-white rounded-xl border border-black/30 w-full h-screen z-10 overflow-hidden relative">
-        {/* Navigation Buttons in the top-left corner */}
         <div className="absolute top-0 left-0 flex gap-1 z-20">
           <button
             onClick={() => handleNav("prev")}
@@ -97,8 +89,6 @@ const Calendar = () => {
             <IoChevronForward />
           </button>
         </div>
-
-        {/* FullCalendar */}
         <FullCalendar
           ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -108,7 +98,6 @@ const Calendar = () => {
           events={events}
           height="100%"
           headerToolbar={false}
-          eventClassNames={() => "scrollbar-hide"}
         />
       </div>
     </main>
