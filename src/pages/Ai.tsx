@@ -304,7 +304,7 @@ const Ai = () => {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 p-2 border rounded-lg focus:outline-none"
+          className="flex-1 p-2 border border-black/30 rounded-lg focus:outline-none"
           placeholder="Ask something..."
           disabled={isTyping && !isPaused} // Disable input while AI is responding unless paused
         />
