@@ -5,7 +5,13 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "types": ["node", "react", "react-dom"]
+    "types": ["node", "react", "react-dom"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   }
   
 }

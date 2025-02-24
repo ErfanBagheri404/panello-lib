@@ -5,8 +5,16 @@ import HomeReminder from "../components/HomeReminder";
 import HomeIncome from "../components/HomeIncome";
 import HomeCalendar from "../components/HomeCalendar";
 import HomeGraph from "../components/HomeGraph";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [, setSelectedItem] = useState<string>("");
+  const handleClick = (path: string) => {
+    setSelectedItem(path);
+    navigate(path);
+  };
   const formatDate = () => {
     const days = [
       "Sunday",
@@ -58,7 +66,8 @@ const Dashboard = () => {
             What can I do for you today?
           </p>
           <button
-            className="flex items-center gap-3 p-2 px-5 text-white rounded-full"
+            onClick={() => handleClick("/ai")} // Navigate to /ai when clicked
+            className="flex items-center gap-3 p-2 px-5 text-white rounded-full hover:cursor-pointer"
             style={{
               background:
                 "linear-gradient(100deg, #7D71E2 -4.65%, #FFF 132.16%)",
@@ -67,10 +76,17 @@ const Dashboard = () => {
             <img src={spark} alt="" />
             <p>Ask a Question</p>
           </button>
-          <button className="p-2 px-5 bg-white border-2 border-[#2CD9BF] rounded-full">
+
+          <button
+            className="p-2 px-5 bg-white border-2 border-[#2CD9BF] rounded-full hover:cursor-pointer"
+            onClick={() => handleClick("/")}
+          >
             Create a new task
           </button>
-          <button className="p-2 px-5 bg-white border-2 border-[#2CD9BF] rounded-full">
+          <button
+            className="p-2 px-5 bg-white border-2 border-[#2CD9BF] rounded-full hover:cursor-pointer"
+            onClick={() => handleClick("/members")}
+          >
             Manage Members
           </button>
         </div>

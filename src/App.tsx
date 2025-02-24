@@ -8,26 +8,29 @@ import Members from "./pages/Members";
 import Graphs from "./pages/Graphs";
 import Calendar from "./pages/Calendar";
 import Messages from "./pages/Messages";
+import { ThemeProvider } from "./components/theme-provider";
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        {/* Public Route */}
-        <Route path="/login" element={<Login />} />
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          {/* Public Route */}
+          <Route path="/login" element={<Login />} />
 
-        {/* Protected Routes with Layout */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/ai" element={<Ai />} />
-          <Route path="/members" element={<Members />} />
-          <Route path="/graphs" element={<Graphs />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
-      </Routes>
-    </Router>
+          {/* Protected Routes with Layout */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/ai" element={<Ai />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/graphs" element={<Graphs />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 };
 

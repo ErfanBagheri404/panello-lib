@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import grid from "../assets/Grid.svg";
+import API from "../components/API";
+import Security from "../components/Security";
+import General from "../components/General";
 
 const Settings = () => {
   const [selectedTab, setSelectedTab] = useState("general");
-  const [name, setName] = useState("John Doe");
-  const [email] = useState("john@example.com");
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const contentVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -83,104 +81,12 @@ const Settings = () => {
             className="h-full"
           >
             {selectedTab === "general" && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-xl">JD</span>
-                  </div>
-                  <button className="px-4 py-2 border rounded-full">
-                    Change Photo
-                  </button>
-                </div>
-                <div className="space-y-2">
-                  <label className="block font-medium">Name</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full p-2 border rounded-lg"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block font-medium">Email</label>
-                  <input
-                    type="email"
-                    value={email}
-                    readOnly
-                    className="w-full p-2 border rounded-lg bg-gray-100"
-                  />
-                </div>
-                <button
-                  onClick={() => setIsDarkMode(!isDarkMode)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-full"
-                >
-                  Toggle Dark Mode
-                </button>
-              </div>
+              <General></General>
             )}
 
-            {selectedTab === "security" && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block font-medium">Current Password</label>
-                  <input
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full p-2 border rounded-lg"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block font-medium">New Password</label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full p-2 border rounded-lg"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block font-medium">Confirm Password</label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full p-2 border rounded-lg"
-                  />
-                </div>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded-full">
-                  Change Password
-                </button>
-              </div>
-            )}
+            {selectedTab === "security" && <Security></Security>}
 
-            {selectedTab === "api" && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block font-medium">MongoDB API Key</label>
-                  <input
-                    type="text"
-                    value="****************"
-                    readOnly
-                    className="w-full p-2 border rounded-lg bg-gray-100"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block font-medium">
-                    OpenRouter API Key
-                  </label>
-                  <input
-                    type="text"
-                    value="****************"
-                    readOnly
-                    className="w-full p-2 border rounded-lg bg-gray-100"
-                  />
-                </div>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded-full">
-                  Regenerate API Keys
-                </button>
-              </div>
-            )}
+            {selectedTab === "api" && <API></API>}
           </motion.div>
         </AnimatePresence>
       </div>

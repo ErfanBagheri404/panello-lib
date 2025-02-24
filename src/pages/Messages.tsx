@@ -10,6 +10,13 @@ interface User {
   online: boolean;
 }
 
+interface Group {
+  id: number;
+  name: string;
+  pfp: string;
+  members: User[];
+}
+
 interface Message {
   sender: string;
   text?: string;
@@ -31,11 +38,32 @@ const users: User[] = [
     pfp: "https://source.unsplash.com/random/40x40?face2",
     online: false,
   },
-  // Add more users as needed
+  {
+    id: 3,
+    name: "Samantha Lee",
+    pfp: "https://source.unsplash.com/random/40x40?face3",
+    online: true,
+  },
+];
+
+const groups: Group[] = [
+  {
+    id: 1,
+    name: "Design Team",
+    pfp: "https://source.unsplash.com/random/40x40?group1",
+    members: [users[0], users[2]],
+  },
+  {
+    id: 2,
+    name: "Development Team",
+    pfp: "https://source.unsplash.com/random/40x40?group2",
+    members: [users[1], users[2]],
+  },
 ];
 
 const Messages = () => {
   const [selectedUser, setSelectedUser] = useState<User>(users[0]);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: "Jason Binoffe",
@@ -48,6 +76,18 @@ const Messages = () => {
       text: "Hi Jasper. I will share the estimate today.\n\nWe need to display this while unwrapping the box",
       timestamp: "3:30 pm",
       date: "2023-12-10",
+    },
+    {
+      sender: "Samantha Lee",
+      text: "Hey, just checking in on the design progress. Any updates?",
+      timestamp: "10:10 am",
+      date: "2023-12-12",
+    },
+    {
+      sender: "You",
+      text: "Yes, I'll be sending the wireframes soon.",
+      timestamp: "10:11 am",
+      date: "2023-12-12",
     },
   ]);
   const [input, setInput] = useState<string>("");
@@ -96,7 +136,6 @@ const Messages = () => {
           alt="grid background"
         />
       </div>
-      {/* Sidebar */}
       {/* Sidebar */}
       <div className="relative z-10 w-1/4 border border-black/30 rounded-xl p-4 flex flex-col gap-4 bg-white/40 backdrop-blur-lg">
         <div className="flex items-center gap-2 text-lg font-semibold">
@@ -154,6 +193,32 @@ const Messages = () => {
                   <div className="text-sm text-gray-500 flex justify-between items-center">
                     <span>{user.online ? "Online" : "Offline"}</span>
                     <span className="text-blue-500 text-xs">View Profile</span>
+                  </div>
+                </div>
+              </button>
+            ))}
+            {/* Group List */}
+            {groups.map((group) => (
+              <button
+                key={group.id}
+                className={`flex items-center gap-3 p-2 rounded-lg transition ${
+                  selectedGroup?.id === group.id
+                    ? "bg-blue-100"
+                    : "hover:bg-gray-100"
+                }`}
+                onClick={() => setSelectedGroup(group)}
+              >
+                <div className="relative">
+                  <img
+                    src={group.pfp}
+                    alt={group.name}
+                    className="w-10 h-10 rounded-full border-2 border-white shadow-md"
+                  />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="font-medium">{group.name}</div>
+                  <div className="text-sm text-gray-500">
+                    {group.members.length} members
                   </div>
                 </div>
               </button>

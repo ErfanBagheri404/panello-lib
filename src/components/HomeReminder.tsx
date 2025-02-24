@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaRegBell, FaRegTrashAlt, FaRegClock } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
 import { HiDotsHorizontal } from "react-icons/hi";
+import { RxDragHandleDots2 } from "react-icons/rx";
 
 const reminders = [
   {
@@ -42,6 +43,7 @@ const HomeReminder = () => {
     <div className="border rounded-xl p-5 border-black/30 bg-white">
       <h2 className="flex items-center justify-between text-lg font-semibold mb-2">
         <div className="flex items-center">
+                  <RxDragHandleDots2 className="hidden"></RxDragHandleDots2>
           <FaRegClock className="text-yellow-500 mr-3" /> Reminders
         </div>
         <HiDotsHorizontal></HiDotsHorizontal>

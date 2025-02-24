@@ -53,6 +53,7 @@ const HomeCalendar = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="flex items-center text-lg font-semibold">
+          
           <FaRegCalendarAlt className="text-purple-500 mr-2" /> Calendar
         </h2>
         <div className="flex items-center space-x-1">
