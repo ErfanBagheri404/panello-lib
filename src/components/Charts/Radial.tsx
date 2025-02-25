@@ -60,7 +60,7 @@ export function Radial({
   );
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex-col hidden lg:flex">
       <CardHeader
         className={`flex flex-row items-center ${
           alignLeft ? "justify-start" : "justify-center"

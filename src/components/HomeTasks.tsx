@@ -5,12 +5,11 @@ const HomeTasks = () => {
   return (
     <div className="p-5 bg-white rounded-xl border border-black/30">
       <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
-        <RxDragHandleDots2></RxDragHandleDots2>
-        <MdOutlineTaskAlt className="text-green-500"></MdOutlineTaskAlt>My Tasks
+        <RxDragHandleDots2 />
+        <MdOutlineTaskAlt className="text-green-500" /> My Tasks
       </h2>
-
-      <div className="grid grid-cols-2 gap-6">
-        <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 flex items-center justify-center border-2 border-dashed border-gray-400 rounded-xl">
               <span className="text-xl font-bold">+</span>
@@ -31,7 +30,7 @@ const HomeTasks = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
           <div className="flex items-center gap-3">
             <div
               className="w-12 h-12 rounded-xl"
