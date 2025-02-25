@@ -63,55 +63,60 @@ const RolesList = () => {
     <div className="z-10 my-5">
       <h3 className="text-lg font-semibold mb-2">Roles</h3>
       <div className="bg-white w-full rounded-xl border border-black/30 overflow-hidden p-3">
-        <table className="w-full text-sm">
-          <thead className="text-left bg-[#CCCCCC]">
-            <tr className="rounded-xl">
-              <th className="p-3 rounded-tl-xl rounded-bl-xl items-center">
-                <input
-                  type="checkbox"
-                  checked={allChecked}
-                  onChange={handleAllCheck}
-                />
-              </th>
-              <th className="p-3">Role</th>
-              <th className="p-3 rounded-tr-xl rounded-br-xl">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {roles.map((role) => (
-              <tr
-                key={role.id}
-                className={`${
-                  roles.indexOf(role) !== 0 ? "border-t border-gray-200" : ""
-                } hover:bg-gray-50`}
-              >
-                <td className="p-3">
+        <div className="overflow-x-auto lg:overflow-visible">
+          <table className="w-full text-sm min-w-[600px]">
+            <thead className="text-left bg-[#CCCCCC]">
+              <tr className="rounded-xl">
+                <th className="p-3 rounded-tl-xl rounded-bl-xl items-center">
                   <input
                     type="checkbox"
-                    checked={checkedRoles.has(role.id)}
-                    onChange={(e) => handleSingleCheck(e, role.id)}
+                    checked={allChecked}
+                    onChange={handleAllCheck}
                   />
-                </td>
-                <td className="p-3">{role.name}</td>
-                <td className="p-3">{role.description}</td>
+                </th>
+                <th className="p-3">Role</th>
+                <th className="p-3 rounded-tr-xl rounded-br-xl">Description</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {roles.map((role) => (
+                <tr
+                  key={role.id}
+                  className={`${
+                    roles.indexOf(role) !== 0 ? "border-t border-gray-200" : ""
+                  } hover:bg-gray-50`}
+                >
+                  <td className="p-3">
+                    <input
+                      type="checkbox"
+                      checked={checkedRoles.has(role.id)}
+                      onChange={(e) => handleSingleCheck(e, role.id)}
+                    />
+                  </td>
+                  <td className="p-3">{role.name}</td>
+                  <td className="p-3">{role.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Actions Section */}
-      <div className="flex items-center mt-3 gap-2">
+
+      <div className="flex lg:flex-row flex-col items-center mt-3 gap-2 text-center">
         <span>Actions for selected roles:</span>
-        <select className="border border-black/30 rounded-md p-1">
-          <option>Options</option>
-          <option>Delete</option>
-          <option>Edit</option>
-          <option>Duplicate</option>
-        </select>
-        <button className="px-3 py-1 bg-black text-white rounded-md text-md">
-          Apply
-        </button>
+        <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
+          <select className="border border-black/30 rounded-md p-1">
+            <option>Options</option>
+            <option>Delete</option>
+            <option>Edit</option>
+            <option>Duplicate</option>
+          </select>
+          <button className="px-3 py-1 bg-black text-white rounded-md text-md">
+            Apply
+          </button>
+        </div>
       </div>
     </div>
   );

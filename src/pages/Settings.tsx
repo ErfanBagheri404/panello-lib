@@ -19,7 +19,7 @@ const Settings = () => {
     <main
       className={`relative ${
         isDarkMode ? "bg-gray-900 text-white" : "bg-white"
-      } border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5`}
+      } border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-4 gap-5`}
     >
       <div className="absolute inset-0 z-0">
         <img
@@ -33,11 +33,11 @@ const Settings = () => {
       <div
         className={`z-10 ${
           isDarkMode ? "bg-gray-800" : "bg-white"
-        } border border-black/30 rounded-2xl p-6`}
+        } border border-black/30 rounded-2xl p-4`}
       >
         <h2 className="text-2xl font-bold">Settings</h2>
         <span>Manage your account through here.</span>
-        <div className="flex gap-3 mt-3">
+        <div className="flex flex-wrap gap-3 mt-3">
           <button
             onClick={() => setSelectedTab("general")}
             className={`px-3 py-1 border rounded-full ${
@@ -68,7 +68,7 @@ const Settings = () => {
       <div
         className={`z-10 ${
           isDarkMode ? "bg-gray-800" : "bg-white"
-        } border border-black/30 rounded-2xl p-6 flex-1`}
+        } border border-black/30 rounded-2xl p-4 flex-1 overflow-auto`}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -80,13 +80,9 @@ const Settings = () => {
             transition={{ duration: 0.2 }}
             className="h-full"
           >
-            {selectedTab === "general" && (
-              <General></General>
-            )}
-
-            {selectedTab === "security" && <Security></Security>}
-
-            {selectedTab === "api" && <API></API>}
+            {selectedTab === "general" && <General />}
+            {selectedTab === "security" && <Security />}
+            {selectedTab === "api" && <API />}
           </motion.div>
         </AnimatePresence>
       </div>

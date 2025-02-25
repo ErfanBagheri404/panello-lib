@@ -1,19 +1,20 @@
 import LanguageSelector from "./LanguageSelector";
-import { useTheme } from "../components/theme-provider"; // adjust the import path as necessary
+import { useTheme } from "../components/theme-provider";
+
 const General = () => {
-      const { theme, setTheme } = useTheme(); // Access the theme context
+  const { theme, setTheme } = useTheme();
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col w-1/3">
+      {/* Profile Picture */}
+      <div className="flex flex-col lg:flex-row lg:items-center">
+        <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Profile Picture</h3>
           <p className="text-sm text-gray-500">Update your Profile Picture.</p>
         </div>
-        <div className="flex items-center justify-between w-full gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 mt-2 lg:mt-0">
           <div className="flex items-center gap-6">
-            <div className="w-12 h-12 bg-gray-200 border border-black/30 flex items-center justify-center rounded-xl">
-              {/* Placeholder for logo */}
-            </div>
+            <div className="w-12 h-12 bg-gray-200 border border-black/30 flex items-center justify-center rounded-xl" />
             <button className="px-3 py-1 rounded-lg bg-white border border-black/30">
               Replace image
             </button>
@@ -25,41 +26,35 @@ const General = () => {
       </div>
 
       {/* Interface Theme */}
-      <div className="flex items-center">
-        <div className="flex flex-col w-1/3">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Interface theme</h3>
-          <p className="text-sm text-gray-500">
-            Select or customize your UI theme.
-          </p>
+          <p className="text-sm text-gray-500">Select or customize your UI theme.</p>
         </div>
-        <div className="flex gap-4 mt-2 w-full">
-          {["System preference", "Light", "Dark"].map((theme) => (
+        <div className="flex flex-wrap gap-4 mt-2 lg:mt-0 lg:w-full">
+          {["System preference", "Light", "Dark"].map((themeOption) => (
             <div
-              key={theme}
-              className={`w-32 h-20 rounded-md border-2 p-2 flex items-center justify-center cursor-pointer ${
-                theme === "System preference"
+              key={themeOption}
+              className={`w-32 h-20 border-2 p-2 flex items-center justify-center cursor-pointer ${
+                themeOption === "System preference"
                   ? "border-blue-500"
                   : "border-gray-300"
               }`}
             >
-              <span className="text-sm">{theme}</span>
+              <span className="text-sm text-center">{themeOption}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Transparent Sidebar */}
-
       {/* Sidebar Feature */}
-      <div className="flex">
-        <div className="flex flex-col w-1/3">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Sidebar feature</h3>
-          <p className="text-sm text-gray-500">
-            What shows in the desktop sidebar.
-          </p>
+          <p className="text-sm text-gray-500">What shows in the desktop sidebar.</p>
         </div>
-        <div className="flex flex-col w-full">
-          <select className="mt-2 border rounded-md px-3 py-2 w-fit">
+        <div className="flex flex-col lg:w-full mt-2 lg:mt-0">
+          <select className="border rounded-md px-3 py-2 w-full lg:w-fit">
             <option>Recent changes</option>
             <option>Favorites</option>
             <option>Shortcuts</option>
@@ -67,21 +62,39 @@ const General = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col w-1/3">
+      {/* Language Selector */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Language</h3>
           <p className="text-sm text-gray-500">Change Dashboard's language.</p>
         </div>
-        <div className="w-full">
-          <LanguageSelector></LanguageSelector>
+        <div className="flex w-full mt-2 lg:mt-0">
+          <LanguageSelector />
         </div>
       </div>
-      <button
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className="px-4 py-2 border rounded-full bg-gray-300"
-      >
-        Toggle Dark Mode
-      </button>
+
+      {/* New Logout Option */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col lg:w-1/3">
+          <h3 className="text-lg font-medium">Account</h3>
+          <p className="text-sm text-gray-500">Manage your account settings.</p>
+        </div>
+        <div className="flex w-full mt-2 lg:mt-0">
+          <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200 w-full lg:w-fit">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Dark Mode Toggle */}
+      <div className="flex justify-center lg:justify-start">
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="px-4 py-2 border rounded-full bg-gray-300 hover:bg-gray-400 transition duration-200"
+        >
+          Toggle Dark Mode
+        </button>
+      </div>
     </div>
   );
 };

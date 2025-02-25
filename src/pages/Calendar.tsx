@@ -129,13 +129,13 @@ const Calendar = () => {
         <div className="absolute top-0 left-0 flex gap-1 z-20">
           <button
             onClick={() => handleNav("prev")}
-            className=" py-1.5 px-0.75 hover:bg-gray-100"
+            className=" py-1.5 px-0.75 "
           >
             <IoChevronBack />
           </button>
           <button
             onClick={() => handleNav("next")}
-            className=" py-1.5 px-0.75 hover:bg-gray-100"
+            className=" py-1.5 px-0.75 "
           >
             <IoChevronForward />
           </button>
