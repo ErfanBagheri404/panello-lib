@@ -119,7 +119,7 @@ const Sidebar = () => {
       {isOpen && (
         <div className="w-full p-4">
           <div className="flex justify-between items-center mb-5">
-            <h3 className="text-sm font-medium">Tasks</h3>
+            <h3 className="text-lg font-medium">Tasks</h3>
             <button className="text-xs text-[#756CDF] bg-[#766cdf4f] px-2 py-1 rounded-full">
               + Add
             </button>
