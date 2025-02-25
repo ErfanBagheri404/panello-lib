@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import grid from "../assets/Grid.svg";
 import logo from "../assets/logo.svg";
 import MembersList from "../components/MembersList";

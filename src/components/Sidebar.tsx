@@ -50,13 +50,13 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`h-full flex flex-col justify-between items-center bg-white border border-black/30 rounded-2xl transition-all duration-300 overflow-y-auto scrollbar-hide ${
-        isOpen ? "w-64" : "w-20"
+      className={`h-fit lg:h-full w-full flex lg:flex-col flex-row justify-between items-center bg-white border border-black/30 rounded-2xl transition-all duration-300 overflow-y-auto scrollbar-hide ${
+        isOpen ? "lg:w-64" : "lg:w-20"
       }`}
     >
       {/* Logo */}
       <div
-        className={`flex items-center p-6 pb-0 gap-4 font-bold w-full ${
+        className={`lg:flex hidden items-center p-6 pb-0 gap-4 font-bold w-full ${
           isOpen ? "mb-2" : "mb-5"
         } p-2`}
       >
@@ -74,7 +74,7 @@ const Sidebar = () => {
 
       {/* Sidebar Navigation */}
       <nav
-        className={`flex flex-col p-4   ${
+        className={`flex lg:flex-col flex-row py-2 lg:p-4 ${
           isOpen
             ? "items-start gap-1 border-b border-black/30"
             : "items-center gap-4"
@@ -84,7 +84,7 @@ const Sidebar = () => {
           <div
             key={index}
             onClick={() => handleMenuItemClick(item.path)}
-            className={`flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 cursor-pointer w-full ${
+            className={`flex items-center gap-2 p-2 px-4 lg:px-2 rounded-lg hover:bg-gray-100 cursor-pointer w-full ${
               !isOpen && "justify-center"
             }`}
           >
@@ -159,7 +159,7 @@ const Sidebar = () => {
 
       {/* Sidebar Toggle Button */}
 
-      <div className="self-start p-4 pt-0 w-full">
+      <div className="self-start lg:block hidden p-4 pt-0 w-full">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={` hover:bg-gray-100 rounded-md p-2 transition w-full flex items-center gap-2 justify-center ${
