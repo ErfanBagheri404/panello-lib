@@ -73,8 +73,13 @@ const Dashboard = () => {
                 "linear-gradient(100deg, #7D71E2 -4.65%, #FFF 132.16%)",
             }}
           >
-            <img src={spark} alt="" />
-            <p>Ask a Question</p>
+            <img
+              src={spark}
+              alt=""
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
+
+            <p className="text-white">Ask a Question</p>
           </button>
 
           <button

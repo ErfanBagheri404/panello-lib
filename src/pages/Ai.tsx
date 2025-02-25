@@ -254,21 +254,21 @@ const Ai = () => {
             <h2 className="text-lg font-semibold mb-4">Start a Conversation</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
               <div
-                className="p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
+                className="p-4 bg-white rounded-lg border border-black/30 cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
                 onClick={() => handleBoxSelect(boxCommands[0])}
               >
                 <IoHappyOutline className="text-3xl mb-2 text-blue-500" />
                 <h3 className="text-md font-semibold">Humor</h3>
               </div>
               <div
-                className="p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
+                className="p-4 bg-white rounded-lg border border-black/30 cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
                 onClick={() => handleBoxSelect(boxCommands[1])}
               >
                 <IoSunnyOutline className="text-3xl mb-2 text-yellow-500" />
                 <h3 className="text-md font-semibold">Weather</h3>
               </div>
               <div
-                className="p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
+                className="p-4 bg-white rounded-lg border border-black/30 cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
                 onClick={() => handleBoxSelect(boxCommands[2])}
               >
                 <IoBookOutline className="text-3xl mb-2 text-green-500" />

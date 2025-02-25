@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/Logo2.svg";
+import logo2 from "../assets/Logo.svg";
 import calendar from "../assets/Sidebar/Calendar.svg";
 import messages from "../assets/Sidebar/chat_bubble.svg";
 import home from "../assets/Sidebar/Home.svg";
@@ -123,29 +124,35 @@ const Sidebar = () => {
               + Add
             </button>
           </div>
-          <ul className="space-y-2 mb-4">
+          <ul className="space-y-5 mb-4">
             {tasks.map((task, idx) => (
-              <li key={idx} className="flex items-center gap-2 text-sm">
-                <span className={`w-3 h-3 rounded-full ${task.color}`}></span>
+              <li key={idx} className="flex items-center gap-4 text-sm">
+                <span className={`w-3 h-3 rounded-[4px] ${task.color}`}></span>
                 {task.label}
               </li>
             ))}
           </ul>
 
           {/* Invite Members Card */}
-          <div className="p-3 bg-gradient-to-br from-[#BFA8FF] to-[#B5B2FD] rounded-xl text-white text-sm">
-            <h4 className="font-semibold">panello</h4>
-            <p className="mt-1 mb-3">
+          <div
+            className="p-6  rounded-2xl text-white text-sm mt-[80px]"
+            style={{
+              background: "linear-gradient(138deg, #7D71E2 0%, #FFF 138.83%)",
+            }}
+          >
+            <h4 className="font-semibold text-lg text-white flex  items-center gap-2">
+              <img src={logo2} width={20} height={20}></img> Panello
+            </h4>
+            <p className="mt-3 mb-3 text-white font-light">
               New members will gain access to public Spaces, Docs, and
               Dashboards
             </p>
             <button
-  onClick={() => navigate("/members")}
-  className="w-full py-1 bg-white text-black rounded-lg text-xs font-medium"
->
-  + Invite Members
-</button>
-
+              onClick={() => navigate("/members")}
+              className="px-3 py-1 bg-white text-black rounded-full text-md font-medium"
+            >
+              + Invite Members
+            </button>
           </div>
         </div>
       )}
