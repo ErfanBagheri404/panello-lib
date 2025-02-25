@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
+import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/Logo2.svg";
 import calendar from "../assets/Sidebar/Calendar.svg";
 import messages from "../assets/Sidebar/chat_bubble.svg";
@@ -26,13 +26,18 @@ const menuItems: MenuItem[] = [
   { icon: settings, label: "Settings", path: "/settings" },
 ];
 
+const tasks = [
+  { color: "bg-red-500", label: "Product Lunch" },
+  { color: "bg-blue-500", label: "Team Brainstorm" },
+  { color: "bg-yellow-400", label: "Branding Lunch" },
+];
+
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>("");
   const navigate = useNavigate();
-  const location = useLocation(); // Get current URL path
+  const location = useLocation();
 
-  // Sync selectedItem with URL path on refresh or route change
   useEffect(() => {
     setSelectedItem(location.pathname);
   }, [location.pathname]);
@@ -44,12 +49,16 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`h-full p-4 flex flex-col justify-between items-center bg-white border border-black/30 rounded-2xl transition-all duration-300 ${
+      className={`h-full flex flex-col justify-between items-center bg-white border border-black/30 rounded-2xl transition-all duration-300 overflow-y-auto scrollbar-hide ${
         isOpen ? "w-64" : "w-20"
       }`}
     >
       {/* Logo */}
-      <div className={`flex items-center gap-4 font-bold w-full mb-5 p-2`}>
+      <div
+        className={`flex items-center p-6 pb-0 gap-4 font-bold w-full ${
+          isOpen ? "mb-2" : "mb-5"
+        } p-2`}
+      >
         <img src={logo} alt="Logo" className="min-w-[32px]" />
         <span
           className={`text-xl transition-all duration-300 ${
@@ -64,15 +73,17 @@ const Sidebar = () => {
 
       {/* Sidebar Navigation */}
       <nav
-        className={`flex flex-col ${
-          isOpen ? "items-start" : "items-center"
-        } gap-4 w-full flex-grow`}
+        className={`flex flex-col p-4   ${
+          isOpen
+            ? "items-start gap-1 border-b border-black/30"
+            : "items-center gap-4"
+        } w-full flex-grow`}
       >
         {menuItems.map((item, index) => (
           <div
             key={index}
             onClick={() => handleMenuItemClick(item.path)}
-            className={`flex items-center gap-2 p-3 rounded-lg hover:bg-gray-100 cursor-pointer w-full ${
+            className={`flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 cursor-pointer w-full ${
               !isOpen && "justify-center"
             }`}
           >
@@ -103,24 +114,63 @@ const Sidebar = () => {
         ))}
       </nav>
 
+      {/* Tasks Section */}
+      {isOpen && (
+        <div className="w-full p-4">
+          <div className="flex justify-between items-center mb-5">
+            <h3 className="text-sm font-medium">Tasks</h3>
+            <button className="text-xs text-[#756CDF] bg-[#766cdf4f] px-2 py-1 rounded-full">
+              + Add
+            </button>
+          </div>
+          <ul className="space-y-2 mb-4">
+            {tasks.map((task, idx) => (
+              <li key={idx} className="flex items-center gap-2 text-sm">
+                <span className={`w-3 h-3 rounded-full ${task.color}`}></span>
+                {task.label}
+              </li>
+            ))}
+          </ul>
+
+          {/* Invite Members Card */}
+          <div className="p-3 bg-gradient-to-br from-[#BFA8FF] to-[#B5B2FD] rounded-xl text-white text-sm">
+            <h4 className="font-semibold">panello</h4>
+            <p className="mt-1 mb-3">
+              New members will gain access to public Spaces, Docs, and
+              Dashboards
+            </p>
+            <button
+  onClick={() => navigate("/members")}
+  className="w-full py-1 bg-white text-black rounded-lg text-xs font-medium"
+>
+  + Invite Members
+</button>
+
+          </div>
+        </div>
+      )}
+
       {/* Sidebar Toggle Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`p-2 hover:bg-gray-100 rounded-md transition w-full flex items-center gap-2 justify-center ${
-          isOpen ? "justify-start" : "items-center"
-        }`}
-      >
-        <img src={sidebar} className="min-w-[24px]" alt="Toggle Sidebar" />
-        <span
-          className={`text-sm font-medium transition-all duration-300 ${
-            isOpen
-              ? "opacity-100 max-w-full"
-              : "opacity-0 max-w-0 overflow-hidden hidden"
+
+      <div className="self-start p-4 pt-0 w-full">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={` hover:bg-gray-100 rounded-md p-2 transition w-full flex items-center gap-2 justify-center ${
+            isOpen ? "justify-start" : "items-center"
           }`}
         >
-          {isOpen ? "Close Sidebar" : ""}
-        </span>
-      </button>
+          <img src={sidebar} className="min-w-[24px]" alt="Toggle Sidebar" />
+          <span
+            className={`text-sm font-medium transition-all duration-300 ${
+              isOpen
+                ? "opacity-100 max-w-full"
+                : "opacity-0 max-w-0 overflow-hidden hidden"
+            }`}
+          >
+            {isOpen ? "Close Sidebar" : ""}
+          </span>
+        </button>
+      </div>
     </aside>
   );
 };
