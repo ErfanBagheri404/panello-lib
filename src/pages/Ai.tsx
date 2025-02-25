@@ -236,8 +236,16 @@ const Ai = () => {
     ],
   ];
 
+  const getMessageClasses = (role: "user" | "ai") => 
+    `mb-3 p-3 rounded-lg max-w-[90%] md:max-w-[70%] lg:max-w-[50%] ${
+      role === "user" 
+        ? "bg-blue-500 text-white self-end rounded-tr-none md:rounded-tr-lg lg:rounded-tr-none" 
+        : "bg-gray-200 text-black self-start rounded-tl-none md:rounded-tl-lg lg:rounded-tl-none"
+    }`;
+
   return (
-    <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide">
+    <main className="relative border border-black/30 h-[calc(100vh-5rem)] mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide">
+      {/* Background Grid */}
       <div className="absolute inset-0 z-0">
         <img
           className="w-full h-full object-cover"
@@ -246,47 +254,37 @@ const Ai = () => {
           alt=""
         />
       </div>
+
       {/* Chat Messages */}
-      <div className="flex-1 flex flex-col p-4 overflow-y-auto z-10 scrollbar-hide">
+      <div className="flex-1 flex flex-col p-2 md:p-4 overflow-y-auto z-10 scrollbar-hide">
         {messages.length === 0 ? (
-          // Render boxes if no messages have been sent
-          <div className="flex flex-col items-center justify-center text-center flex-1">
+          // Responsive start boxes
+          <div className="flex flex-col items-center justify-center text-center flex-1 px-2">
             <h2 className="text-lg font-semibold mb-4">Start a Conversation</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
-              <div
-                className="p-4 bg-white rounded-lg border border-black/30 cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
-                onClick={() => handleBoxSelect(boxCommands[0])}
-              >
-                <IoHappyOutline className="text-3xl mb-2 text-blue-500" />
-                <h3 className="text-md font-semibold">Humor</h3>
-              </div>
-              <div
-                className="p-4 bg-white rounded-lg border border-black/30 cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
-                onClick={() => handleBoxSelect(boxCommands[1])}
-              >
-                <IoSunnyOutline className="text-3xl mb-2 text-yellow-500" />
-                <h3 className="text-md font-semibold">Weather</h3>
-              </div>
-              <div
-                className="p-4 bg-white rounded-lg border border-black/30 cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
-                onClick={() => handleBoxSelect(boxCommands[2])}
-              >
-                <IoBookOutline className="text-3xl mb-2 text-green-500" />
-                <h3 className="text-md font-semibold">Books</h3>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 w-full max-w-3xl">
+              {boxCommands.map((commands, index) => (
+                <div
+                  key={index}
+                  className="p-3 md:p-4 bg-white rounded-lg border border-black/30 cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
+                  onClick={() => handleBoxSelect(commands)}
+                >
+                  {index === 0 && <IoHappyOutline className="text-2xl md:text-3xl mb-2 text-blue-500" />}
+                  {index === 1 && <IoSunnyOutline className="text-2xl md:text-3xl mb-2 text-yellow-500" />}
+                  {index === 2 && <IoBookOutline className="text-2xl md:text-3xl mb-2 text-green-500" />}
+                  <h3 className="text-sm md:text-md font-semibold">
+                    {['Humor', 'Weather', 'Books'][index]}
+                  </h3>
+                </div>
+              ))}
             </div>
           </div>
         ) : (
-          // Render messages if there are any
+          // Messages list
           <>
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`mb-3 p-3 rounded-lg w-fit ${
-                  msg.role === "user"
-                    ? "bg-blue-500 text-white self-end rounded-tr-none"
-                    : "bg-gray-200 text-black self-start rounded-tl-none"
-                }`}
+                className={getMessageClasses(msg.role)}
               >
                 {renderMessage(msg)}
               </div>
@@ -295,33 +293,36 @@ const Ai = () => {
           </>
         )}
       </div>
-      {/* Input Field */}
+
+      {/* Responsive Input Field */}
       <form
         onSubmit={handleSend}
-        className="p-4 border-t border-black/20 bg-white flex z-10"
+        className="p-2 md:p-4 border-t border-black/20 bg-white flex z-10 gap-2"
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 p-2 border border-black/30 rounded-lg focus:outline-none"
+          className="flex-1 p-2 text-sm md:text-base border border-black/30 rounded-lg focus:outline-none"
           placeholder="Ask something..."
-          disabled={isTyping && !isPaused} // Disable input while AI is responding unless paused
+          disabled={isTyping && !isPaused}
         />
-        {/* Send/Pause Button - Disabled when AI is responding */}
         <button
           type="button"
-          className={`ml-2 px-4 py-2 rounded-lg ${
+          className={`p-2 md:px-4 md:py-2 rounded-lg ${
             isTyping
               ? "bg-red-500 hover:bg-red-600"
               : "bg-blue-500 hover:bg-blue-600"
-          }  text-white disabled:opacity-50`}
+          } text-white disabled:opacity-50 flex items-center`}
           onClick={isTyping ? handlePause : handleSend}
         >
           {isTyping ? (
-            <IoPause className="text-white" />
+            <IoPause className="text-sm md:text-base" />
           ) : (
-            <IoSend className="text-white" />
+            <>
+              <span className="hidden md:inline">Send</span>
+              <IoSend className="md:hidden text-sm" />
+            </>
           )}
         </button>
       </form>
