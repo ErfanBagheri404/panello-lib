@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import grid from "../assets/Grid.svg";
-import API from "../components/API";
-import Security from "../components/Security";
-import General from "../components/General";
+import API from "../components/Settings/API";
+import Security from "../components/Settings/Security";
+import General from "../components/Settings/General";
 
 const Settings = () => {
   const [selectedTab, setSelectedTab] = useState("general");

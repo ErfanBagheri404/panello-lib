@@ -1,9 +1,9 @@
 import { useState } from "react";
 import grid from "../assets/Grid.svg";
 import logo from "../assets/logo.svg";
-import MembersList from "../components/MembersList";
-import RolesList from "../components/RolesList";
-import InviteMemberModal from "../components/InviteMemberModal";
+import MembersList from "../components/Members/MembersList";
+import RolesList from "../components/Members/RolesList";
+import InviteMemberModal from "../features/InviteMemberModal";
 
 const Members = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

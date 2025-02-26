@@ -1,10 +1,10 @@
 import spark from "../assets/Sidebar/Sparkling.svg";
 import grid from "../assets/Grid.svg";
-import HomeTasks from "../components/HomeTasks";
-import HomeReminder from "../components/HomeReminder";
-import HomeIncome from "../components/HomeIncome";
-import HomeCalendar from "../components/HomeCalendar";
-import HomeGraph from "../components/HomeGraph";
+import HomeTasks from "../components/Home Widgets/HomeTasks";
+import HomeReminder from "../components/Home Widgets/HomeReminder";
+import HomeIncome from "../components/Home Widgets/HomeIncome";
+import HomeCalendar from "../components/Home Widgets/HomeCalendar";
+import HomeGraph from "../components/Home Widgets/HomeGraph";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 

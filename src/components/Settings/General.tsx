@@ -1,5 +1,5 @@
 import LanguageSelector from "./LanguageSelector";
-import { useTheme } from "../components/theme-provider";
+import { useTheme } from "../theme-provider";
 
 const General = () => {
   const { theme, setTheme } = useTheme();
@@ -29,7 +29,9 @@ const General = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Interface theme</h3>
-          <p className="text-sm text-gray-500">Select or customize your UI theme.</p>
+          <p className="text-sm text-gray-500">
+            Select or customize your UI theme.
+          </p>
         </div>
         <div className="flex flex-wrap gap-4 mt-2 lg:mt-0 lg:w-full">
           {["System preference", "Light", "Dark"].map((themeOption) => (
@@ -51,7 +53,9 @@ const General = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Sidebar feature</h3>
-          <p className="text-sm text-gray-500">What shows in the desktop sidebar.</p>
+          <p className="text-sm text-gray-500">
+            What shows in the desktop sidebar.
+          </p>
         </div>
         <div className="flex flex-col lg:w-full mt-2 lg:mt-0">
           <select className="border rounded-md px-3 py-2 w-full lg:w-fit">

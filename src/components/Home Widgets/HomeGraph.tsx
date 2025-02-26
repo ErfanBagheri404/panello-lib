@@ -1,4 +1,4 @@
-import Radial from "./Charts/Radial";
+import Radial from "../Charts/Radial";
 
 const HomeGraph = () => {
   return (
