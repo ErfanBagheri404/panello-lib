@@ -173,3 +173,22 @@ body {
     color: var(--foreground);
   }
 }
+
+.fc .fc-scrollgrid-sync-inner {
+  white-space: nowrap; /* Prevent wrapping */
+  text-align: center;
+}
+.fc .fc-col-header-cell {
+  min-width: 80px; /* Adjust column width */
+}
+.fc-view {
+  min-width: 800px; /* Adjust this value based on your layout */
+}
+
+.fc-timegrid {
+  min-width: 1000px; /* Ensures enough space for week view */
+}
+
+.fc .fc-scrollgrid {
+  min-width: 800px; /* Prevents shrinking */
+}

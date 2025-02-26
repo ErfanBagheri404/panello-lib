@@ -91,7 +91,7 @@ const Calendar = () => {
   };
 
   return (
-    <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5">
+    <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5 w-full">
       <div className="absolute inset-0 z-0">
         <img
           className="w-full h-full object-cover"
@@ -100,8 +100,8 @@ const Calendar = () => {
           alt="grid background"
         />
       </div>
-      <div className="flex items-center justify-between z-10">
-        <div className="flex gap-5 items-center">
+      <div className="flex lg:flex-row flex-col items-center justify-between z-10">
+        <div className="flex gap-5 items-center w-full justify-between lg:w-fit">
           <p className="font-medium text-xl">{formatDate()}</p>
           <button
             onClick={() => handleNav("today")}
@@ -110,23 +110,25 @@ const Calendar = () => {
             Today
           </button>
         </div>
-        <div className="flex items-center gap-5">
-          <div className="rounded-md border border-black/30 overflow-hidden bg-gray-200">
+        <div className="flex lg:flex-row flex-col items-center lg:gap-5 w-full lg:w-fit">
+          <div className="rounded-md border w-full lg:w-fit border-black/30 overflow-hidden bg-gray-200 text-center my-2 lg:my-0">
             <button className="px-3 py-1">Day</button>
             <button className="px-3 py-1 bg-white rounded-md">Week</button>
             <button className="px-3 py-1">Month</button>
           </div>
-          <button className="flex items-center text-lg gap-2 border border-black/30 rounded-md px-3 py-0.5 bg-white">
-            <CiFilter />
-            Filter
-          </button>
-          <button className="flex items-center text-lg gap-2 border border-black/30 rounded-md p-1.5 bg-white">
-            <HiDotsHorizontal />
-          </button>
+          <div className="flex w-full lg:w-fit gap-2 lg:gap-5">
+            <button className="flex items-center text-lg gap-2 border border-black/30 rounded-md px-3 py-0.5 bg-white w-full justify-center">
+              <CiFilter />
+              Filter
+            </button>
+            <button className="flex items-center text-lg gap-2 border border-black/30 rounded-md p-1.5 bg-white">
+              <HiDotsHorizontal />
+            </button>
+          </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl border border-black/30 w-full h-screen z-10 overflow-hidden relative">
-        <div className="absolute top-0 left-0 flex gap-1 z-20">
+      <div className="relative bg-white rounded-xl border border-black/30 w-full h-screen z-10 lg:overflow-hidden overflow-x-auto">
+        <div className="absolute top-0 lg:top-0 lg:left-0 flex gap-2 z-20">
           <button
             onClick={() => handleNav("prev")}
             className=" py-1.5 px-0.75 "
