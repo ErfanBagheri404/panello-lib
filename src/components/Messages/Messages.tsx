@@ -6,10 +6,11 @@ import { User, Group, Message } from "../../types";
 import { users, groups, initialMessages } from "../../data/mockData";
 
 const Messages = () => {
-  const [selectedUser, setSelectedUser] = useState<User>(users[0]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(users[0]);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [input, setInput] = useState<string>("");
+  const [input, setInput] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -26,31 +27,51 @@ const Messages = () => {
     setInput("");
   };
 
+  const handleBackClick = () => {
+    setIsSidebarOpen(true);
+    setSelectedUser(null);
+    setSelectedGroup(null);
+    setInput("");
+    setMessages(initialMessages);
+  };
+
   return (
-    <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex scrollbar-hide p-6 gap-5">
+    <main className="relative border border-black/30 h-screen mt-2.5 w-full rounded-2xl overflow-hidden flex scrollbar-hide p-4 lg:p-6  gap-5 items-center">
       <div className="absolute inset-0 z-0">
         <img
           className="w-full h-full object-cover"
-          draggable="false"
+          draggable={false}
           src={grid}
           alt="grid background"
         />
       </div>
-
       <Sidebar
         users={users}
         groups={groups}
         selectedUser={selectedUser}
         selectedGroup={selectedGroup}
-        onUserSelect={setSelectedUser}
-        onGroupSelect={setSelectedGroup}
+        isOpen={isSidebarOpen} 
+        onUserSelect={(user) => {
+          setSelectedUser(user);
+          setSelectedGroup(null);
+          setIsSidebarOpen(false);
+        }}
+        onGroupSelect={(group) => {
+          setSelectedGroup(group);
+          setSelectedUser(null);
+          setIsSidebarOpen(false);
+        }}
       />
+
       <ChatWindow
         selectedUser={selectedUser}
+        selectedGroup={selectedGroup}
         messages={messages}
         input={input}
         onInputChange={setInput}
         onSendMessage={sendMessage}
+        onBackClick={handleBackClick}
+        isSidebarOpen={isSidebarOpen}
       />
     </main>
   );

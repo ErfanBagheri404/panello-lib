@@ -5,14 +5,16 @@ import { User, Group } from "../../types";
 interface SidebarProps {
   users: User[];
   groups: Group[];
-  selectedUser: User;
+  selectedUser: User | null; // Updated to User | null
   selectedGroup: Group | null;
   onUserSelect: (user: User) => void;
   onGroupSelect: (group: Group) => void;
+  isOpen: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
   users,
+  isOpen,
   groups,
   selectedUser,
   selectedGroup,
@@ -20,7 +22,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   onGroupSelect,
 }) => {
   return (
-    <div className="relative z-10 w-1/4 border border-black/30 rounded-xl p-4 flex flex-col gap-4 bg-white/40 backdrop-blur-lg">
+    <div
+      className={`relative z-10 w-full lg:w-1/4 h-full border border-black/30 rounded-xl p-4 flex flex-col gap-4 bg-white/40 ${
+        isOpen ? "block" : "hidden lg:block"
+      }`}
+    >
       <div className="flex items-center gap-2 text-lg font-semibold">
         <FiMessageSquare className="text-blue-500" />
         <span>Messages</span>
@@ -35,7 +41,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             className="w-full p-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-
         {/* Filter Tabs */}
         <div className="flex gap-2">
           <button className="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm">
@@ -48,14 +53,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             GROUPS
           </button>
         </div>
-
         {/* User & Group List */}
         <div className="flex flex-col gap-2 overflow-y-auto scrollbar-hide">
           {users.map((user) => (
             <button
               key={user.id}
               className={`flex items-center gap-3 p-2 rounded-lg transition ${
-                selectedUser.id === user.id
+                selectedUser?.id === user.id
                   ? "bg-blue-100"
                   : "hover:bg-gray-100"
               }`}
