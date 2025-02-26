@@ -21,7 +21,7 @@ const menuItems: MenuItem[] = [
   { icon: home, label: "Home", path: "/" },
   { icon: ai, label: "AI Tools", path: "/ai" },
   { icon: members, label: "Members", path: "/members" },
-  { icon: chart, label: "Analytics", path: "/graphs" },
+  { icon: chart, label: "Graphs & Charts", path: "/graphs" },
   { icon: calendar, label: "Calendar", path: "/calendar" },
   { icon: messages, label: "Messages", path: "/messages" },
   { icon: settings, label: "Settings", path: "/settings" },

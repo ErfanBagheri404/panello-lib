@@ -7,6 +7,7 @@ import Radial from "../components/Charts/Radial";
 const Graphs = () => {
   return (
     <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5">
+      {/* Background Grid */}
       <div className="absolute inset-0 z-0">
         <img
           className="w-full h-full object-cover"
@@ -15,8 +16,11 @@ const Graphs = () => {
           alt="grid background"
         />
       </div>
-      <div className="flex gap-5 z-10">
-        <div className="flex flex-col w-1/2 gap-5">
+
+      {/* Responsive Charts Layout */}
+      <div className="flex flex-col lg:flex-row gap-5 z-10">
+        {/* First Column */}
+        <div className="flex flex-col w-full lg:w-1/2 gap-5">
           <Radial
             chartData={[
               { month: "January", desktop: 1200, mobile: 800 },
@@ -33,11 +37,13 @@ const Graphs = () => {
             showLabels={true}
             customTooltip={false}
           />
-          <BarChartComponent></BarChartComponent>
+          <BarChartComponent />
         </div>
-        <div className="flex flex-col w-1/2 gap-5">
-          <LineChartComponent></LineChartComponent>
-          <BarChart2></BarChart2>
+
+        {/* Second Column */}
+        <div className="flex flex-col w-full lg:w-1/2 gap-5">
+          <LineChartComponent />
+          <BarChart2 />
         </div>
       </div>
     </main>
