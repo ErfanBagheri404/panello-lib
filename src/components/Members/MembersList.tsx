@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IoEllipse } from "react-icons/io5";
-import { Member, Role } from "../../pages/Members"; 
+import { Member, Role } from "../../pages/Members";
 
 interface MembersListProps {
   members: Member[];
@@ -8,11 +8,11 @@ interface MembersListProps {
   roles: Role[];
 }
 
-
 const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
   const [allChecked, setAllChecked] = useState(false);
   const [checkedMembers, setCheckedMembers] = useState<Set<number>>(new Set());
   const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
+  const [selectedAction, setSelectedAction] = useState<string>("");
 
   const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = event.target.checked;
@@ -45,6 +45,44 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
       )
     );
     setEditingMemberId(null);
+  };
+  const handleActionApply = () => {
+    if (!selectedAction || checkedMembers.size === 0) return;
+
+    switch (selectedAction) {
+      case "Ban":
+        setMembers((prev) =>
+          prev.map((member) =>
+            checkedMembers.has(member.id)
+              ? { ...member, accountState: "Deactivated (Banned)" }
+              : member
+          )
+        );
+        break;
+
+      case "Remove":
+        setMembers((prev) =>
+          prev.filter((member) => !checkedMembers.has(member.id))
+        );
+        break;
+
+      case "Change Role":
+        // Implement role change modal or direct selection
+        const newRole = prompt("Enter new role:");
+        if (newRole) {
+          setMembers((prev) =>
+            prev.map((member) =>
+              checkedMembers.has(member.id)
+                ? { ...member, role: newRole }
+                : member
+            )
+          );
+        }
+        break;
+    }
+
+    setCheckedMembers(new Set());
+    setAllChecked(false);
   };
 
   return (
@@ -158,19 +196,26 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
       </div>
       {/* Keep actions section the same */}
       <div className="flex lg:flex-row flex-col items-center mt-3 gap-2 text-center">
-        <span>Actions to do with selected users:</span>
-        <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
-          <select className="border border-black/30 rounded-md p-1">
-            <option>Options</option>
-            <option>Ban</option>
-            <option>Change Role</option>
-            <option>Remove</option>
-          </select>
-          <button className="px-3 py-1 bg-black text-white rounded-md text-md">
-            Apply
-          </button>
-        </div>
-      </div>
+    <span>Actions to do with selected users:</span>
+    <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
+      <select 
+        className="border border-black/30 rounded-md p-1"
+        value={selectedAction}
+        onChange={(e) => setSelectedAction(e.target.value)}
+      >
+        <option value="">Options</option>
+        <option>Ban</option>
+        <option>Change Role</option>
+        <option>Remove</option>
+      </select>
+      <button 
+        className="px-3 py-1 bg-black text-white rounded-md text-md"
+        onClick={handleActionApply}
+      >
+        Apply
+      </button>
+    </div>
+  </div>
     </div>
   );
 };

@@ -5,10 +5,10 @@ interface RolesListProps {
   setRoles: React.Dispatch<React.SetStateAction<Role[]>>;
 }
 
-
-const RolesList = ({ roles }: RolesListProps) => {
+const RolesList = ({ roles, setRoles }: RolesListProps) => {
   const [allChecked, setAllChecked] = useState(false);
   const [checkedRoles, setCheckedRoles] = useState<Set<number>>(new Set());
+  const [selectedAction, setSelectedAction] = useState<string>("");
 
   const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = event.target.checked;
@@ -29,6 +29,54 @@ const RolesList = ({ roles }: RolesListProps) => {
       : updatedCheckedRoles.delete(roleId);
     setCheckedRoles(updatedCheckedRoles);
     setAllChecked(updatedCheckedRoles.size === roles.length);
+  };
+
+  const handleActionApply = () => {
+    if (!selectedAction || checkedRoles.size === 0) return;
+
+    switch (selectedAction) {
+      case "Delete":
+        setRoles((prev) => prev.filter((role) => !checkedRoles.has(role.id)));
+        break;
+
+      case "Edit":
+        checkedRoles.forEach((roleId) => {
+          const role = roles.find((r) => r.id === roleId);
+          if (role) {
+            const newName = prompt("Edit role name:", role.name);
+            const newDesc = prompt("Edit role description:", role.description);
+            if (newName && newDesc) {
+              setRoles((prev) =>
+                prev.map((r) =>
+                  r.id === roleId
+                    ? { ...r, name: newName, description: newDesc }
+                    : r
+                )
+              );
+            }
+          }
+        });
+        break;
+
+      case "Duplicate":
+        checkedRoles.forEach((roleId) => {
+          const role = roles.find((r) => r.id === roleId);
+          if (role) {
+            setRoles((prev) => [
+              ...prev,
+              {
+                ...role,
+                id: Math.max(...prev.map((r) => r.id)) + 1,
+                name: `${role.name} (Copy)`,
+              },
+            ]);
+          }
+        });
+        break;
+    }
+
+    setCheckedRoles(new Set());
+    setAllChecked(false);
   };
 
   return (
@@ -79,13 +127,20 @@ const RolesList = ({ roles }: RolesListProps) => {
       <div className="flex lg:flex-row flex-col items-center mt-3 gap-2 text-center">
         <span>Actions for selected roles:</span>
         <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
-          <select className="border border-black/30 rounded-md p-1">
-            <option>Options</option>
+          <select
+            className="border border-black/30 rounded-md p-1"
+            value={selectedAction}
+            onChange={(e) => setSelectedAction(e.target.value)}
+          >
+            <option value="">Options</option>
             <option>Delete</option>
             <option>Edit</option>
             <option>Duplicate</option>
           </select>
-          <button className="px-3 py-1 bg-black text-white rounded-md text-md">
+          <button
+            className="px-3 py-1 bg-black text-white rounded-md text-md"
+            onClick={handleActionApply}
+          >
             Apply
           </button>
         </div>
