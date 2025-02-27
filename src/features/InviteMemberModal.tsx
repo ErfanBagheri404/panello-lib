@@ -1,32 +1,40 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
+import {  Role } from "../pages/Members"; 
 
-const roles = ["Owner", "Co-Owner", "Administrator", "Moderator", "Member"];
+interface InviteMemberModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  roles: Role[]; // Add roles prop type
+}
 
 interface InviteData {
   email: string;
   role: string;
   avatar: string;
 }
-
 const InviteMemberModal = ({
   isOpen,
   onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) => {
+  roles,
+}:InviteMemberModalProps) => {
   const [step, setStep] = useState(1);
   const [inviteData, setInviteData] = useState<InviteData>({
     email: "",
     role: "",
     avatar: "",
   });
+  const [emailError, setEmailError] = useState("");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleNext = () => {
     if (step === 1 && inviteData.email) {
-      // Generate a fake avatar based on email (pravatar)
+      if (!emailRegex.test(inviteData.email)) {
+        setEmailError("Please enter a valid email address");
+        return;
+      }
+      setEmailError("");
       setInviteData((prev) => ({
         ...prev,
         avatar: `https://i.pravatar.cc/150?u=${inviteData.email}`,
@@ -88,6 +96,9 @@ const InviteMemberModal = ({
                     placeholder="user@example.com"
                     required
                   />
+                  {emailError && (
+                    <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                  )}
                 </motion.div>
               )}
 
@@ -108,8 +119,8 @@ const InviteMemberModal = ({
                   >
                     <option value="">Select a role</option>
                     {roles.map((role) => (
-                      <option key={role} value={role}>
-                        {role}
+                      <option key={role.id} value={role.name}>
+                        {role.name}
                       </option>
                     ))}
                   </select>

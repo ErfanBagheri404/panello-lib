@@ -1,40 +1,12 @@
 import React, { useState } from "react";
-
-interface Role {
-  id: number;
-  name: string;
-  description: string;
+import { Role } from "../../pages/Members";
+interface RolesListProps {
+  roles: Role[];
+  setRoles: React.Dispatch<React.SetStateAction<Role[]>>;
 }
 
-const roles: Role[] = [
-  {
-    id: 1,
-    name: "Owner",
-    description: "Full access to all settings and data.",
-  },
-  {
-    id: 2,
-    name: "Co-Owner",
-    description: "Same as Owner, except cannot remove the Owner.",
-  },
-  {
-    id: 3,
-    name: "Administrator",
-    description: "Can manage users and settings but cannot delete the app.",
-  },
-  {
-    id: 4,
-    name: "Moderator",
-    description: "Can manage user activity and enforce rules.",
-  },
-  {
-    id: 5,
-    name: "Member",
-    description: "Standard access with no administrative rights.",
-  },
-];
 
-const RolesList = () => {
+const RolesList = ({ roles }: RolesListProps) => {
   const [allChecked, setAllChecked] = useState(false);
   const [checkedRoles, setCheckedRoles] = useState<Set<number>>(new Set());
 

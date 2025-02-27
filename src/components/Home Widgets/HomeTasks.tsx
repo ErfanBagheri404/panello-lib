@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MdOutlineTaskAlt } from "react-icons/md";
 import { RxDragHandleDots2 } from "react-icons/rx";
-import TaskManagerModal from "./TaskManagerModal";
+import TaskManagerModal from "../../features/TaskManagerModal";
 
 type Task = {
   id: number;

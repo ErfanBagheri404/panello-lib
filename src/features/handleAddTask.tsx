@@ -1,7 +1,7 @@
 import { SetStateAction, useState } from "react";
 import { MdOutlineTaskAlt } from "react-icons/md";
 import { RxDragHandleDots2 } from "react-icons/rx";
-import TaskManagerModal, { Task } from "./TaskManagerModal";
+import TaskManagerModal, { Task } from "../../features/TaskManagerModal";
 
 const HomeTasks = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

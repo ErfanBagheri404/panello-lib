@@ -5,8 +5,93 @@ import MembersList from "../components/Members/MembersList";
 import RolesList from "../components/Members/RolesList";
 import InviteMemberModal from "../features/InviteMemberModal";
 
+export interface Role {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export interface Member {
+  id: number;
+  name: string;
+  role: string;
+  dateAdded: string;
+  status: string;
+  accountState: string;
+  avatar: string;
+}
+
+const initialMembers: Member[] = [
+  {
+    id: 1,
+    name: "Tyrell Wellick",
+    role: "Owner",
+    dateAdded: "Apr 19, 08:01 AM",
+    status: "Online",
+    accountState: "Active",
+    avatar: "https://i.pravatar.cc/40?img=1",
+  },
+  {
+    id: 2,
+    name: "Tyrell Wellick",
+    role: "Co-Owner",
+    dateAdded: "Apr 19, 08:01 AM",
+    status: "Offline",
+    accountState: "Deactivated (Banned)",
+    avatar: "https://i.pravatar.cc/40?img=2",
+  },
+  {
+    id: 3,
+    name: "Tyrell Wellick",
+    role: "Administration",
+    dateAdded: "Apr 19, 08:01 AM",
+    status: "Online",
+    accountState: "Active",
+    avatar: "https://i.pravatar.cc/40?img=3",
+  },
+  {
+    id: 4,
+    name: "Tyrell Wellick",
+    role: "Administration",
+    dateAdded: "Apr 19, 08:01 AM",
+    status: "Online",
+    accountState: "Active",
+    avatar: "https://i.pravatar.cc/40?img=4",
+  },
+];
+
+const initialRoles: Role[] = [
+  {
+    id: 1,
+    name: "Owner",
+    description: "Full access to all settings and data.",
+  },
+  {
+    id: 2,
+    name: "Co-Owner",
+    description: "Same as Owner, except cannot remove the Owner.",
+  },
+  {
+    id: 3,
+    name: "Administrator",
+    description: "Can manage users and settings but cannot delete the app.",
+  },
+  {
+    id: 4,
+    name: "Moderator",
+    description: "Can manage user activity and enforce rules.",
+  },
+  {
+    id: 5,
+    name: "Member",
+    description: "Standard access with no administrative rights.",
+  },
+];
+
 const Members = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [roles, setRoles] = useState<Role[]>(initialRoles);
+  const [members, setMembers] = useState<Member[]>(initialMembers);
 
   return (
     <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5">
@@ -51,14 +136,21 @@ const Members = () => {
         />
       </div>
 
-      <MembersList />
-      <RolesList />
-
-      {/* Invite Member Modal */}
-      <InviteMemberModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+      <MembersList 
+        members={members} 
+        setMembers={setMembers} 
+        roles={roles} 
       />
+      <RolesList 
+  roles={roles} 
+  setRoles={setRoles}  // Already correct in your code
+/>
+
+<InviteMemberModal
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  roles={roles}  // Already correct in your code
+/>
     </main>
   );
 };

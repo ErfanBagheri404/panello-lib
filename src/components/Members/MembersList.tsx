@@ -1,58 +1,18 @@
 import React, { useState } from "react";
 import { IoEllipse } from "react-icons/io5";
+import { Member, Role } from "../../pages/Members"; 
 
-interface Member {
-  id: number;
-  name: string;
-  role: string;
-  dateAdded: string;
-  status: string;
-  accountState: string;
-  avatar: string;
+interface MembersListProps {
+  members: Member[];
+  setMembers: React.Dispatch<React.SetStateAction<Member[]>>;
+  roles: Role[];
 }
 
-const members: Member[] = [
-  {
-    id: 1,
-    name: "Tyrell Wellick",
-    role: "Owner",
-    dateAdded: "Apr 19, 08:01 AM",
-    status: "Online",
-    accountState: "Active",
-    avatar: "https://i.pravatar.cc/40?img=1",
-  },
-  {
-    id: 2,
-    name: "Tyrell Wellick",
-    role: "Co-Owner",
-    dateAdded: "Apr 19, 08:01 AM",
-    status: "Offline",
-    accountState: "Deactivated (Banned)",
-    avatar: "https://i.pravatar.cc/40?img=2",
-  },
-  {
-    id: 3,
-    name: "Tyrell Wellick",
-    role: "Administration",
-    dateAdded: "Apr 19, 08:01 AM",
-    status: "Online",
-    accountState: "Active",
-    avatar: "https://i.pravatar.cc/40?img=3",
-  },
-  {
-    id: 4,
-    name: "Tyrell Wellick",
-    role: "Administration",
-    dateAdded: "Apr 19, 08:01 AM",
-    status: "Online",
-    accountState: "Active",
-    avatar: "https://i.pravatar.cc/40?img=4",
-  },
-];
 
-const MembersList = () => {
+const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
   const [allChecked, setAllChecked] = useState(false);
   const [checkedMembers, setCheckedMembers] = useState<Set<number>>(new Set());
+  const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
 
   const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = event.target.checked;
@@ -77,6 +37,14 @@ const MembersList = () => {
     }
     setCheckedMembers(updatedCheckedMembers);
     setAllChecked(updatedCheckedMembers.size === members.length);
+  };
+  const handleRoleChange = (memberId: number, newRole: string) => {
+    setMembers((prev) =>
+      prev.map((member) =>
+        member.id === memberId ? { ...member, role: newRole } : member
+      )
+    );
+    setEditingMemberId(null);
   };
 
   return (
@@ -135,7 +103,30 @@ const MembersList = () => {
                     </div>
                   </td>
                   <td className="p-3 min-w-[150px] whitespace-nowrap">
-                    {member.role}
+                    {editingMemberId === member.id ? (
+                      <select
+                        value={member.role}
+                        onChange={(e) =>
+                          handleRoleChange(member.id, e.target.value)
+                        }
+                        autoFocus
+                        onBlur={() => setEditingMemberId(null)}
+                        className="border rounded-md p-1"
+                      >
+                        {roles.map((role) => (
+                          <option key={role.id} value={role.name}>
+                            {role.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span
+                        onClick={() => setEditingMemberId(member.id)}
+                        className="cursor-pointer hover:underline"
+                      >
+                        {member.role}
+                      </span>
+                    )}
                   </td>
                   <td className="p-3 whitespace-nowrap">{member.dateAdded}</td>
                   <td className="p-3 whitespace-nowrap">
