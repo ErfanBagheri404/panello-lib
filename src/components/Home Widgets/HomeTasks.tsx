@@ -63,13 +63,19 @@ const HomeTasks = () => {
         {tasks.map((task) => (
           <div className="flex items-center gap-3" key={task.id}>
             <div
-              className="w-12 h-12 rounded-xl"
+              className="w-12 h-12 rounded-xl hover:cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
               style={{
                 background: `linear-gradient(55deg, ${task.color} -25.4%, #000 137.29%)`,
               }}
             />
             <div>
-              <p className="font-medium text-md">{task.name}</p>
+              <p
+                className="font-medium text-md hover:cursor-pointer"
+                onClick={() => setIsModalOpen(true)}
+              >
+                {task.name}
+              </p>
               <p className="text-sm text-gray-500">
                 {task.subtasks.length} tasks • 0 members
               </p>
