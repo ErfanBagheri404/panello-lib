@@ -1,9 +1,9 @@
 import { useState } from "react";
-import grid from "../../assets/Grid.svg";
-import Sidebar from "./Sidebar";
-import ChatWindow from "./ChatWindow";
-import { User, Group, Message } from "../../types";
-import { users, groups, initialMessages } from "../../data/mockData";
+import grid from "../assets/Grid.svg";
+import Sidebar from "../components/Messages/Sidebar";
+import ChatWindow from "../components/Messages/ChatWindow";
+import { User, Group, Message } from "../types";
+import { users, groups, initialMessages } from "../data/mockData";
 
 const Messages = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(users[0]);
@@ -50,7 +50,7 @@ const Messages = () => {
         groups={groups}
         selectedUser={selectedUser}
         selectedGroup={selectedGroup}
-        isOpen={isSidebarOpen} 
+        isOpen={isSidebarOpen}
         onUserSelect={(user) => {
           setSelectedUser(user);
           setSelectedGroup(null);

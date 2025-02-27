@@ -7,7 +7,7 @@ import Ai from "./pages/Ai";
 import Members from "./pages/Members";
 import Graphs from "./pages/Graphs";
 import Calendar from "./pages/Calendar";
-import Messages from "./components/Messages/Messages";
+import Messages from "./pages/Messages";
 import { ThemeProvider } from "./components/theme-provider";
 
 const App = () => {

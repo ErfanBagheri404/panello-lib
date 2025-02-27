@@ -23,11 +23,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   return (
     <div
-      className={`relative z-10 w-full lg:w-1/4 h-full border border-black/30 rounded-xl p-4 flex flex-col gap-4 bg-white/40 ${
+      className={`relative z-10 w-full lg:w-1/4 h-full border border-black/30 rounded-xl p-4 flex flex-col bg-white/40 ${
         isOpen ? "block" : "hidden lg:block"
       }`}
     >
-      <div className="flex items-center gap-2 text-lg font-semibold">
+      <div className="flex items-center gap-2 text-lg font-semibold mb-4">
         <FiMessageSquare className="text-blue-500" />
         <span>Messages</span>
       </div>
