@@ -7,39 +7,75 @@ type Task = {
   id: number;
   name: string;
   subtasks: string[];
-  color: string; // Add color property
-};
-
-const getRandomColor = () => {
-  const colors = [
-    "#4B00FF",
-    "#FF5722",
-    "#009688",
-    "#E91E63",
-    "#FFEB3B",
-    "#3F51B5",
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
+  color: string;
 };
 
 const HomeTasks = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Shared tasks state (moved here from the modal)
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: 1,
       name: "Team brainstorm",
       subtasks: ["Prepare agenda", "Invite team"],
-      color: getRandomColor(), // Initial color
+      color: "#4B00FF", // Temporary initial color
     },
     {
       id: 2,
       name: "Design review",
       subtasks: ["Review new mockups", "Prepare feedback"],
-      color: getRandomColor(), // Initial color
+      color: "#FF5722", // Temporary initial color
     },
   ]);
+
+  // Corrected getRandomColor - now inside HomeTasks and takes tasks as argument
+  const getRandomColor = (tasks: Task[]) => {
+    const colors = [
+      "#4B00FF",
+      "#FF5722",
+      "#009688",
+      "#E91E63",
+      "#FFEB3B",
+      "#3F51B5",
+      "#00bcd4",
+      "#4CAF50",
+      "#9C27B0",
+      "#FF9800",
+      "#009688",
+      "#795548",
+      "#607D8B",
+      "#CDDC39",
+      "#FF5722",
+      "#9E9E9E",
+      "#FFECB3",
+      "#B2EBF0",
+    ];
+
+    const usedColors = tasks.map((task) => task.color);
+    const availableColors = colors.filter((color) => !usedColors.includes(color));
+
+    if (availableColors.length > 0) {
+      return availableColors[Math.floor(Math.random() * availableColors.length)];
+    }
+
+    // Fallback: Generate a random color if all preset colors are used
+    return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0")}`;
+  };
+
+  // Initialize colors correctly for the default tasks (only if needed)
+  const initializeColors = () => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task, _index) => ({
+        ...task,
+        color: task.color || getRandomColor(prevTasks),
+      }))
+    );
+  };
+
+  // Run initialization once (optional if you want dynamic colors at start)
+  useState(() => {
+    initializeColors();
+  });
 
   return (
     <div className="p-5 bg-white rounded-xl border border-black/30">

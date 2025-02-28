@@ -1,4 +1,3 @@
-// Calendar.tsx
 import { useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -22,15 +21,14 @@ import { ViewSwitcher } from "../components/Calendar/ViewSwitcher";
 
 export const Calendar = () => {
   const calendarRef = useRef<FullCalendar>(null);
-  const [view, setView] = useState<
-    "dayGridMonth" | "timeGridWeek" | "timeGridDay"
-  >("timeGridWeek");
-  const [showFilter, setShowFilter] = useState(false);
-  const [showOptions, setShowOptions] = useState(false);
+  const [view, setView] = useState<"dayGridMonth" | "timeGridWeek" | "timeGridDay">("timeGridWeek");
+
   const filterPopupRef = useRef<HTMLDivElement>(null);
   const optionsPopupRef = useRef<HTMLDivElement>(null);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
   const optionsButtonRef = useRef<HTMLButtonElement>(null);
+
+  const [openPopup, setOpenPopup] = useState<"filter" | "options" | null>(null);
 
   const [dateRange, setDateRange] = useState({
     start: new Date(),
@@ -38,10 +36,13 @@ export const Calendar = () => {
   });
   const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-  useClickOutside(filterPopupRef, filterButtonRef, () => setShowFilter(false));
-  useClickOutside(optionsPopupRef, optionsButtonRef, () =>
-    setShowOptions(false)
-  );
+  useClickOutside(filterPopupRef, filterButtonRef, () => {
+    if (openPopup === "filter") setOpenPopup(null);
+  });
+
+  useClickOutside(optionsPopupRef, optionsButtonRef, () => {
+    if (openPopup === "options") setOpenPopup(null);
+  });
 
   const handleViewChange = (newView: typeof view) => {
     setView(newView);
@@ -50,7 +51,7 @@ export const Calendar = () => {
 
   const handleFilterApply = (start: Date, end: Date) => {
     setDateRange({ start, end });
-    setShowFilter(false);
+    setOpenPopup(null);
   };
 
   const handleAddEvent = () => {
@@ -81,21 +82,15 @@ export const Calendar = () => {
 
   const formatDate = () => {
     const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
     ];
     const now = new Date();
     return `${months[now.getMonth()]} ${now.getFullYear()}`;
+  };
+
+  const togglePopup = (popup: "filter" | "options") => {
+    setOpenPopup((prev) => (prev === popup ? null : popup));
   };
 
   return (
@@ -124,36 +119,38 @@ export const Calendar = () => {
           <ViewSwitcher currentView={view} onChange={handleViewChange} />
 
           <div className="flex w-full lg:w-fit gap-2 lg:gap-5">
+            {/* Filter Button & Popup */}
             <div className="relative z-10 w-full lg:w-fit">
               <button
                 ref={filterButtonRef}
-                onClick={() => setShowFilter(!showFilter)}
+                onClick={() => togglePopup("filter")}
                 className="flex items-center text-lg gap-2 border border-black/30 rounded-md px-3 py-0.5 bg-white w-full justify-center"
               >
                 <CiFilter />
                 Filter
               </button>
               <AnimatePresence>
-                {showFilter && (
+                {openPopup === "filter" && (
                   <FilterPopup
                     dateRange={dateRange}
                     onApply={handleFilterApply}
-                    onClose={() => setShowFilter(false)}
+                    onClose={() => setOpenPopup(null)}
                   />
                 )}
               </AnimatePresence>
             </div>
 
+            {/* Options Button & Popup */}
             <div className="relative z-10">
               <button
                 ref={optionsButtonRef}
-                onClick={() => setShowOptions(!showOptions)}
+                onClick={() => togglePopup("options")}
                 className="flex items-center text-lg gap-2 border border-black/30 rounded-md p-1.5 bg-white"
               >
                 <HiDotsHorizontal />
               </button>
               <AnimatePresence>
-                {showOptions && (
+                {openPopup === "options" && (
                   <OptionsPopup
                     onAddEvent={handleAddEvent}
                     onDeleteEvent={handleDeleteEvent}
@@ -206,10 +203,7 @@ export const Calendar = () => {
                   fontSize: "12px",
                   padding: "5px",
                   paddingTop: "1px",
-                  backgroundColor: hexToRgba(
-                    arg.event.extendedProps.color,
-                    0.3
-                  ),
+                  backgroundColor: hexToRgba(arg.event.extendedProps.color, 0.3),
                 }}
               >
                 <div style={{ fontWeight: "bold" }}>{arg.event.title}</div>
