@@ -124,7 +124,7 @@ export const Calendar = () => {
           <ViewSwitcher currentView={view} onChange={handleViewChange} />
 
           <div className="flex w-full lg:w-fit gap-2 lg:gap-5">
-            <div className="relative z-10">
+            <div className="relative z-10 w-full lg:w-fit">
               <button
                 ref={filterButtonRef}
                 onClick={() => setShowFilter(!showFilter)}
