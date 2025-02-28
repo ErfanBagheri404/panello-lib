@@ -192,3 +192,7 @@ body {
 .fc .fc-scrollgrid {
   min-width: 800px; /* Prevents shrinking */
 }
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
