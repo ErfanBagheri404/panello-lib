@@ -1,16 +1,21 @@
 import { useState, useEffect } from "react";
-import logo from "../../assets/logo.svg";
+import logo from "../assets/logo.svg";
 import { FaArrowRight } from "react-icons/fa6";
-import login1 from "../../assets/login1.jpeg";
-import login2 from "../../assets/login2.jpeg";
-import login3 from "../../assets/login3.jpeg";
+import login1 from "../assets/login1.jpeg";
+import login2 from "../assets/login2.jpeg";
+import login3 from "../assets/login3.jpeg";
 
 const images = [login1, login2, login3];
 
-const Register = () => {
+const Login = () => {
   const [bgImage, setBgImage] = useState(login1);
   const [fade, setFade] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,6 +34,27 @@ const Register = () => {
 
     return () => clearInterval(interval);
   }, []); // Empty dependency array ensures this effect runs only once
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        window.location.href = "/dashboard";
+      } else {
+        setError(data.message || "Login failed");
+      }
+    } catch (err) {
+      setError("An error occurred during login");
+    }
+  };
 
   return (
     <main className="relative flex flex-col lg:flex-row p-5 h-screen">
@@ -70,31 +96,20 @@ const Register = () => {
       {/* Right Section */}
       <div className="relative z-10 flex-1 flex justify-center items-center p-10 h-full">
         <div className="w-full max-w-md space-y-6">
-          <h2 className="text-5xl font-medium text-gray-900">
-            Create an account
-          </h2>
+          <h2 className="text-5xl font-medium text-gray-900">Log in</h2>
 
-          <form className="space-y-4">
-            <div className="flex flex-col lg:flex-row gap-3">
-              <input
-                type="fname"
-                id="fname"
-                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
-                placeholder="First name"
-              />
-              <input
-                type="lname"
-                id="lname"
-                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
-                placeholder="Last name"
-              />
-            </div>
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <input
                 type="email"
                 id="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
                 placeholder="Enter your email"
+                required
               />
             </div>
 
@@ -102,8 +117,11 @@ const Register = () => {
               <input
                 type="password"
                 id="password"
+                value={formData.password}
+          onChange={(e) => setFormData({...formData, password: e.target.value})}
                 className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
                 placeholder="Enter your password"
+                required
               />
             </div>
 
@@ -123,6 +141,7 @@ const Register = () => {
                 </a>
               </label>
             </div>
+            {error && <div className="text-red-500 text-sm">{error}</div>}
 
             <button
               type="submit"
@@ -172,12 +191,12 @@ const Register = () => {
           </button>
 
           <p className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
+            Don't have an account?{" "}
             <a
-              href="#"
+              href="/register"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Log in
+              Register
             </a>
           </p>
         </div>
@@ -186,4 +205,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

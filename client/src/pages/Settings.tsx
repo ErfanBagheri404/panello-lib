@@ -7,7 +7,7 @@ import General from "../components/Settings/General";
 
 const Settings = () => {
   const [selectedTab, setSelectedTab] = useState("general");
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode] = useState(false);
 
   const contentVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -66,7 +66,7 @@ const Settings = () => {
       </div>
 
       <div
-        className={`z-10 ${
+        className={`z-10 scrollbar-hide ${
           isDarkMode ? "bg-gray-800" : "bg-white"
         } border border-black/30 rounded-2xl p-4 flex-1 overflow-auto`}
       >

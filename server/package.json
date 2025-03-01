@@ -1,0 +1,25 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "@types/express": "^5.0.0",
+        "@types/node": "^22.13.7",
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "google-auth-library": "^9.15.1",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^5.10.9",
+        "typescript": "^5.8.2"
+    },
+    "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "@types/cors": "^2.8.17",
+        "@types/jsonwebtoken": "^9.0.9"
+    }
+}
