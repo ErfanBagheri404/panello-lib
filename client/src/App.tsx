@@ -1,3 +1,4 @@
+import React from "react"; // Ensure React is imported
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,50 +16,56 @@ import Calendar from "./pages/Calendar";
 import Messages from "./pages/Messages";
 import { ThemeProvider } from "./components/theme-provider";
 import Register from "./pages/Register";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const App = () => {
+  // Define the type for the children prop
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("token");
     return token ? <>{children}</> : <Navigate to="/login" />;
   };
 
   return (
-    <ThemeProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+    <GoogleOAuthProvider clientId={googleClientId || ""}>
+      <ThemeProvider>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          {/* Root Route - Auto-redirect */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Navigate to="/dashboard" replace />
-              </ProtectedRoute>
-            }
-          />
+            {/* Root Route - Auto-redirect */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Navigate to="/dashboard" replace />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Protected Routes with Layout */}
-          <Route
-            element={
-              <ProtectedRoute>
-                <DashboardLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/ai" element={<Ai />} />
-            <Route path="/members" element={<Members />} />
-            <Route path="/graphs" element={<Graphs />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
-        </Routes>
-      </Router>
-    </ThemeProvider>
+            {/* Protected Routes with Layout */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/ai" element={<Ai />} />
+              <Route path="/members" element={<Members />} />
+              <Route path="/graphs" element={<Graphs />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </GoogleOAuthProvider>
   );
 };
 

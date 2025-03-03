@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "../../config.ts";
+
 import logo from "../assets/logo.svg";
 import { FaArrowRight } from "react-icons/fa6";
 import login1 from "../assets/login1.jpeg";
@@ -38,22 +40,29 @@ const Register = () => {
   }, []); // Empty dependency array ensures this effect runs only once
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
-      const response = await fetch("/api/auth/register", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        window.location.href = "/login";
-      } else {
-        setError(data.message || "Registration failed");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Registration failed");
       }
-    } catch (err) {
-      setError("An error occurred during registration");
+
+      const { token } = await res.json();
+
+      // Store token for authenticated requests
+      localStorage.setItem("token", token);
+
+      // Redirect to dashboard or protected route
+      window.location.href = "/dashboard";
+    } catch (err: any) {
+      setError(err.message);
+      console.error("Registration error:", err.message);
     }
   };
 
@@ -178,8 +187,9 @@ const Register = () => {
         text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Login
+              Create an account
             </button>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </form>
 
           <div className="relative">
