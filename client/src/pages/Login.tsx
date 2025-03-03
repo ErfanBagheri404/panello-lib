@@ -5,6 +5,7 @@ import login1 from "../assets/login1.jpeg";
 import login2 from "../assets/login2.jpeg";
 import login3 from "../assets/login3.jpeg";
 import { useGoogleLogin } from "@react-oauth/google";
+import { API_BASE_URL } from "../../config.ts";
 
 const images = [login1, login2, login3];
 
@@ -35,45 +36,54 @@ const Login = () => {
 
     return () => clearInterval(interval);
   }, []); // Empty dependency array ensures this effect runs only once
-  const handleSubmit = async (e: React.FormEvent) => {
+
+
+
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, { // Updated endpoint
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/dashboard";
-      } else {
-        setError(data.message || "Login failed");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Login failed");
       }
-    } catch (err) {
-      setError("An error occurred during login");
+
+      const { token } = await response.json();
+      localStorage.setItem("token", token);
+      window.location.href = "/dashboard";
+    } catch (err: any) {
+      setError(err.message);
+      console.error("Login error:", err.message);
     }
   };
 
+
   const login = useGoogleLogin({
-    flow: "auth-code",
-    redirect_uri: "http://localhost:5173/api/auth/google/callback",
+flow: "auth-code",
+    redirect_uri: "http://localhost:5173", // Should match your Google Cloud credentials
     onSuccess: async (codeResponse) => {
       try {
-        const response = await fetch("/api/auth/google", {
+        const response = await fetch(`${API_BASE_URL}/api/auth/google`, { // Updated endpoint
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: codeResponse.code }), // Send 'code', not token
+          body: JSON.stringify({ code: codeResponse.code }),
         });
 
-        const data = await response.json();
-        localStorage.setItem("token", data.token);
+        if (!response.ok) {
+          throw new Error("Google login failed");
+        }
+
+        const { token } = await response.json();
+        localStorage.setItem("token", token);
         window.location.href = "/dashboard";
-      } catch (error) {
-        console.error("Google login failed:", error);
-        setError("Google login failed. Please try again.");
+      } catch (err: any) {
+        setError(err.message);
+        console.error("Google login error:", err.message);
       }
     },
     onError: () => {

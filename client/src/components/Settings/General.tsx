@@ -1,8 +1,17 @@
 import LanguageSelector from "./LanguageSelector";
 import { useTheme } from "../theme-provider";
+import { useNavigate } from "react-router-dom";
 
 const General = () => {
   const { theme, setTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Remove the authentication token from localStorage
+    localStorage.removeItem("authToken");
+    // Redirect to login page
+    navigate("/login");
+  };
 
   return (
     <div className="space-y-6">
@@ -84,7 +93,10 @@ const General = () => {
           <p className="text-sm text-gray-500">Manage your account settings.</p>
         </div>
         <div className="flex w-full mt-2 lg:mt-0">
-          <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200 w-full lg:w-fit">
+          <button
+            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200 w-full lg:w-fit"
+            onClick={handleLogout}
+          >
             Logout
           </button>
         </div>
