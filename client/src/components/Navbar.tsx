@@ -7,11 +7,17 @@ import chart from "../assets/Sidebar/Pie chart.svg";
 import settings from "../assets/Sidebar/Settings.svg";
 import ai from "../assets/Sidebar/Sparkling.svg";
 import members from "../assets/Sidebar/Users.svg";
+import defaultUser from "../assets/defaultUser.jpg";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState<{
+    name: string;
+    avatar?: string;
+    role: string;
+  } | null>(null);
 
   const menuItems = [
     { icon: home, label: "Home", path: "/" },
@@ -32,6 +38,8 @@ const Navbar = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
   };
+
+  
   const useClickOutside = (ref: any, callback: () => void) => {
     useEffect(() => {
       const handleClick = (e: MouseEvent) => {
@@ -45,6 +53,24 @@ const Navbar = () => {
   };
   const dropdownRef = useRef(null);
   useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("/api/auth/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        setUserProfile(data);
+      } catch (error) {
+        console.error("Profile fetch error:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   return (
     <nav className="bg-white px-6 py-4 flex justify-between border border-black/30 rounded-2xl items-center">
@@ -53,13 +79,16 @@ const Navbar = () => {
       {/* Profile Dropdown */}
       <div className="relative">
         <button
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsDropdownOpen(prev => !prev);
+          }}
           className="flex items-center gap-2 hover:bg-gray-100 rounded-lg p-2"
         >
           <img
-            src="https://via.placeholder.com/40"
+            src={userProfile?.avatar || defaultUser}
             alt="Profile"
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover"
           />
           <svg
             className={`w-4 h-4 transition-transform ${
@@ -80,16 +109,22 @@ const Navbar = () => {
 
         {/* Dropdown Menu */}
         {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border z-10 " ref={dropdownRef}> 
+          <div
+            className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border z-100 "
+            ref={dropdownRef}
+          >
             <div className="flex items-center px-4 py-2 gap-2">
               <img
-                src="https://via.placeholder.com/40"
+                src={userProfile?.avatar || defaultUser}
                 alt="Profile"
-                className="w-10 h-10 rounded-full"
-              />{" "}
+                className="w-10 h-10 rounded-full object-cover"
+              />
               <div className="flex flex-col">
-                <span>John Doe</span>
-                <span className="text-gray-400 text-xs">Adminstrator</span>
+                <span>{userProfile?.name || "User"}</span>
+                <span className="text-gray-400 text-xs">
+                  {" "}
+                  {userProfile?.role || "User"}
+                </span>
               </div>
             </div>
             <a

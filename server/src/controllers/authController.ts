@@ -71,6 +71,7 @@ export const googleAuth = async (
         firstName: payload.given_name || "Google",
         lastName: payload.family_name || "User",
         avatar: payload.picture,
+        role: "user",
       });
     }
 
@@ -143,5 +144,33 @@ export const loginUser = async (
   } catch (error) {
     console.error("Login error:", error);
     res.status(400).json({ error: "Login failed" });
+  }
+};
+
+export const getProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const user = await User.findById(req.user.userId).select(
+      "firstName lastName name avatar role email"
+    );
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.json({
+      name: user.name || `${user.firstName} ${user.lastName}`,
+      avatar: user.avatar,
+      role: user.role,
+      email: user.email,
+    });
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };

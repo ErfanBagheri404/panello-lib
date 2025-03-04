@@ -9,6 +9,7 @@ interface IUser extends Document {
   googleId?: string;
   name?: string;
   avatar?: string;
+  role: string;
   comparePassword: (password: string) => Promise<boolean>;
 }
 
@@ -39,6 +40,11 @@ const userSchema = new Schema<IUser>({
       return !this.googleId;
     },
   },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  }
 });
 userSchema.methods.comparePassword = async function (
   this: IUser,
