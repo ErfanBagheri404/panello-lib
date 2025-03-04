@@ -10,7 +10,13 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 // Connect to MongoDB
 if (!process.env.MONGO_URI) {
@@ -25,6 +31,10 @@ mongoose
 app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
   res.redirect("/login");
+});
+app.use((req, res, next) => {
+  console.log(`Received ${req.method} request for: ${req.url}`);
+  next();
 });
 
 // Start the server

@@ -64,29 +64,41 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 
   const login = useGoogleLogin({
-flow: "auth-code",
-    redirect_uri: "http://localhost:5173", // Should match your Google Cloud credentials
+    flow: "auth-code",
+    redirect_uri: window.location.origin,
+    scope: "openid email profile",
     onSuccess: async (codeResponse) => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/google`, { // Updated endpoint
+        console.log("Google auth code received:", codeResponse.code);
+        
+        const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: codeResponse.code }),
+          body: JSON.stringify({ 
+            code: codeResponse.code,
+            redirect_uri: window.location.origin
+          }),
         });
-
+  
+        console.log("Google auth response status:", response.status);
+  
         if (!response.ok) {
-          throw new Error("Google login failed");
+          const errorText = await response.text();
+          throw new Error(`Server error: ${errorText}`);
         }
-
+  
         const { token } = await response.json();
+        console.log("JWT token received:", token);
+        
         localStorage.setItem("token", token);
         window.location.href = "/dashboard";
       } catch (err: any) {
+        console.error("Full Google login error:", err);
         setError(err.message);
-        console.error("Google login error:", err.message);
       }
     },
-    onError: () => {
+    onError: (errorResponse) => {
+      console.error("Google OAuth error:", errorResponse);
       setError("Google login failed. Please try again.");
     },
   });

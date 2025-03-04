@@ -25,6 +25,7 @@ const generateJWTToken = (user: any): string => {
 interface GoogleAuthRequest extends Request {
   body: {
     code: string;
+    redirect_uri?: string;
   };
 }
 
@@ -33,34 +34,56 @@ export const googleAuth = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { code } = req.body;
+    const { code, redirect_uri } = req.body;
+    console.log("Received Google auth code:", code.substring(0, 10) + "...");
+    console.log("Using redirect_uri:", redirect_uri);
 
-    const { tokens } = await client.getToken(code);
+    const { tokens } = await client.getToken({
+      code,
+      redirect_uri: redirect_uri || "postmessage",
+    });
+    console.log("Google tokens received:", tokens);
+
     const ticket = await client.verifyIdToken({
       idToken: tokens.id_token!,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: process.env.GOOGLE_CLIENT_ID!,
     });
+    console.log("Ticket verified:", ticket);
 
     const payload = ticket.getPayload();
+    console.log("Google payload:", payload);
+
     if (!payload?.email) {
+      console.error("No email in Google payload");
       res.status(401).json({ error: "Invalid authentication" });
       return;
     }
 
     let user = await User.findOne({ email: payload.email });
+    console.log("Existing user found:", !!user);
+
     if (!user) {
+      console.log("Creating new user from Google payload");
       user = await User.create({
         email: payload.email,
-        name: payload.name,
+        name: payload.name || "Google User",
         googleId: payload.sub,
+        firstName: payload.given_name || "Google",
+        lastName: payload.family_name || "User",
+        avatar: payload.picture,
       });
     }
 
     const jwtToken = generateJWTToken(user);
+    console.log("Generated JWT token for user:", user.email);
+
     res.json({ token: jwtToken });
   } catch (error) {
-    console.error("Google auth error:", error);
-    res.status(401).json({ error: "Invalid authentication" });
+    console.error("Full Google auth error:", error);
+    res.status(401).json({
+      error: "Invalid authentication",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
