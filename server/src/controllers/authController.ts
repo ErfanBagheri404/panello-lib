@@ -8,6 +8,13 @@ const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_SECRET,
   "postmessage"
 );
+interface AuthenticatedRequest extends Request {
+  user: {
+    userId: string;
+    email: string;
+    role: string;
+  };
+}
 
 const generateJWTToken = (user: any): string => {
   return jwt.sign(
@@ -147,30 +154,32 @@ export const loginUser = async (
   }
 };
 
-export const getProfile = async (req: Request, res: Response): Promise<void> => {
-  try {
-    if (!req.user) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
+export const getProfile = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { user } = req as AuthenticatedRequest;
 
-    const user = await User.findById(req.user.userId).select(
-      "firstName lastName name avatar role email"
-    );
-
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
-
-    res.json({
-      name: user.name || `${user.firstName} ${user.lastName}`,
-      avatar: user.avatar,
-      role: user.role,
-      email: user.email,
-    });
-  } catch (error) {
-    console.error("Profile error:", error);
-    res.status(500).json({ error: "Server error" });
+  if (!user) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
   }
+
+  const foundUser = await User.findById(user.userId).select(
+    "firstName lastName name avatar role email"
+  );
+
+  if (!foundUser) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  res.json({
+    firstName: foundUser.firstName,
+    lastName: foundUser.lastName,
+    name: foundUser.name || `${foundUser.firstName} ${foundUser.lastName}`,
+    avatar: foundUser.avatar,
+    role: foundUser.role,
+    email: foundUser.email,
+  });
 };

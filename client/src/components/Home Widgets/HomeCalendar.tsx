@@ -20,11 +20,7 @@ const HomeCalendar = () => {
       title: "Meeting with VP",
       time: "10:30 - 11:30 am",
       platform: "Google Meet",
-      attendees: [
-        "https://via.placeholder.com/80x80?text=User1",
-        "https://via.placeholder.com/80x80?text=User2",
-        "https://via.placeholder.com/80x80?text=User3",
-      ],
+      attendees: ["", "", ""],
       extraCount: 2,
     },
   ];

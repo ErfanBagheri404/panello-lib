@@ -14,7 +14,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<{
-    name: string;
+    firstName?: string;
+    lastName?: string;
     avatar?: string;
     role: string;
   } | null>(null);
@@ -39,7 +40,6 @@ const Navbar = () => {
     window.location.href = "/login";
   };
 
-  
   const useClickOutside = (ref: any, callback: () => void) => {
     useEffect(() => {
       const handleClick = (e: MouseEvent) => {
@@ -81,7 +81,7 @@ const Navbar = () => {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setIsDropdownOpen(prev => !prev);
+            setIsDropdownOpen((prev) => !prev);
           }}
           className="flex items-center gap-2 hover:bg-gray-100 rounded-lg p-2"
         >
@@ -90,6 +90,12 @@ const Navbar = () => {
             alt="Profile"
             className="w-10 h-10 rounded-full object-cover"
           />
+          <div className="flex flex-col items-start">
+            <span className="text-sm font-medium">
+              {userProfile?.firstName} {userProfile?.lastName}
+            </span>
+            <span className="text-xs text-gray-500">{userProfile?.role}</span>
+          </div>
           <svg
             className={`w-4 h-4 transition-transform ${
               isDropdownOpen ? "rotate-180" : ""
@@ -120,7 +126,7 @@ const Navbar = () => {
                 className="w-10 h-10 rounded-full object-cover"
               />
               <div className="flex flex-col">
-                <span>{userProfile?.name || "User"}</span>
+                <span>  {userProfile?.firstName} {userProfile?.lastName}</span>
                 <span className="text-gray-400 text-xs">
                   {" "}
                   {userProfile?.role || "User"}
