@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { OAuth2Client } from "google-auth-library";
 import User from "../models/User";
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";import multer from 'multer';
+import path from 'path';
 
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -182,4 +183,72 @@ export const getProfile = async (
     role: foundUser.role,
     email: foundUser.email,
   });
+};
+
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/avatars/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)
+    );
+  }
+});
+
+export const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image files are allowed"));
+    }
+  },
+});
+
+export const updateAvatar = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { user } = req as AuthenticatedRequest;
+    const file = req.file as Express.Multer.File;
+
+    if (!file) {
+      res.status(400).json({ error: 'No file uploaded' });
+      return;
+    }
+
+    const avatarUrl = `/uploads/avatars/${file.filename}`;
+    const updatedUser = await User.findByIdAndUpdate(
+      user.userId,
+      { avatar: avatarUrl },
+      { new: true }
+    ).select('avatar');
+
+    res.json({ avatar: updatedUser?.avatar });
+  } catch (error) {
+    console.error('Avatar upload error:', error);
+    res.status(500).json({ error: 'Failed to update avatar' });
+  }
+};
+
+export const removeAvatar = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { user } = req as AuthenticatedRequest;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      user.userId,
+      { avatar: null },
+      { new: true }
+    ).select('avatar');
+
+    res.json({ avatar: updatedUser?.avatar });
+  } catch (error) {
+    console.error('Avatar removal error:', error);
+    res.status(500).json({ error: 'Failed to remove avatar' });
+  }
 };

@@ -8,6 +8,7 @@ import settings from "../assets/Sidebar/Settings.svg";
 import ai from "../assets/Sidebar/Sparkling.svg";
 import members from "../assets/Sidebar/Users.svg";
 import defaultUser from "../assets/defaultUser.jpg";
+import axios from "axios";
 
 const Navbar = () => {
   const location = useLocation();
@@ -37,7 +38,7 @@ const Navbar = () => {
   // Logout handler
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   const useClickOutside = (ref: any, callback: () => void) => {
@@ -53,27 +54,31 @@ const Navbar = () => {
   };
   const dropdownRef = useRef(null);
   useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
+
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
       try {
-        const response = await fetch("/api/auth/profile", {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await axios.get("/api/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
-        const data = await response.json();
-        setUserProfile(data);
+        setUserProfile(response.data); // Corrected to setUserProfile
       } catch (error) {
-        console.error("Profile fetch error:", error);
+        console.error("Failed to fetch profile:", error);
       }
     };
 
-    fetchProfile();
+    if (localStorage.getItem("token")) {
+      fetchProfile();
+    }
   }, []);
 
   return (
-    <nav className="bg-white px-6 py-4 flex justify-between border border-black/30 rounded-2xl items-center">
+    <nav className="bg-white px-6 py-3 flex justify-between border border-black/30 rounded-2xl items-center">
       <h1 className="text-xl font-bold">{currentPage}</h1>
 
       {/* Profile Dropdown */}
@@ -85,11 +90,14 @@ const Navbar = () => {
           }}
           className="flex items-center gap-2 hover:bg-gray-100 rounded-lg p-2"
         >
-          <img
-            src={userProfile?.avatar || defaultUser}
-            alt="Profile"
-            className="w-10 h-10 rounded-full object-cover"
-          />
+          <div className="flex w-fit">
+            <img
+              src={userProfile?.avatar || defaultUser}
+              alt="Profile"
+              className="w-10 h-10 rounded-full object-cover"
+            />
+            <div className="absolute bg-green-500 rounded-full w-3 h-3 left-9 bottom-2"></div>
+          </div>
           <div className="flex flex-col items-start">
             <span className="text-sm font-medium">
               {userProfile?.firstName} {userProfile?.lastName}
@@ -126,7 +134,10 @@ const Navbar = () => {
                 className="w-10 h-10 rounded-full object-cover"
               />
               <div className="flex flex-col">
-                <span>  {userProfile?.firstName} {userProfile?.lastName}</span>
+                <span>
+                  {" "}
+                  {userProfile?.firstName} {userProfile?.lastName}
+                </span>
                 <span className="text-gray-400 text-xs">
                   {" "}
                   {userProfile?.role || "User"}

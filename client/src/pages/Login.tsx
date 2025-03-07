@@ -13,6 +13,8 @@ const Login = () => {
   const [bgImage, setBgImage] = useState(login1);
   const [fade, setFade] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,29 +22,40 @@ const Login = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Check for saved credentials on component mount
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    const savedPassword = localStorage.getItem("rememberedPassword");
+    if (savedEmail && savedPassword) {
+      setFormData({ email: savedEmail, password: savedPassword });
+      setRememberMe(true);
+    }
+
+    // Background image rotation
     const interval = setInterval(() => {
       setFade(false);
-
       setTimeout(() => {
         setActiveIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % images.length;
-          setBgImage(images[nextIndex]); // Ensures correct image update
-          return nextIndex; // Updates active index properly
+          setBgImage(images[nextIndex]);
+          return nextIndex;
         });
-
         setFade(true);
       }, 400);
     }, 8000);
 
     return () => clearInterval(interval);
-  }, []); // Empty dependency array ensures this effect runs only once
+  }, []);
 
-
-
-const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!acceptedTerms) {
+      setError("You must agree to the terms and conditions.");
+      return;
+    }
+
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, { // Updated endpoint
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -55,13 +68,22 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       const { token } = await response.json();
       localStorage.setItem("token", token);
+
+      // Handle remember me functionality
+      if (rememberMe) {
+        localStorage.setItem("rememberedEmail", formData.email);
+        localStorage.setItem("rememberedPassword", formData.password);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+        localStorage.removeItem("rememberedPassword");
+      }
+
       window.location.href = "/dashboard";
     } catch (err: any) {
       setError(err.message);
       console.error("Login error:", err.message);
     }
   };
-
 
   const login = useGoogleLogin({
     flow: "auth-code",
@@ -70,26 +92,26 @@ const handleSubmit = async (e: React.FormEvent) => {
     onSuccess: async (codeResponse) => {
       try {
         console.log("Google auth code received:", codeResponse.code);
-        
+
         const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             code: codeResponse.code,
-            redirect_uri: window.location.origin
+            redirect_uri: window.location.origin,
           }),
         });
-  
+
         console.log("Google auth response status:", response.status);
-  
+
         if (!response.ok) {
           const errorText = await response.text();
           throw new Error(`Server error: ${errorText}`);
         }
-  
+
         const { token } = await response.json();
         console.log("JWT token received:", token);
-        
+
         localStorage.setItem("token", token);
         window.location.href = "/dashboard";
       } catch (err: any) {
@@ -178,7 +200,10 @@ const handleSubmit = async (e: React.FormEvent) => {
               <input
                 type="checkbox"
                 id="terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                required
               />
               <label
                 htmlFor="terms"
@@ -200,6 +225,21 @@ const handleSubmit = async (e: React.FormEvent) => {
             >
               Login
             </button>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="rememberMe"
+                className="ml-2 block text-sm text-gray-900"
+              >
+                Remember me
+              </label>
+            </div>
           </form>
 
           <div className="relative">

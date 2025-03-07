@@ -1,8 +1,14 @@
 import LanguageSelector from "./LanguageSelector";
 import { useTheme } from "../theme-provider";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../user-provider";
+import axios from "axios";
+import { useRef } from "react";
+import defaultUser from "../../assets/defaultUser.jpg";
 
 const General = () => {
+  const { user, setUser } = useUser();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -11,6 +17,46 @@ const General = () => {
     localStorage.removeItem("authToken");
     // Redirect to login page
     navigate("/login");
+  };
+
+  const handleAvatarUpdate = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const response = await axios.put(
+        "http://localhost:5000/api/auth/avatar",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Changed from "authToken" to "token"
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setUser((prev) =>
+        prev ? { ...prev, avatar: response.data.avatar } : prev
+      );
+    } catch (error) {
+      console.error("Avatar update failed:", error);
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    try {
+      const response = await axios.delete("/api/auth/avatar", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      });
+
+      setUser((prev) =>
+        prev ? { ...prev, avatar: response.data.avatar } : prev
+      );
+    } catch (error) {
+      console.error("Avatar removal failed:", error);
+    }
   };
 
   return (
@@ -23,14 +69,49 @@ const General = () => {
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 mt-2 lg:mt-0">
           <div className="flex items-center gap-6">
-            <div className="w-12 h-12 bg-gray-200 border border-black/30 flex items-center justify-center rounded-xl" />
-            <button className="px-3 py-1 rounded-lg bg-white border border-black/30">
+            <div className="w-12 h-12 bg-gray-200 border border-black/30 flex items-center justify-center rounded-xl overflow-hidden">
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img
+                  src={defaultUser}
+                  alt="Default Profile"
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              hidden
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files?.[0]) {
+                  handleAvatarUpdate(e.target.files[0]);
+                }
+              }}
+            />
+            <button
+              className="px-3 py-1 rounded-lg bg-white border border-black/30"
+              onClick={() => fileInputRef.current?.click()}
+            >
               Replace image
             </button>
+
+            {user?.avatar && (
+              <button
+                className="text-red-500 bg-red-100 px-3 py-1 rounded-lg"
+                onClick={handleRemoveAvatar}
+              >
+                Remove
+              </button>
+            )}
           </div>
-          <button className="text-red-500 bg-red-100 px-3 py-1 rounded-lg">
-            Remove
-          </button>
         </div>
       </div>
 

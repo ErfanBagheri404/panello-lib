@@ -18,7 +18,7 @@ type MenuItem = {
 };
 
 const menuItems: MenuItem[] = [
-  { icon: home, label: "Home", path: "/" },
+  { icon: home, label: "Home", path: "/dashboard" },
   { icon: ai, label: "AI Tools", path: "/ai" },
   { icon: members, label: "Members", path: "/members" },
   { icon: chart, label: "Graphs & Charts", path: "/graphs" },
