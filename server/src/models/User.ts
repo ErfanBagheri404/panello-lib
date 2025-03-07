@@ -39,7 +39,7 @@ const userSchema = new Schema<IUser>({
   },
   avatar: {
     type: String,
-    default: "/default-avatar.png",
+    default: "./src/assets/defaultUser.jpg",
   },
   role: {
     type: String,

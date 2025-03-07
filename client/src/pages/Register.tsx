@@ -5,13 +5,16 @@ import { FaArrowRight } from "react-icons/fa6";
 import login1 from "../assets/login1.jpeg";
 import login2 from "../assets/login2.jpeg";
 import login3 from "../assets/login3.jpeg";
+import { useGoogleAuth } from "../components/hooks/useGoogleLogin.ts";
 
 const images = [login1, login2, login3];
 
 const Register = () => {
   const [bgImage, setBgImage] = useState(login1);
   const [fade, setFade] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const { googleLogin } = useGoogleAuth(); // Add this line
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -39,7 +42,6 @@ const Register = () => {
   }, []); // Empty dependency array ensures this effect runs only once
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
 
     if (!acceptedTerms) {
       setError("You must agree to the terms and conditions.");
@@ -213,6 +215,7 @@ const Register = () => {
           </div>
 
           <button
+            onClick={() => googleLogin()}
             className="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 border 
       border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 
       hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

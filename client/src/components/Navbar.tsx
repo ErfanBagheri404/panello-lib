@@ -7,7 +7,6 @@ import chart from "../assets/Sidebar/Pie chart.svg";
 import settings from "../assets/Sidebar/Settings.svg";
 import ai from "../assets/Sidebar/Sparkling.svg";
 import members from "../assets/Sidebar/Users.svg";
-import defaultUser from "../assets/defaultUser.jpg";
 import axios from "axios";
 
 const Navbar = () => {
@@ -92,7 +91,7 @@ const Navbar = () => {
         >
           <div className="flex w-fit">
             <img
-              src={userProfile?.avatar || defaultUser}
+              src={userProfile?.avatar}
               alt="Profile"
               className="w-10 h-10 rounded-full object-cover"
             />
@@ -129,7 +128,7 @@ const Navbar = () => {
           >
             <div className="flex items-center px-4 py-2 gap-2">
               <img
-                src={userProfile?.avatar || defaultUser}
+                src={userProfile?.avatar}
                 alt="Profile"
                 className="w-10 h-10 rounded-full object-cover"
               />
