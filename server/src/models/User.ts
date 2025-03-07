@@ -1,13 +1,12 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 
-interface IUser extends Document {
-  firstName?: string;
-  lastName?: string;
+export interface IUser extends Document {
+  firstName: string;
+  lastName: string;
   email: string;
   password?: string;
   googleId?: string;
-  name?: string;
   avatar?: string;
   role: string;
   comparePassword: (password: string) => Promise<boolean>;
@@ -15,17 +14,15 @@ interface IUser extends Document {
 
 const userSchema = new Schema<IUser>({
   googleId: { type: String, unique: true, sparse: true },
-  name: String,
-  avatar: String,
   firstName: {
     type: String,
-    required: function (this: IUser) {
+    required: function () {
       return !this.googleId;
     },
   },
   lastName: {
     type: String,
-    required: function (this: IUser) {
+    required: function () {
       return !this.googleId;
     },
   },
@@ -36,16 +33,21 @@ const userSchema = new Schema<IUser>({
   },
   password: {
     type: String,
-    required: function (this: IUser) {
+    required: function () {
       return !this.googleId;
     },
   },
+  avatar: {
+    type: String,
+    default: "/default-avatar.png",
+  },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  }
+    enum: ["user", "admin"],
+    default: "user",
+  },
 });
+
 userSchema.methods.comparePassword = async function (
   this: IUser,
   password: string
@@ -55,9 +57,9 @@ userSchema.methods.comparePassword = async function (
 };
 
 // Hash password before saving
-userSchema.pre("save", async function(this: IUser, next) {
+userSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password") || !this.password) return next();
-  
+
   try {
     const hashedPassword = await bcrypt.hash(this.password, 10);
     this.password = hashedPassword;

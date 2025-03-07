@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "../../config.ts";
-
 import logo from "../assets/logo.svg";
 import { FaArrowRight } from "react-icons/fa6";
 import login1 from "../assets/login1.jpeg";

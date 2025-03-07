@@ -1,19 +1,25 @@
 import { Request, Response } from "express";
-import { OAuth2Client } from "google-auth-library";
-import User from "../models/User";
-import jwt from "jsonwebtoken";import multer from 'multer';
-import path from 'path';
+import User, { IUser } from "../models/User";
+import jwt from "jsonwebtoken";
+import passport from "passport";
+import axios from "axios";
+import multer from "multer";
 
-const client = new OAuth2Client(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  "postmessage"
-);
 interface AuthenticatedRequest extends Request {
   user: {
     userId: string;
     email: string;
     role: string;
+  };
+}
+
+// Typing for register & login requests
+interface AuthRequest extends Request {
+  body: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
   };
 }
 
@@ -29,82 +35,74 @@ const generateJWTToken = (user: any): string => {
   );
 };
 
-// Google Auth Request typing
-interface GoogleAuthRequest extends Request {
-  body: {
-    code: string;
-    redirect_uri?: string;
-  };
-}
+export const googleAuth = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
 
-export const googleAuth = async (
-  req: GoogleAuthRequest,
-  res: Response
-): Promise<void> => {
-  try {
-    const { code, redirect_uri } = req.body;
-    console.log("Received Google auth code:", code.substring(0, 10) + "...");
-    console.log("Using redirect_uri:", redirect_uri);
-
-    const { tokens } = await client.getToken({
-      code,
-      redirect_uri: redirect_uri || "postmessage",
-    });
-    console.log("Google tokens received:", tokens);
-
-    const ticket = await client.verifyIdToken({
-      idToken: tokens.id_token!,
-      audience: process.env.GOOGLE_CLIENT_ID!,
-    });
-    console.log("Ticket verified:", ticket);
-
-    const payload = ticket.getPayload();
-    console.log("Google payload:", payload);
-
-    if (!payload?.email) {
-      console.error("No email in Google payload");
-      res.status(401).json({ error: "Invalid authentication" });
-      return;
+export const googleAuthCallback = (req: Request, res: Response) => {
+  passport.authenticate('google', { session: false }, (err: Error, user: IUser) => {
+    if (err || !user) {
+      return res.status(400).json({ error: 'Google authentication failed' });
     }
-
-    let user = await User.findOne({ email: payload.email });
-    console.log("Existing user found:", !!user);
-
-    if (!user) {
-      console.log("Creating new user from Google payload");
-      user = await User.create({
-        email: payload.email,
-        name: payload.name || "Google User",
-        googleId: payload.sub,
-        firstName: payload.given_name || "Google",
-        lastName: payload.family_name || "User",
-        avatar: payload.picture,
-        role: "user",
-      });
-    }
-
-    const jwtToken = generateJWTToken(user);
-    console.log("Generated JWT token for user:", user.email);
-
-    res.json({ token: jwtToken });
-  } catch (error) {
-    console.error("Full Google auth error:", error);
-    res.status(401).json({
-      error: "Invalid authentication",
-      details: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
+    
+    const token = generateJWTToken(user);
+    res.redirect(`${process.env.CLIENT_URL}/dashboard?token=${token}`);
+  })(req, res);
 };
 
-// Typing for register & login requests
-interface AuthRequest extends Request {
-  body: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-  };
-}
+export const googleLogin = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.body;
+    
+    // Validate Google token
+    if (!token) {
+      res.status(400).json({ error: "Missing Google token" });
+      return; // Exit the function after sending the response
+    }
+
+    // Get user info from Google
+    const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    // Validate response data
+    if (!response.data?.sub || !response.data?.email) {
+      res.status(400).json({ error: "Invalid Google response" });
+      return; // Exit the function after sending the response
+    }
+
+    // Extract user data with fallbacks
+    const googleUser = {
+      id: response.data.sub,
+      email: response.data.email,
+      firstName: response.data.given_name || response.data.name?.split(' ')[0] || 'User',
+      lastName: response.data.family_name || response.data.name?.split(' ').slice(1).join(' ') || 'User',
+      avatar: response.data.picture || '/default-avatar.png'
+    };
+
+    // Find or create user
+    const user = await User.findOneAndUpdate(
+      { email: googleUser.email },
+      {
+        $setOnInsert: {
+          googleId: googleUser.id,
+          firstName: googleUser.firstName,
+          lastName: googleUser.lastName,
+          avatar: googleUser.avatar,
+          email: googleUser.email
+        }
+      },
+      { upsert: true, new: true }
+    );
+
+    // Generate JWT token
+    const jwtToken = generateJWTToken(user);
+    res.json({ token: jwtToken });
+  } catch (error) {
+    console.error("Google login error:", error);
+    res.status(400).json({ error: "Google authentication failed" });
+  }
+};
 
 export const registerUser = async (
   req: AuthRequest,
@@ -142,7 +140,13 @@ export const loginUser = async (
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
+    if (!user || !user.password) {
+      res.status(401).json({ error: "Invalid credentials" });
+      return;
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
       res.status(401).json({ error: "Invalid credentials" });
       return;
     }
@@ -178,77 +182,8 @@ export const getProfile = async (
   res.json({
     firstName: foundUser.firstName,
     lastName: foundUser.lastName,
-    name: foundUser.name || `${foundUser.firstName} ${foundUser.lastName}`,
     avatar: foundUser.avatar,
     role: foundUser.role,
     email: foundUser.email,
   });
-};
-
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/avatars/');
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)
-    );
-  }
-});
-
-export const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only image files are allowed"));
-    }
-  },
-});
-
-export const updateAvatar = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { user } = req as AuthenticatedRequest;
-    const file = req.file as Express.Multer.File;
-
-    if (!file) {
-      res.status(400).json({ error: 'No file uploaded' });
-      return;
-    }
-
-    const avatarUrl = `/uploads/avatars/${file.filename}`;
-    const updatedUser = await User.findByIdAndUpdate(
-      user.userId,
-      { avatar: avatarUrl },
-      { new: true }
-    ).select('avatar');
-
-    res.json({ avatar: updatedUser?.avatar });
-  } catch (error) {
-    console.error('Avatar upload error:', error);
-    res.status(500).json({ error: 'Failed to update avatar' });
-  }
-};
-
-export const removeAvatar = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { user } = req as AuthenticatedRequest;
-
-    const updatedUser = await User.findByIdAndUpdate(
-      user.userId,
-      { avatar: null },
-      { new: true }
-    ).select('avatar');
-
-    res.json({ avatar: updatedUser?.avatar });
-  } catch (error) {
-    console.error('Avatar removal error:', error);
-    res.status(500).json({ error: 'Failed to remove avatar' });
-  }
 };

@@ -4,8 +4,8 @@ import { FaArrowRight } from "react-icons/fa6";
 import login1 from "../assets/login1.jpeg";
 import login2 from "../assets/login2.jpeg";
 import login3 from "../assets/login3.jpeg";
-import { useGoogleLogin } from "@react-oauth/google";
 import { API_BASE_URL } from "../../config.ts";
+import { useGoogleAuth } from "../components/hooks/useGoogleLogin.ts";
 
 const images = [login1, login2, login3];
 
@@ -15,6 +15,7 @@ const Login = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const { googleLogin } = useGoogleAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -84,46 +85,6 @@ const Login = () => {
       console.error("Login error:", err.message);
     }
   };
-
-  const login = useGoogleLogin({
-    flow: "auth-code",
-    redirect_uri: window.location.origin,
-    scope: "openid email profile",
-    onSuccess: async (codeResponse) => {
-      try {
-        console.log("Google auth code received:", codeResponse.code);
-
-        const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            code: codeResponse.code,
-            redirect_uri: window.location.origin,
-          }),
-        });
-
-        console.log("Google auth response status:", response.status);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Server error: ${errorText}`);
-        }
-
-        const { token } = await response.json();
-        console.log("JWT token received:", token);
-
-        localStorage.setItem("token", token);
-        window.location.href = "/dashboard";
-      } catch (err: any) {
-        console.error("Full Google login error:", err);
-        setError(err.message);
-      }
-    },
-    onError: (errorResponse) => {
-      console.error("Google OAuth error:", errorResponse);
-      setError("Google login failed. Please try again.");
-    },
-  });
 
   return (
     <main className="relative flex flex-col lg:flex-row p-5 h-screen">
@@ -255,7 +216,7 @@ const Login = () => {
 
           <div className="w-full">
             <button
-              onClick={() => login()}
+              onClick={() => googleLogin()}
               className="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 
       border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 
       hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

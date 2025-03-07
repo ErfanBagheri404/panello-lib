@@ -1,5 +1,6 @@
 // types/express.d.ts
 import { Request } from "express";
+import mongoose from "mongoose";
 declare global {
   namespace Express {
     interface Request {
@@ -9,6 +10,13 @@ declare global {
         role: string;
       };
     }
-    
+  }
+}
+declare global {
+  namespace mongoose {
+    interface Document {
+      id: string;
+      _id: mongoose.Types.ObjectId;
+    }
   }
 }

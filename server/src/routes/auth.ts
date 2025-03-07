@@ -5,11 +5,14 @@ import jwt from "jsonwebtoken";
 import {
   registerUser,
   loginUser,
-  googleAuth,
+
   getProfile,
-  updateAvatar,
-  removeAvatar,
-  upload,
+  googleAuth,
+  googleAuthCallback,
+  googleLogin,
+
+
+
 } from "../controllers/authController";
 
 const router = express.Router();
@@ -42,10 +45,10 @@ export const authenticateUser = (
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.post("/google", googleAuth);
 router.get("/profile", authenticateUser, getProfile);
-router.put("/avatar", authenticateUser, upload.single("avatar"), updateAvatar);
+router.get('/google', googleAuth);
+router.get('/google/callback', googleAuthCallback);
+router.post('/google', googleLogin);
 
-router.delete("/avatar", authenticateUser, removeAvatar);
 
 export default router;

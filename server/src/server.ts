@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/auth";
+import "./config/passport";
+import session from "express-session";
+import passport from "passport";
+import { configurePassport } from "./config/passport";
 
 dotenv.config();
 
@@ -27,6 +31,14 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
@@ -36,6 +48,18 @@ app.use((req, res, next) => {
   console.log(`Received ${req.method} request for: ${req.url}`);
   next();
 });
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// Initialize passport
+configurePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Start the server
 const PORT = process.env.PORT || 5000;
