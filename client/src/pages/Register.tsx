@@ -12,7 +12,7 @@ const images = [login1, login2, login3];
 const Register = () => {
   const [bgImage, setBgImage] = useState(login1);
   const [fade, setFade] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -40,6 +40,12 @@ const Register = () => {
   }, []); // Empty dependency array ensures this effect runs only once
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+
+    if (!acceptedTerms) {
+      setError("You must agree to the terms and conditions.");
+      return;
+    }
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
@@ -168,7 +174,10 @@ const Register = () => {
               <input
                 type="checkbox"
                 id="terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                required
               />
               <label
                 htmlFor="terms"
@@ -180,6 +189,7 @@ const Register = () => {
                 </a>
               </label>
             </div>
+            {error && <div className="text-red-500 text-sm">{error}</div>}
 
             <button
               type="submit"
