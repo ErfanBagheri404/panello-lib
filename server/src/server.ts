@@ -7,6 +7,7 @@ import "./config/passport";
 import session from "express-session";
 import passport from "passport";
 import { configurePassport } from "./config/passport";
+import userRoutes from "./routes/users";
 
 dotenv.config();
 
@@ -55,6 +56,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use("/api/users", userRoutes);
 
 // Initialize passport
 configurePassport();

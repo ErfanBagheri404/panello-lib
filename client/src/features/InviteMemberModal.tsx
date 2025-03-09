@@ -28,17 +28,27 @@ const InviteMemberModal = ({
   const [emailError, setEmailError] = useState("");
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step === 1 && inviteData.email) {
       if (!emailRegex.test(inviteData.email)) {
-        setEmailError("Please enter a valid email address");
+        setEmailError("Invalid email");
         return;
       }
-      setEmailError("");
-      setInviteData((prev) => ({
-        ...prev,
-        avatar: `https://i.pravatar.cc/150?u=${inviteData.email}`,
-      }));
+      try {
+        const response = await fetch(`/api/users/check-email?email=${encodeURIComponent(inviteData.email)}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        const data = await response.json();
+        if (!data.exists) {
+          setEmailError("User not registered - ask them to sign up first");
+          return;
+        }
+        // Proceed to next step
+        setInviteData(prev => ({ ...prev, avatar: `https://i.pravatar.cc/150?u=${inviteData.email}` }));
+        setStep(2);
+      } catch (error) {
+        setEmailError("Error checking user");
+      }
     }
     if (step < 3) setStep((prev) => prev + 1);
   };
@@ -47,12 +57,29 @@ const InviteMemberModal = ({
     if (step > 1) setStep((prev) => prev - 1);
   };
 
-  const handleInvite = () => {
-    console.log("Invited Member:", inviteData);
+const handleInvite = async () => {
+  try {
+    const response = await fetch('/api/users/invite', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        email: inviteData.email,
+        role: inviteData.role
+      })
+    });
+    if (!response.ok) throw new Error('Invite failed');
+    // Reset and close modal
     onClose();
-    setStep(1); // Reset for next invite
+    setStep(1);
     setInviteData({ email: "", role: "", avatar: "" });
-  };
+  } catch (error) {
+    console.error("Invite failed:", error);
+  }
+};
+
 
   return (
     <AnimatePresence>

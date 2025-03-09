@@ -163,7 +163,7 @@ export const getProfile = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { user } = req as AuthenticatedRequest;
+  const user = (req as AuthenticatedRequest).user;
 
   if (!user) {
     res.status(401).json({ error: "Unauthorized" });
@@ -171,7 +171,7 @@ export const getProfile = async (
   }
 
   const foundUser = await User.findById(user.userId).select(
-    "firstName lastName name avatar role email"
+    "firstName lastName name avatar role email isInvited"
   );
 
   if (!foundUser) {
@@ -185,5 +185,6 @@ export const getProfile = async (
     avatar: foundUser.avatar,
     role: foundUser.role,
     email: foundUser.email,
+    isInvited: foundUser.isInvited
   });
 };

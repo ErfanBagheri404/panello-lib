@@ -8,7 +8,7 @@ export interface IUser extends Document {
   password?: string;
   googleId?: string;
   avatar?: string;
-  role: string;
+  role: string;isInvited: boolean;
   comparePassword: (password: string) => Promise<boolean>;
 }
 
@@ -45,6 +45,10 @@ const userSchema = new Schema<IUser>({
     type: String,
     enum: ["user", "admin"],
     default: "user",
+  },
+  isInvited: {
+    type: Boolean,
+    default: false,
   },
 });
 

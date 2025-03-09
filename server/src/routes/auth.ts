@@ -5,14 +5,10 @@ import jwt from "jsonwebtoken";
 import {
   registerUser,
   loginUser,
-
   getProfile,
   googleAuth,
   googleAuthCallback,
   googleLogin,
-
-
-
 } from "../controllers/authController";
 
 const router = express.Router();
