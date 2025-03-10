@@ -42,9 +42,8 @@ export const authenticateUser = (
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/profile", authenticateUser, getProfile);
-router.get('/google', googleAuth);
-router.get('/google/callback', googleAuthCallback);
-router.post('/google', googleLogin);
-
+router.get("/google", googleAuth);
+router.get("/google/callback", googleAuthCallback);
+router.post("/google", googleLogin);
 
 export default router;

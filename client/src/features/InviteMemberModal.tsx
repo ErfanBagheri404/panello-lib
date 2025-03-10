@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
-import {  Role } from "../pages/Members"; 
+
+interface Role {
+  id: string;
+  name: string;
+}
 
 interface InviteMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  roles: Role[]; // Add roles prop type
+  roles: Role[];
 }
 
 interface InviteData {
@@ -14,11 +18,8 @@ interface InviteData {
   role: string;
   avatar: string;
 }
-const InviteMemberModal = ({
-  isOpen,
-  onClose,
-  roles,
-}:InviteMemberModalProps) => {
+
+const InviteMemberModal = ({ isOpen, onClose, roles }: InviteMemberModalProps) => {
   const [step, setStep] = useState(1);
   const [inviteData, setInviteData] = useState<InviteData>({
     email: "",
@@ -34,52 +35,54 @@ const InviteMemberModal = ({
         setEmailError("Invalid email");
         return;
       }
+
       try {
         const response = await fetch(`/api/users/check-email?email=${encodeURIComponent(inviteData.email)}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         const data = await response.json();
         if (!data.exists) {
-          setEmailError("User not registered - ask them to sign up first");
+          setEmailError("User not registered");
           return;
         }
-        // Proceed to next step
-        setInviteData(prev => ({ ...prev, avatar: `https://i.pravatar.cc/150?u=${inviteData.email}` }));
-        setStep(2);
+
+        setInviteData(prev => ({
+          ...prev,
+          avatar: data.avatar || "/default-avatar.jpg"
+        }));
       } catch (error) {
-        setEmailError("Error checking user");
+        setEmailError("Error verifying user");
+        return;
       }
     }
     if (step < 3) setStep((prev) => prev + 1);
   };
 
-  const handleBack = () => {
-    if (step > 1) setStep((prev) => prev - 1);
-  };
+  const handleBack = () => step > 1 && setStep(prev => prev - 1);
 
-const handleInvite = async () => {
-  try {
+  const handleInvite = async () => {
+    try {
     const response = await fetch('/api/users/invite', {
       method: 'PUT',
-      headers: {
+        headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        email: inviteData.email,
+        },
+        body: JSON.stringify({
+          email: inviteData.email,
         role: inviteData.role
       })
-    });
+      });
     if (!response.ok) throw new Error('Invite failed');
     // Reset and close modal
     onClose();
-    setStep(1);
-    setInviteData({ email: "", role: "", avatar: "" });
-  } catch (error) {
-    console.error("Invite failed:", error);
-  }
-};
-
+      setStep(1);
+      setInviteData({ email: "", role: "", avatar: "" });
+    } catch (error) {
+      console.error("Invite failed:", error);
+    }
+  };
+  
 
   return (
     <AnimatePresence>
@@ -103,7 +106,6 @@ const handleInvite = async () => {
               </button>
             </div>
 
-            {/* Steps */}
             <div className="space-y-4">
               {step === 1 && (
                 <motion.div
@@ -116,9 +118,11 @@ const handleInvite = async () => {
                   <input
                     type="email"
                     value={inviteData.email}
-                    onChange={(e) =>
-                      setInviteData({ ...inviteData, email: e.target.value })
-                    }
+                    onChange={(e) => setInviteData(prev => ({
+                      ...prev,
+                      email: e.target.value,
+                      avatar: ""
+                    }))}
                     className="w-full p-2 border rounded-md"
                     placeholder="user@example.com"
                     required
@@ -140,9 +144,10 @@ const handleInvite = async () => {
                   <select
                     className="w-full p-2 border rounded-md"
                     value={inviteData.role}
-                    onChange={(e) =>
-                      setInviteData({ ...inviteData, role: e.target.value })
-                    }
+                    onChange={(e) => setInviteData(prev => ({
+                      ...prev,
+                      role: e.target.value
+                    }))}
                   >
                     <option value="">Select a role</option>
                     {roles.map((role) => (
@@ -178,7 +183,6 @@ const handleInvite = async () => {
               )}
             </div>
 
-            {/* Navigation Buttons */}
             <div className="flex justify-between mt-6">
               {step > 1 && (
                 <button

@@ -63,27 +63,27 @@ const initialMembers: Member[] = [
 const initialRoles: Role[] = [
   {
     id: 1,
-    name: "Owner",
+    name: "owner",
     description: "Full access to all settings and data.",
   },
   {
     id: 2,
-    name: "Co-Owner",
+    name: "co-owner",
     description: "Same as Owner, except cannot remove the Owner.",
   },
   {
     id: 3,
-    name: "Administrator",
+    name: "administrator",
     description: "Can manage users and settings but cannot delete the app.",
   },
   {
     id: 4,
-    name: "Moderator",
+    name: "moderator",
     description: "Can manage user activity and enforce rules.",
   },
   {
     id: 5,
-    name: "Member",
+    name: "member",
     description: "Standard access with no administrative rights.",
   },
 ];
@@ -136,21 +136,17 @@ const Members = () => {
         />
       </div>
 
-      <MembersList 
-        members={members} 
-        setMembers={setMembers} 
-        roles={roles} 
+      <MembersList members={members} setMembers={setMembers} roles={roles} />
+      <RolesList
+        roles={roles}
+        setRoles={setRoles} // Already correct in your code
       />
-      <RolesList 
-  roles={roles} 
-  setRoles={setRoles}  // Already correct in your code
-/>
 
-<InviteMemberModal
-  isOpen={isModalOpen}
-  onClose={() => setIsModalOpen(false)}
-  roles={roles}  // Already correct in your code
-/>
+      <InviteMemberModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        roles={roles} // Already correct in your code
+      />
     </main>
   );
 };

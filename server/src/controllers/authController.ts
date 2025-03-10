@@ -29,6 +29,8 @@ const generateJWTToken = (user: any): string => {
       userId: user._id,
       email: user.email,
       role: user.role,
+      // Add refresh trigger
+      timestamp: Date.now()
     },
     process.env.JWT_SECRET!,
     { expiresIn: "1h" }
