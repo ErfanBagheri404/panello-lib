@@ -189,7 +189,7 @@ const General = () => {
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="px-4 py-2 border rounded-full bg-gray-300 hover:bg-gray-400 transition duration-200"
         >
-          Toggle Dark Mode
+          {theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
         </button>
       </div>
     </div>
