@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTheme } from "./theme-provider"; // Assuming this is your custom theme hook
 import calendar from "../assets/Sidebar/Calendar.svg";
 import messages from "../assets/Sidebar/chat_bubble.svg";
 import home from "../assets/Sidebar/Home.svg";
@@ -10,6 +11,7 @@ import members from "../assets/Sidebar/Users.svg";
 import axios from "axios";
 
 const Navbar = () => {
+  const { theme } = useTheme(); // Get the current theme
   const location = useLocation();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -77,8 +79,20 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="bg-white px-6 py-3 flex justify-between border border-black/30 rounded-2xl items-center">
-      <h1 className="text-xl font-bold">{currentPage}</h1>
+    <nav
+      className={`px-6 py-3 flex justify-between border rounded-2xl items-center ${
+        theme === "dark"
+          ? "bg-black text-white border-white/30"
+          : "bg-white text-black border-black/30"
+      }`}
+    >
+      <h1
+        className={`text-xl font-bold ${
+          theme === "dark" ? "text-white" : "text-black"
+        }`}
+      >
+        {currentPage}
+      </h1>
 
       {/* Profile Dropdown */}
       <div className="relative">
@@ -87,7 +101,9 @@ const Navbar = () => {
             e.stopPropagation();
             setIsDropdownOpen((prev) => !prev);
           }}
-          className="flex items-center gap-2 hover:bg-gray-100 rounded-lg p-2"
+          className={`flex items-center gap-2 hover:bg-gray-100 rounded-lg p-2 ${
+            theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100"
+          }`}
         >
           <div className="flex w-fit">
             <img
@@ -98,15 +114,25 @@ const Navbar = () => {
             <div className="absolute bg-green-500 rounded-full w-3 h-3 left-9 bottom-2"></div>
           </div>
           <div className="flex flex-col items-start">
-            <span className="text-sm font-medium">
+            <span
+              className={`text-sm font-medium ${
+                theme === "dark" ? "text-white" : "text-black"
+              }`}
+            >
               {userProfile?.firstName} {userProfile?.lastName}
             </span>
-            <span className="text-xs text-gray-500">{userProfile?.role}</span>
+            <span
+              className={`text-xs ${
+                theme === "dark" ? "text-gray-400" : "text-gray-500"
+              }`}
+            >
+              {userProfile?.role}
+            </span>
           </div>
           <svg
             className={`w-4 h-4 transition-transform ${
               isDropdownOpen ? "rotate-180" : ""
-            }`}
+            } ${theme === "dark" ? "text-white" : "text-black"}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -123,10 +149,16 @@ const Navbar = () => {
         {/* Dropdown Menu */}
         {isDropdownOpen && (
           <div
-            className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border z-100 "
+            className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-100 ${
+              theme === "dark" ? "bg-black text-white" : "bg-white text-black"
+            }`}
             ref={dropdownRef}
           >
-            <div className="flex items-center px-4 py-2 gap-2">
+            <div
+              className={`flex items-center px-4 py-2 gap-2 ${
+                theme === "dark" ? "text-white" : "text-black"
+              }`}
+            >
               <img
                 src={userProfile?.avatar}
                 alt="Profile"
@@ -134,25 +166,35 @@ const Navbar = () => {
               />
               <div className="flex flex-col">
                 <span>
-                  {" "}
                   {userProfile?.firstName} {userProfile?.lastName}
                 </span>
-                <span className="text-gray-400 text-xs">
-                  {" "}
+                <span
+                  className={`text-gray-400 text-xs ${
+                    theme === "dark" ? "text-gray-500" : "text-gray-400"
+                  }`}
+                >
                   {userProfile?.role || "User"}
                 </span>
               </div>
             </div>
             <a
               href="#"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className={`block px-4 py-2 text-sm ${
+                theme === "dark"
+                  ? "text-white hover:bg-gray-700"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
               onClick={() => navigate("/settings")}
             >
               Settings
             </a>
             <button
               onClick={handleLogout}
-              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className={`w-full text-left px-4 py-2 text-sm ${
+                theme === "dark"
+                  ? "text-white hover:bg-gray-700"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
             >
               Logout
             </button>
