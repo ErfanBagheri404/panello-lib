@@ -19,7 +19,11 @@ interface InviteData {
   avatar: string;
 }
 
-const InviteMemberModal = ({ isOpen, onClose, roles }: InviteMemberModalProps) => {
+const InviteMemberModal = ({
+  isOpen,
+  onClose,
+  roles,
+}: InviteMemberModalProps) => {
   const [step, setStep] = useState(1);
   const [inviteData, setInviteData] = useState<InviteData>({
     email: "",
@@ -29,60 +33,91 @@ const InviteMemberModal = ({ isOpen, onClose, roles }: InviteMemberModalProps) =
   const [emailError, setEmailError] = useState("");
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  // Handles step progression. If any error occurs, stops the flow.
   const handleNext = async () => {
+    console.log("handleNext called, current step:", step);
     if (step === 1 && inviteData.email) {
       if (!emailRegex.test(inviteData.email)) {
+        console.log("Invalid email format:", inviteData.email);
         setEmailError("Invalid email");
         return;
       }
 
       try {
-        const response = await fetch(`/api/users/check-email?email=${encodeURIComponent(inviteData.email)}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        console.log("Checking email existence for:", inviteData.email);
+        const response = await fetch(
+          `/api/users/check-email?email=${encodeURIComponent(
+            inviteData.email
+          )}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await response.json();
+        console.log("Check-email response data:", data);
         if (!data.exists) {
           setEmailError("User not registered");
           return;
         }
-
-        setInviteData(prev => ({
+        // Set avatar from response or fallback to default
+        setInviteData((prev) => ({
           ...prev,
-          avatar: data.avatar || "/default-avatar.jpg"
+          avatar: data.avatar || "/default-avatar.jpg",
         }));
+        setEmailError(""); // Clear previous errors if any
       } catch (error) {
+        console.error("Error verifying user:", error);
         setEmailError("Error verifying user");
         return;
       }
     }
-    if (step < 3) setStep((prev) => prev + 1);
+    if (step < 3) {
+      console.log("Proceeding to next step:", step + 1);
+      setStep((prev) => prev + 1);
+    }
   };
 
-  const handleBack = () => step > 1 && setStep(prev => prev - 1);
+  const handleBack = () => {
+    if (step > 1) {
+      console.log("Going back from step:", step);
+      setStep((prev) => prev - 1);
+    }
+  };
 
+  // Sends the invite to the backend.
   const handleInvite = async () => {
+    console.log("handleInvite called with inviteData:", inviteData);
     try {
-    const response = await fetch('/api/users/invite', {
-      method: 'PUT',
+      // Note: Use the backend URL (port 5000) instead of the client port (5173)
+      const response = await fetch("http://localhost:5000/api/users/invite", {
+        method: "PUT",
         headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           email: inviteData.email,
-        role: inviteData.role
-      })
+          role: inviteData.role.toLowerCase(),
+        }),
       });
-    if (!response.ok) throw new Error('Invite failed');
-    // Reset and close modal
-    onClose();
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Invite error response:", errorData);
+        throw new Error(errorData.error || "Invite failed");
+      }
+      console.log("Invite succeeded");
+      // Reset and close modal after successful invite
       setStep(1);
       setInviteData({ email: "", role: "", avatar: "" });
+      onClose();
     } catch (error) {
       console.error("Invite failed:", error);
+      alert(error instanceof Error ? error.message : "Invite failed");
     }
   };
-  
 
   return (
     <AnimatePresence>
@@ -118,11 +153,13 @@ const InviteMemberModal = ({ isOpen, onClose, roles }: InviteMemberModalProps) =
                   <input
                     type="email"
                     value={inviteData.email}
-                    onChange={(e) => setInviteData(prev => ({
-                      ...prev,
-                      email: e.target.value,
-                      avatar: ""
-                    }))}
+                    onChange={(e) =>
+                      setInviteData((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                        avatar: "",
+                      }))
+                    }
                     className="w-full p-2 border rounded-md"
                     placeholder="user@example.com"
                     required
@@ -144,10 +181,12 @@ const InviteMemberModal = ({ isOpen, onClose, roles }: InviteMemberModalProps) =
                   <select
                     className="w-full p-2 border rounded-md"
                     value={inviteData.role}
-                    onChange={(e) => setInviteData(prev => ({
-                      ...prev,
-                      role: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setInviteData((prev) => ({
+                        ...prev,
+                        role: e.target.value,
+                      }))
+                    }
                   >
                     <option value="">Select a role</option>
                     {roles.map((role) => (
@@ -170,7 +209,7 @@ const InviteMemberModal = ({ isOpen, onClose, roles }: InviteMemberModalProps) =
                     <img
                       src={inviteData.avatar}
                       alt="Avatar"
-                      className="w-16 h-16 rounded-full mb-2"
+                      className="w-16 h-16 rounded-full mb-2 object-cover"
                     />
                     <p>
                       <strong>Email:</strong> {inviteData.email}
