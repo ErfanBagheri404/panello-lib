@@ -1,5 +1,5 @@
-import * as React from "react"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import * as React from "react";
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import {
   Card,
@@ -7,13 +7,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card"
+} from "../ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "../ui/chart"
+} from "../ui/chart";
+import { useTheme } from "../theme-provider";
 
 const chartData = [
   { date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -35,17 +36,18 @@ const chartData = [
   { date: "2024-04-17", desktop: 446, mobile: 360 },
   { date: "2024-04-18", desktop: 364, mobile: 410 },
   { date: "2024-04-19", desktop: 243, mobile: 180 },
-]
+];
 
 const chartConfig = {
   views: { label: "Page Views" },
   desktop: { label: "Desktop", color: "hsl(var(--chart-1))" },
   mobile: { label: "Mobile", color: "hsl(var(--chart-2))" },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 const LineChartComponent: React.FC = () => {
+  const { theme } = useTheme();
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>("desktop")
+    React.useState<keyof typeof chartConfig>("desktop");
 
   const total = React.useMemo(
     () => ({
@@ -53,7 +55,7 @@ const LineChartComponent: React.FC = () => {
       mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0),
     }),
     []
-  )
+  );
 
   return (
     <Card>
@@ -66,7 +68,7 @@ const LineChartComponent: React.FC = () => {
         </div>
         <div className="flex">
           {["desktop", "mobile"].map((key) => {
-            const chart = key as keyof typeof chartConfig
+            const chart = key as keyof typeof chartConfig;
             return (
               <button
                 key={chart}
@@ -81,7 +83,7 @@ const LineChartComponent: React.FC = () => {
                   {total[key as keyof typeof total].toLocaleString()}
                 </span>
               </button>
-            )
+            );
           })}
         </div>
       </CardHeader>
@@ -94,6 +96,7 @@ const LineChartComponent: React.FC = () => {
             accessibilityLayer
             data={chartData}
             margin={{ left: 12, right: 12 }}
+            className={`${theme === "dark" ? "fill-white" : ""}`}
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -130,12 +133,13 @@ const LineChartComponent: React.FC = () => {
               stroke={`var(--color-${activeChart})`}
               strokeWidth={2}
               dot={false}
+              className={`${theme === "dark" ? "fill-white" : ""}`}
             />
           </LineChart>
         </ChartContainer>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default LineChartComponent
+export default LineChartComponent;

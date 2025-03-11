@@ -16,6 +16,7 @@ import {
   ChartTooltipContent,
 } from "../ui/chart";
 import { FaChartArea } from "react-icons/fa";
+import { useTheme } from "../theme-provider";
 
 type RadialProps = {
   chartData: { month: string; desktop: number; mobile: number }[];
@@ -58,6 +59,7 @@ export function Radial({
     (acc, data) => acc + data.desktop + data.mobile,
     0
   );
+  const { theme } = useTheme();
 
   return (
     <Card className="flex-col hidden lg:flex">
@@ -149,14 +151,18 @@ export function Radial({
               stackId="a"
               cornerRadius={5}
               fill="var(--color-desktop)"
-              className="stroke-transparent stroke-2"
+              className={`${
+                theme === "dark" ? "fill-white" : ""
+              } stroke-transparent stroke-2`}
             />
             <RadialBar
               dataKey="mobile"
               fill="var(--color-mobile)"
               stackId="a"
               cornerRadius={5}
-              className="stroke-transparent stroke-2"
+              className={`${
+                theme === "dark" ? "fill-white" : ""
+              } stroke-transparent stroke-2`}
             />
           </RadialBarChart>
         </ChartContainer>

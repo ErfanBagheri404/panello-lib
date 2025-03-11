@@ -1,7 +1,5 @@
-"use client"
-
-import * as React from "react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import * as React from "react";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import {
   Card,
@@ -9,13 +7,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card"
+} from "../ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "../ui/chart"
+} from "../ui/chart";
+import { useTheme } from "../theme-provider";
 
 const chartData = [
   { date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -48,17 +47,18 @@ const chartData = [
   { date: "2024-04-28", desktop: 122, mobile: 180 },
   { date: "2024-04-29", desktop: 315, mobile: 240 },
   { date: "2024-04-30", desktop: 454, mobile: 380 },
-]
+];
 
 const chartConfig = {
   views: { label: "Page Views" },
   desktop: { label: "Desktop", color: "hsl(var(--chart-1))" },
   mobile: { label: "Mobile", color: "hsl(var(--chart-2))" },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function BarChartComponent() {
+  const { theme } = useTheme();
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>("desktop")
+    React.useState<keyof typeof chartConfig>("desktop");
 
   const total = React.useMemo(
     () => ({
@@ -66,7 +66,7 @@ export function BarChartComponent() {
       mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0),
     }),
     []
-  )
+  );
 
   return (
     <Card>
@@ -78,26 +78,25 @@ export function BarChartComponent() {
           </CardDescription>
         </div>
         <div className="flex">
-  {(["desktop", "mobile"] as const).map((key) => {
-    const chart = key as keyof typeof total // Only 'desktop' or 'mobile'
-    return (
-      <button
-        key={chart}
-        data-active={activeChart === chart}
-        className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
-        onClick={() => setActiveChart(chart)}
-      >
-        <span className="text-xs text-muted-foreground">
-          {chartConfig[chart].label}
-        </span>
-        <span className="text-lg font-bold leading-none sm:text-3xl">
-          {total[chart].toLocaleString()}
-        </span>
-      </button>
-    )
-  })}
-</div>
-
+          {(["desktop", "mobile"] as const).map((key) => {
+            const chart = key as keyof typeof total;
+            return (
+              <button
+                key={chart}
+                data-active={activeChart === chart}
+                className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+                onClick={() => setActiveChart(chart)}
+              >
+                <span className="text-xs text-muted-foreground">
+                  {chartConfig[chart].label}
+                </span>
+                <span className="text-lg font-bold leading-none sm:text-3xl">
+                  {total[chart].toLocaleString()}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
         <ChartContainer
@@ -108,6 +107,7 @@ export function BarChartComponent() {
             accessibilityLayer
             data={chartData}
             margin={{ left: 12, right: 12 }}
+            className={`${theme === "dark" ? "fill-white" : ""}`}
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -143,5 +143,5 @@ export function BarChartComponent() {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

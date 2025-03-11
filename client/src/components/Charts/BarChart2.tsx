@@ -15,6 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
+import { useTheme } from "../theme-provider";
 
 const chartData = [
   { month: "January", desktop: 186 },
@@ -34,6 +35,7 @@ const chartConfig = {
 
 // Exported BarChart component
 export default function BarChart2() {
+  const { theme } = useTheme();
   return (
     <Card>
       <CardHeader>
@@ -42,7 +44,10 @@ export default function BarChart2() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart data={chartData}>
+          <BarChart
+            className={`${theme === "dark" ? "fill-white" : ""}`}
+            data={chartData}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
