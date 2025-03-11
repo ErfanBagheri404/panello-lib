@@ -11,7 +11,8 @@ const Messages = () => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);  const { theme } = useTheme();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { theme } = useTheme();
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -37,7 +38,11 @@ const Messages = () => {
   };
 
   return (
-    <main className="relative border border-black/30 h-screen mt-2.5 w-full rounded-2xl overflow-hidden flex scrollbar-hide p-4 lg:p-6  gap-5 items-center">
+    <main
+      className={`relative border ${
+        theme === "dark" ? "border-white/30" : "border-black/30"
+      } h-screen mt-2.5 w-full rounded-2xl overflow-hidden flex scrollbar-hide p-4 lg:p-6  gap-5 items-center`}
+    >
       <div className="absolute inset-0 z-0">
         <img
           className={`w-full h-full object-cover ${
