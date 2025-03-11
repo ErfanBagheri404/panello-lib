@@ -22,7 +22,10 @@ import { useTheme } from "../components/theme-provider";
 
 export const Calendar = () => {
   const calendarRef = useRef<FullCalendar>(null);
-  const [view, setView] = useState<"dayGridMonth" | "timeGridWeek" | "timeGridDay">("timeGridWeek");  const { theme } = useTheme();
+  const [view, setView] = useState<
+    "dayGridMonth" | "timeGridWeek" | "timeGridDay"
+  >("timeGridWeek");
+  const { theme } = useTheme();
 
   const filterPopupRef = useRef<HTMLDivElement>(null);
   const optionsPopupRef = useRef<HTMLDivElement>(null);
@@ -83,8 +86,18 @@ export const Calendar = () => {
 
   const formatDate = () => {
     const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
     const now = new Date();
     return `${months[now.getMonth()]} ${now.getFullYear()}`;
@@ -95,11 +108,17 @@ export const Calendar = () => {
   };
 
   return (
-    <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5 w-full">
+    <main
+      className={`relative border h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5 w-full ${
+        theme === "dark"
+          ? "bg-black text-white border-white/30"
+          : "bg-white text-black border-black/30"
+      }`}
+    >
       <div className="absolute inset-0 z-0">
         <img
           className={`w-full h-full object-cover ${
-            theme === "dark" ? "invert  " : ""
+            theme === "dark" ? "invert" : ""
           }`}
           draggable="false"
           src={grid}
@@ -112,7 +131,9 @@ export const Calendar = () => {
           <p className="font-medium text-xl">{formatDate()}</p>
           <button
             onClick={() => handleNav("today")}
-            className="bg-black px-3 py-1 rounded-md text-white"
+            className={`${
+              theme === "dark" ? "bg-blue-500" : "bg-black"
+            } px-3 py-1 rounded-md text-white`}
           >
             Today
           </button>
@@ -127,7 +148,11 @@ export const Calendar = () => {
               <button
                 ref={filterButtonRef}
                 onClick={() => togglePopup("filter")}
-                className="flex items-center text-lg gap-2 border border-black/30 rounded-md px-3 py-0.5 bg-white w-full justify-center"
+                className={`flex items-center text-lg gap-2 border rounded-md px-3 py-0.5 w-full justify-center ${
+                  theme === "dark"
+                    ? "bg-gray-900 text-white border-white/30"
+                    : "bg-white text-black border-black/30"
+                }`}
               >
                 <CiFilter />
                 Filter
@@ -148,7 +173,11 @@ export const Calendar = () => {
               <button
                 ref={optionsButtonRef}
                 onClick={() => togglePopup("options")}
-                className="flex items-center text-lg gap-2 border border-black/30 rounded-md p-1.5 bg-white"
+                className={`flex items-center text-lg gap-2 border rounded-md p-1.5 ${
+                  theme === "dark"
+                    ? "bg-gray-900 text-white border-white/30"
+                    : "bg-white text-black border-black/30"
+                }`}
               >
                 <HiDotsHorizontal />
               </button>
@@ -165,7 +194,13 @@ export const Calendar = () => {
         </div>
       </div>
 
-      <div className="relative bg-white rounded-xl border border-black/30 w-full h-screen z-5 lg:overflow-hidden overflow-x-auto">
+      <div
+        className={`relative rounded-xl border w-full h-screen z-5 lg:overflow-hidden overflow-x-auto ${
+          theme === "dark"
+            ? "bg-gray-900 border-white/30"
+            : "bg-white border-black/30"
+        }`}
+      >
         <CalendarControls onNavigate={handleNav} />
         <FullCalendar
           ref={calendarRef}
@@ -206,7 +241,10 @@ export const Calendar = () => {
                   fontSize: "12px",
                   padding: "5px",
                   paddingTop: "1px",
-                  backgroundColor: hexToRgba(arg.event.extendedProps.color, 0.3),
+                  backgroundColor: hexToRgba(
+                    arg.event.extendedProps.color,
+                    0.3
+                  ),
                 }}
               >
                 <div style={{ fontWeight: "bold" }}>{arg.event.title}</div>

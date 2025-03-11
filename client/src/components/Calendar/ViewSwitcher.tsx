@@ -1,6 +1,6 @@
-// ViewSwitcher.tsx
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "../theme-provider"; // Adjust the path based on your project structure
 
 interface ViewSwitcherProps {
   currentView: "dayGridMonth" | "timeGridWeek" | "timeGridDay";
@@ -8,6 +8,7 @@ interface ViewSwitcherProps {
 }
 
 export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
+  const { theme } = useTheme();
   const [activeTabPosition, setActiveTabPosition] = useState({
     left: 0,
     width: 0,
@@ -38,13 +39,25 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
     onChange(view);
   };
 
+  // Define theme-based styles
+  const containerClass = `relative rounded-md border w-full lg:w-fit overflow-hidden text-center my-2 lg:my-0 ${
+    theme === "dark"
+      ? "bg-gray-800 border-white/30"
+      : "bg-gray-200 border-black/30"
+  }`;
+
+  const indicatorClass = `absolute top-0 h-full rounded-md z-0 ${
+    theme === "dark" ? "bg-gray-700" : "bg-white"
+  }`;
+
+  const activeTextColor = theme === "dark" ? "text-white" : "text-black";
+  const inactiveTextColor =
+    theme === "dark" ? "text-gray-400" : "text-gray-600";
+
   return (
-    <div
-      ref={containerRef}
-      className="relative rounded-md border w-full lg:w-fit border-black/30 overflow-hidden bg-gray-200 text-center my-2 lg:my-0"
-    >
+    <div ref={containerRef} className={containerClass}>
       <motion.div
-        className="absolute top-0 h-full bg-white rounded-md z-0"
+        className={indicatorClass}
         initial={activeTabPosition}
         animate={{
           left: activeTabPosition.left,
@@ -57,7 +70,7 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
         data-view="timeGridDay"
         onClick={(e) => handleClick("timeGridDay", e)}
         className={`relative px-3 py-1 z-10 transition-colors ${
-          currentView === "timeGridDay" ? "text-black" : "text-gray-600"
+          currentView === "timeGridDay" ? activeTextColor : inactiveTextColor
         }`}
       >
         Day
@@ -66,7 +79,7 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
         data-view="timeGridWeek"
         onClick={(e) => handleClick("timeGridWeek", e)}
         className={`relative px-3 py-1 z-10 transition-colors ${
-          currentView === "timeGridWeek" ? "text-black" : "text-gray-600"
+          currentView === "timeGridWeek" ? activeTextColor : inactiveTextColor
         }`}
       >
         Week
@@ -75,7 +88,7 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
         data-view="dayGridMonth"
         onClick={(e) => handleClick("dayGridMonth", e)}
         className={`relative px-3 py-1 z-10 transition-colors ${
-          currentView === "dayGridMonth" ? "text-black" : "text-gray-600"
+          currentView === "dayGridMonth" ? activeTextColor : inactiveTextColor
         }`}
       >
         Month

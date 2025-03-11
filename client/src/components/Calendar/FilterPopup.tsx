@@ -1,6 +1,6 @@
-// FilterPopup.tsx
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useTheme } from "../theme-provider"; // Adjust path as needed
 
 interface FilterPopupProps {
   dateRange: { start: Date; end: Date };
@@ -13,6 +13,7 @@ export const FilterPopup = ({
   onApply,
   onClose,
 }: FilterPopupProps) => {
+  const { theme } = useTheme();
   const [localDateRange, setLocalDateRange] = useState(dateRange);
 
   useEffect(() => {
@@ -24,7 +25,11 @@ export const FilterPopup = ({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="absolute right-0 mt-2 bg-white rounded-lg shadow-lg p-4 z-[100] border"
+      className={`absolute right-0 mt-2 rounded-lg shadow-lg p-4 z-[100] border ${
+        theme === "dark"
+          ? "bg-gray-800 text-white border-white/30"
+          : "bg-white text-black border-black/30"
+      }`}
     >
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium">
@@ -38,7 +43,11 @@ export const FilterPopup = ({
                 start: new Date(e.target.value),
               }))
             }
-            className="ml-2 border rounded p-1"
+            className={`ml-2 border rounded p-1 ${
+              theme === "dark"
+                ? "bg-gray-700 text-white border-white/30"
+                : "bg-white text-black border-black/30"
+            }`}
           />
         </label>
         <label className="text-sm font-medium">
@@ -52,7 +61,11 @@ export const FilterPopup = ({
                 end: new Date(e.target.value),
               }))
             }
-            className="ml-2 border rounded p-1"
+            className={`ml-2 border rounded p-1 ${
+              theme === "dark"
+                ? "bg-gray-700 text-white border-white/30"
+                : "bg-white text-black border-black/30"
+            }`}
           />
         </label>
         <div className="flex gap-2">
@@ -64,7 +77,11 @@ export const FilterPopup = ({
           </button>
           <button
             onClick={onClose}
-            className="mt-2 bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
+            className={`mt-2 px-3 py-1 rounded ${
+              theme === "dark"
+                ? "bg-gray-700 hover:bg-gray-600"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
           >
             Cancel
           </button>
