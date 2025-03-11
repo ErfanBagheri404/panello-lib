@@ -18,10 +18,11 @@ import { FilterPopup } from "../components/Calendar/FilterPopup";
 import { OptionsPopup } from "../components/Calendar/OptionsPopup";
 import { CalendarControls } from "../components/Calendar/CalendarControls";
 import { ViewSwitcher } from "../components/Calendar/ViewSwitcher";
+import { useTheme } from "../components/theme-provider";
 
 export const Calendar = () => {
   const calendarRef = useRef<FullCalendar>(null);
-  const [view, setView] = useState<"dayGridMonth" | "timeGridWeek" | "timeGridDay">("timeGridWeek");
+  const [view, setView] = useState<"dayGridMonth" | "timeGridWeek" | "timeGridDay">("timeGridWeek");  const { theme } = useTheme();
 
   const filterPopupRef = useRef<HTMLDivElement>(null);
   const optionsPopupRef = useRef<HTMLDivElement>(null);
@@ -97,7 +98,9 @@ export const Calendar = () => {
     <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5 w-full">
       <div className="absolute inset-0 z-0">
         <img
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover ${
+            theme === "dark" ? "invert  " : ""
+          }`}
           draggable="false"
           src={grid}
           alt="grid background"

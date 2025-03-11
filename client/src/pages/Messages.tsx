@@ -4,13 +4,14 @@ import Sidebar from "../components/Messages/Sidebar";
 import ChatWindow from "../components/Messages/ChatWindow";
 import { User, Group, Message } from "../types";
 import { users, groups, initialMessages } from "../data/mockData";
+import { useTheme } from "../components/theme-provider";
 
 const Messages = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(users[0]);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);  const { theme } = useTheme();
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -39,8 +40,10 @@ const Messages = () => {
     <main className="relative border border-black/30 h-screen mt-2.5 w-full rounded-2xl overflow-hidden flex scrollbar-hide p-4 lg:p-6  gap-5 items-center">
       <div className="absolute inset-0 z-0">
         <img
-          className="w-full h-full object-cover"
-          draggable={false}
+          className={`w-full h-full object-cover ${
+            theme === "dark" ? "invert  " : ""
+          }`}
+          draggable="false"
           src={grid}
           alt="grid background"
         />

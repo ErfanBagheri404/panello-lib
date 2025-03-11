@@ -3,14 +3,17 @@ import { BarChartComponent } from "../components/Charts/BarChart";
 import BarChart2 from "../components/Charts/BarChart2";
 import LineChartComponent from "../components/Charts/LineChart";
 import Radial from "../components/Charts/Radial";
+import { useTheme } from "../components/theme-provider";
 
-const Graphs = () => {
+const Graphs = () => {  const { theme } = useTheme();
   return (
     <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5">
       {/* Background Grid */}
       <div className="absolute inset-0 z-0">
         <img
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover ${
+            theme === "dark" ? "invert  " : ""
+          }`}
           draggable="false"
           src={grid}
           alt="grid background"

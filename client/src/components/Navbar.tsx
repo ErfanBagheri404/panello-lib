@@ -80,7 +80,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`px-6 py-3 flex justify-between border rounded-2xl items-center ${
+      className={`px-6 py-3 flex justify-between border rounded-2xl items-center transition-all duration-300 ${
         theme === "dark"
           ? "bg-black text-white border-white/30"
           : "bg-white text-black border-black/30"

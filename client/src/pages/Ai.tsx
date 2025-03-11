@@ -12,6 +12,7 @@ import { FaRegCopy } from "react-icons/fa"; // Copy icon
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useTheme } from "../components/theme-provider";
 
 type Message = {
   role: "user" | "ai";
@@ -35,7 +36,7 @@ const Ai = () => {
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const currentModel = FREE_MODELS[currentModelIndex];
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);  const { theme } = useTheme();
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -248,10 +249,12 @@ const Ai = () => {
       {/* Background Grid */}
       <div className="absolute inset-0 z-0">
         <img
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover ${
+            theme === "dark" ? "invert  " : ""
+          }`}
           draggable="false"
           src={grid}
-          alt=""
+          alt="grid background"
         />
       </div>
 

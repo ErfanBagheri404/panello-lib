@@ -102,9 +102,9 @@ const Sidebar = () => {
             key={index}
             onClick={() => handleMenuItemClick(item.path)}
             className={`flex items-center gap-2 p-2 px-4 lg:px-2 rounded-lg 
-              hover:bg-gray-800 cursor-pointer w-full ${
-                !isOpen && "justify-center"
-              }`}
+              ${
+                theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100"
+              } cursor-pointer w-full ${!isOpen && "justify-center"}`}
           >
             {/* Icons adapt to theme */}
             <img
@@ -186,7 +186,9 @@ const Sidebar = () => {
       <div className="self-start lg:block hidden p-4 pt-0 w-full">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`hover:bg-gray-800 rounded-md p-2 transition w-full flex items-center gap-2 justify-center ${
+          className={`${
+            theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100"
+          } rounded-md p-2 transition w-full flex items-center gap-2 justify-center ${
             isOpen ? "justify-start" : "items-center"
           }`}
         >

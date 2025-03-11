@@ -13,9 +13,7 @@ const General = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Remove the authentication token from localStorage
     localStorage.removeItem("authToken");
-    // Redirect to login page
     navigate("/login");
   };
 
@@ -29,7 +27,7 @@ const General = () => {
         formData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Changed from "authToken" to "token"
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -60,29 +58,29 @@ const General = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 transition-all duration-300">
       {/* Profile Picture */}
       <div className="flex flex-col lg:flex-row lg:items-center">
         <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Profile Picture</h3>
-          <p className="text-sm text-gray-500">Update your Profile Picture.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Update your Profile Picture.
+          </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 mt-2 lg:mt-0">
           <div className="flex items-center gap-6">
-            <div className="w-12 h-12 bg-gray-200 border border-black/30 flex items-center justify-center rounded-xl overflow-hidden">
-              {user?.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <img
-                  src={defaultUser}
-                  alt="Default Profile"
-                  className="w-full h-full object-cover"
-                />
-              )}
+            <div
+              className={`w-12 h-12 border flex items-center justify-center rounded-xl overflow-hidden ${
+                theme === "dark"
+                  ? "border-white/30 bg-gray-800"
+                  : "border-black/30 bg-gray-200"
+              }`}
+            >
+              <img
+                src={user?.avatar || defaultUser}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
             </div>
 
             <input
@@ -97,7 +95,11 @@ const General = () => {
               }}
             />
             <button
-              className="px-3 py-1 rounded-lg bg-white border border-black/30"
+              className={`px-3 py-1 rounded-lg border transition ${
+                theme === "dark"
+                  ? "bg-gray-800 text-white border-white/30 hover:bg-gray-700"
+                  : "bg-white text-black border-black/30 hover:bg-gray-100"
+              }`}
               onClick={() => fileInputRef.current?.click()}
             >
               Replace image
@@ -105,7 +107,7 @@ const General = () => {
 
             {user?.avatar && (
               <button
-                className="text-red-500 bg-red-100 px-3 py-1 rounded-lg"
+                className="text-red-500 bg-red-100 dark:bg-red-900 px-3 py-1 rounded-lg transition hover:bg-red-200 dark:hover:bg-red-800"
                 onClick={handleRemoveAvatar}
               >
                 Remove
@@ -119,7 +121,7 @@ const General = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Interface theme</h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Select or customize your UI theme.
           </p>
         </div>
@@ -127,10 +129,14 @@ const General = () => {
           {["System preference", "Light", "Dark"].map((themeOption) => (
             <div
               key={themeOption}
-              className={`w-32 h-20 border-2 p-2 flex items-center justify-center cursor-pointer ${
-                themeOption === "System preference"
+              className={`w-32 h-20 border-2 p-2 flex items-center justify-center cursor-pointer transition ${
+                theme === "dark"
+                  ? "border-white/30 bg-gray-800 hover:bg-gray-700"
+                  : "border-gray-300 bg-white hover:bg-gray-100"
+              } ${
+                themeOption === "Dark" && theme === "dark"
                   ? "border-blue-500"
-                  : "border-gray-300"
+                  : ""
               }`}
             >
               <span className="text-sm text-center">{themeOption}</span>
@@ -143,12 +149,18 @@ const General = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Sidebar feature</h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             What shows in the desktop sidebar.
           </p>
         </div>
         <div className="flex flex-col lg:w-full mt-2 lg:mt-0">
-          <select className="border rounded-md px-3 py-2 w-full lg:w-fit">
+          <select
+            className={`border rounded-md px-3 py-2 w-full lg:w-fit transition ${
+              theme === "dark"
+                ? "bg-gray-900 text-white border-white/30"
+                : "bg-white text-black border-black/30"
+            }`}
+          >
             <option>Recent changes</option>
             <option>Favorites</option>
             <option>Shortcuts</option>
@@ -160,7 +172,9 @@ const General = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Language</h3>
-          <p className="text-sm text-gray-500">Change Dashboard's language.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Change Dashboard's language.
+          </p>
         </div>
         <div className="flex w-full mt-2 lg:mt-0">
           <LanguageSelector />
@@ -171,7 +185,9 @@ const General = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Account</h3>
-          <p className="text-sm text-gray-500">Manage your account settings.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Manage your account settings.
+          </p>
         </div>
         <div className="flex w-full mt-2 lg:mt-0">
           <button
@@ -187,7 +203,11 @@ const General = () => {
       <div className="flex justify-center lg:justify-start">
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="px-4 py-2 border rounded-full bg-gray-300 hover:bg-gray-400 transition duration-200"
+          className={`px-4 py-2 border rounded-full transition ${
+            theme === "dark"
+              ? "bg-gray-800 text-white border-white/30 hover:bg-gray-700"
+              : "bg-gray-300 text-black border-black/30 hover:bg-gray-400"
+          }`}
         >
           {theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
         </button>
