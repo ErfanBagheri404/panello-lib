@@ -92,10 +92,15 @@ const initialRoles: Role[] = [
 const Members = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roles, setRoles] = useState<Role[]>(initialRoles);
-  const [members, setMembers] = useState<Member[]>(initialMembers);  const { theme } = useTheme();
+  const [members, setMembers] = useState<Member[]>(initialMembers);
+  const { theme } = useTheme();
 
   return (
-    <main className="relative border border-black/30 h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5">
+    <main
+      className={`relative border ${
+        theme === "dark" ? "border-white/30" : "border-black/30"
+      } h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5`}
+    >
       <div className="absolute inset-0 z-0">
         <img
           className={`w-full h-full object-cover ${
@@ -111,7 +116,10 @@ const Members = () => {
       <div
         className="p-7 z-10 rounded-xl text-white flex flex-col lg:flex-row justify-between items-center"
         style={{
-          background: "linear-gradient(92deg, #756CDF 1.33%, #FFF 216.44%)",
+          background:
+            theme === "dark"
+              ? "linear-gradient(138deg, #4B48A6 0%, #333 138.83%)"
+              : "linear-gradient(138deg, #7D71E2 0%, #FFF 138.83%)",
         }}
       >
         <div>

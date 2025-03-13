@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Role } from "../../pages/Members";
+import { useTheme } from "../theme-provider";
+
 interface RolesListProps {
   roles: Role[];
   setRoles: React.Dispatch<React.SetStateAction<Role[]>>;
 }
 
 const RolesList = ({ roles, setRoles }: RolesListProps) => {
+  const { theme } = useTheme();
   const [allChecked, setAllChecked] = useState(false);
   const [checkedRoles, setCheckedRoles] = useState<Set<number>>(new Set());
   const [selectedAction, setSelectedAction] = useState<string>("");
@@ -80,13 +83,27 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
   };
 
   return (
-    <div className="z-10 my-5">
+    <div
+      className={`z-10 my-5 ${
+        theme === "dark" ? "text-gray-100" : "text-gray-900"
+      }`}
+    >
       <h3 className="text-lg font-semibold mb-2">Roles</h3>
-      <div className="bg-white w-full rounded-xl border border-black/30 overflow-hidden p-3">
+      <div
+        className={`w-full rounded-xl border overflow-hidden p-3 ${
+          theme === "dark"
+            ? "bg-gray-800 border-gray-600"
+            : "bg-white border-black/30"
+        }`}
+      >
         <div className="overflow-x-auto lg:overflow-visible">
           <table className="w-full text-sm min-w-[600px]">
-            <thead className="text-left bg-[#CCCCCC]">
-              <tr className="rounded-xl">
+            <thead
+              className={`text-left ${
+                theme === "dark" ? "bg-gray-700" : "bg-gray-300"
+              }`}
+            >
+              <tr>
                 <th className="p-3 rounded-tl-xl rounded-bl-xl items-center">
                   <input
                     type="checkbox"
@@ -103,8 +120,15 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
                 <tr
                   key={role.id}
                   className={`${
-                    roles.indexOf(role) !== 0 ? "border-t border-gray-200" : ""
-                  } hover:bg-gray-50`}
+                    roles.indexOf(role) !== 0
+                      ? "border-t " +
+                        (theme === "dark"
+                          ? "border-gray-600"
+                          : "border-gray-200")
+                      : ""
+                  } ${
+                    theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-50"
+                  }`}
                 >
                   <td className="p-3">
                     <input
@@ -122,13 +146,15 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
         </div>
       </div>
 
-      {/* Actions Section */}
-
       <div className="flex lg:flex-row flex-col items-center mt-3 gap-2 text-center">
         <span>Actions for selected roles:</span>
         <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
           <select
-            className="border border-black/30 rounded-md p-1"
+            className={`border rounded-md p-1 ${
+              theme === "dark"
+                ? "bg-gray-800 border-gray-600 text-gray-100"
+                : "bg-white border-black/30 text-gray-900"
+            }`}
             value={selectedAction}
             onChange={(e) => setSelectedAction(e.target.value)}
           >
@@ -138,7 +164,11 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
             <option>Duplicate</option>
           </select>
           <button
-            className="px-3 py-1 bg-black text-white rounded-md text-md"
+            className={`px-3 py-1 rounded-md text-md ${
+              theme === "dark"
+                ? "bg-gray-200 text-gray-800"
+                : "bg-black text-white"
+            }`}
             onClick={handleActionApply}
           >
             Apply

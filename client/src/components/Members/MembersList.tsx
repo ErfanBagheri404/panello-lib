@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IoEllipse } from "react-icons/io5";
 import { Member, Role } from "../../pages/Members";
+import { useTheme } from "../theme-provider";
 
 interface MembersListProps {
   members: Member[];
@@ -9,6 +10,7 @@ interface MembersListProps {
 }
 
 const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
+  const { theme } = useTheme();
   const [allChecked, setAllChecked] = useState(false);
   const [checkedMembers, setCheckedMembers] = useState<Set<number>>(new Set());
   const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
@@ -38,6 +40,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
     setCheckedMembers(updatedCheckedMembers);
     setAllChecked(updatedCheckedMembers.size === members.length);
   };
+
   const handleRoleChange = (memberId: number, newRole: string) => {
     setMembers((prev) =>
       prev.map((member) =>
@@ -46,6 +49,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
     );
     setEditingMemberId(null);
   };
+
   const handleActionApply = () => {
     if (!selectedAction || checkedMembers.size === 0) return;
 
@@ -59,15 +63,12 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
           )
         );
         break;
-
       case "Remove":
         setMembers((prev) =>
           prev.filter((member) => !checkedMembers.has(member.id))
         );
         break;
-
       case "Change Role":
-        // Implement role change modal or direct selection
         const newRole = prompt("Enter new role:");
         if (newRole) {
           setMembers((prev) =>
@@ -86,13 +87,27 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
   };
 
   return (
-    <div className="z-10 my-5">
+    <div
+      className={`z-10 my-5 ${
+        theme === "dark" ? "text-gray-100" : "text-gray-900"
+      }`}
+    >
       <h3 className="text-lg font-semibold mb-2">Members</h3>
-      <div className="bg-white w-full rounded-xl border border-black/30 overflow-hidden p-3">
+      <div
+        className={`${
+          theme === "dark"
+            ? "bg-gray-800 border-gray-600"
+            : "bg-white border-black/30"
+        } w-full rounded-xl border overflow-hidden p-3`}
+      >
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="text-left bg-[#CCCCCC]">
-              <tr className="rounded-xl">
+            <thead
+              className={`text-left ${
+                theme === "dark" ? "bg-gray-700" : "bg-gray-300"
+              }`}
+            >
+              <tr>
                 <th className="p-3 rounded-tl-xl rounded-bl-xl whitespace-nowrap w-[50px]">
                   <input
                     type="checkbox"
@@ -113,15 +128,20 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
                 </th>
               </tr>
             </thead>
-            <tbody className="">
+            <tbody>
               {members.map((member) => (
                 <tr
                   key={member.id}
                   className={`${
                     members.indexOf(member) !== 0
-                      ? "border-t border-gray-200"
+                      ? "border-t " +
+                        (theme === "dark"
+                          ? "border-gray-600"
+                          : "border-gray-200")
                       : ""
-                  } hover:bg-gray-50`}
+                  } ${
+                    theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-50"
+                  }`}
                 >
                   <td className="p-3 whitespace-nowrap w-[50px]">
                     <input
@@ -149,7 +169,11 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
                         }
                         autoFocus
                         onBlur={() => setEditingMemberId(null)}
-                        className="border rounded-md p-1"
+                        className={`border rounded-md p-1 ${
+                          theme === "dark"
+                            ? "bg-gray-700 border-gray-600"
+                            : "bg-white border-black/30"
+                        }`}
                       >
                         {roles.map((role) => (
                           <option key={role.id} value={role.name}>
@@ -182,7 +206,9 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
                   <td
                     className={`p-3 whitespace-nowrap ${
                       member.accountState.includes("Deactivated")
-                        ? "text-red-500"
+                        ? theme === "dark"
+                          ? "text-red-400"
+                          : "text-red-500"
                         : ""
                     }`}
                   >
@@ -194,28 +220,35 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
           </table>
         </div>
       </div>
-      {/* Keep actions section the same */}
       <div className="flex lg:flex-row flex-col items-center mt-3 gap-2 text-center">
-    <span>Actions to do with selected users:</span>
-    <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
-      <select 
-        className="border border-black/30 rounded-md p-1"
-        value={selectedAction}
-        onChange={(e) => setSelectedAction(e.target.value)}
-      >
-        <option value="">Options</option>
-        <option>Ban</option>
-        <option>Change Role</option>
-        <option>Remove</option>
-      </select>
-      <button 
-        className="px-3 py-1 bg-black text-white rounded-md text-md"
-        onClick={handleActionApply}
-      >
-        Apply
-      </button>
-    </div>
-  </div>
+        <span>Actions to do with selected users:</span>
+        <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
+          <select
+            className={`border ${
+              theme === "dark"
+                ? "bg-gray-800 border-gray-600 text-gray-100"
+                : "bg-white border-black/30 text-gray-900"
+            } rounded-md p-1`}
+            value={selectedAction}
+            onChange={(e) => setSelectedAction(e.target.value)}
+          >
+            <option value="">Options</option>
+            <option>Ban</option>
+            <option>Change Role</option>
+            <option>Remove</option>
+          </select>
+          <button
+            className={`px-3 py-1 rounded-md text-md ${
+              theme === "dark"
+                ? "bg-gray-200 text-gray-800"
+                : "bg-black text-white"
+            }`}
+            onClick={handleActionApply}
+          >
+            Apply
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

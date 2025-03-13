@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
+import { useTheme } from "../components/theme-provider";
 
 interface Role {
   id: string;
@@ -24,6 +25,7 @@ const InviteMemberModal = ({
   onClose,
   roles,
 }: InviteMemberModalProps) => {
+  const { theme } = useTheme();
   const [step, setStep] = useState(1);
   const [inviteData, setInviteData] = useState<InviteData>({
     email: "",
@@ -61,12 +63,11 @@ const InviteMemberModal = ({
           setEmailError("User not registered");
           return;
         }
-        // Set avatar from response or fallback to default
         setInviteData((prev) => ({
           ...prev,
           avatar: data.avatar || "/default-avatar.jpg",
         }));
-        setEmailError(""); // Clear previous errors if any
+        setEmailError("");
       } catch (error) {
         console.error("Error verifying user:", error);
         setEmailError("Error verifying user");
@@ -90,7 +91,6 @@ const InviteMemberModal = ({
   const handleInvite = async () => {
     console.log("handleInvite called with inviteData:", inviteData);
     try {
-      // Note: Use the backend URL (port 5000) instead of the client port (5173)
       const response = await fetch("http://localhost:5000/api/users/invite", {
         method: "PUT",
         headers: {
@@ -109,7 +109,6 @@ const InviteMemberModal = ({
         throw new Error(errorData.error || "Invite failed");
       }
       console.log("Invite succeeded");
-      // Reset and close modal after successful invite
       setStep(1);
       setInviteData({ email: "", role: "", avatar: "" });
       onClose();
@@ -123,13 +122,17 @@ const InviteMemberModal = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 ${
+            theme === "dark" ? "text-gray-100" : "text-gray-900"
+          }`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-white rounded-xl p-6 w-96 shadow-lg"
+            className={`rounded-xl p-6 w-96 shadow-lg ${
+              theme === "dark" ? "bg-gray-800" : "bg-white"
+            }`}
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
@@ -160,7 +163,11 @@ const InviteMemberModal = ({
                         avatar: "",
                       }))
                     }
-                    className="w-full p-2 border rounded-md"
+                    className={`w-full p-2 border rounded-md ${
+                      theme === "dark"
+                        ? "bg-gray-700 border-gray-600 text-gray-100"
+                        : "bg-white border-black/30 text-gray-900"
+                    }`}
                     placeholder="user@example.com"
                     required
                   />
@@ -179,7 +186,11 @@ const InviteMemberModal = ({
                 >
                   <label className="block text-sm mb-2">Select Role:</label>
                   <select
-                    className="w-full p-2 border rounded-md"
+                    className={`w-full p-2 border rounded-md ${
+                      theme === "dark"
+                        ? "bg-gray-700 border-gray-600 text-gray-100"
+                        : "bg-white border-black/30 text-gray-900"
+                    }`}
                     value={inviteData.role}
                     onChange={(e) =>
                       setInviteData((prev) => ({
@@ -226,7 +237,11 @@ const InviteMemberModal = ({
               {step > 1 && (
                 <button
                   onClick={handleBack}
-                  className="px-3 py-1 bg-gray-200 rounded-md"
+                  className={`px-3 py-1 rounded-md ${
+                    theme === "dark"
+                      ? "bg-gray-600 text-gray-100"
+                      : "bg-gray-200 text-gray-900"
+                  }`}
                 >
                   Back
                 </button>
@@ -242,6 +257,8 @@ const InviteMemberModal = ({
                     (step === 1 && !inviteData.email) ||
                     (step === 2 && !inviteData.role)
                       ? "bg-gray-300 cursor-not-allowed"
+                      : theme === "dark"
+                      ? "bg-blue-600 text-white"
                       : "bg-blue-500 text-white"
                   }`}
                 >
@@ -250,7 +267,11 @@ const InviteMemberModal = ({
               ) : (
                 <button
                   onClick={handleInvite}
-                  className="px-3 py-1 bg-green-500 text-white rounded-md"
+                  className={`px-3 py-1 rounded-md ${
+                    theme === "dark"
+                      ? "bg-green-600 text-white"
+                      : "bg-green-500 text-white"
+                  }`}
                 >
                   Invite
                 </button>
