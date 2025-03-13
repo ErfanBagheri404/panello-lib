@@ -3,8 +3,8 @@ import { FaRegBell, FaRegTrashAlt, FaRegClock } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { RxDragHandleDots2 } from "react-icons/rx";
+import { useTheme } from "../theme-provider"; // Add this import
 
-// Define types for better type safety
 type ReminderTask = {
   text: string;
   completed: boolean;
@@ -38,7 +38,9 @@ const initialReminders: { date: string; tasks: string[] }[] = [
 ];
 
 const HomeReminder = () => {
-  const [reminders, setReminders] = useState<ReminderSection[]>(initialReminders.map(section => ({
+  const { theme } = useTheme(); // Use the theme hook
+  const [reminders, setReminders] = useState<ReminderSection[]>(
+    initialReminders.map((section) => ({
       ...section,
       tasks: section.tasks.map((task) => ({
         text: task,
@@ -50,7 +52,6 @@ const HomeReminder = () => {
 
   const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
 
-  // Add type annotations to parameters
   const toggleSection = (index: number) => {
     setOpenSections((prev) => ({
       ...prev,
@@ -85,13 +86,19 @@ const HomeReminder = () => {
   };
 
   return (
-    <div className="border rounded-xl p-5 border-black/30 bg-white">
+    <div
+      className={`rounded-xl p-5 border transition-all duration-300 ${
+        theme === "dark"
+          ? "border-white/30 bg-black text-white"
+          : "border-black/30 bg-white text-black"
+      }`}
+    >
       <h2 className="flex items-center justify-between text-lg font-semibold mb-2">
         <div className="flex items-center">
-          <RxDragHandleDots2 className="hidden"></RxDragHandleDots2>
+          <RxDragHandleDots2 className="hidden" />
           <FaRegClock className="text-yellow-500 mr-3" /> Reminders
         </div>
-        <HiDotsHorizontal></HiDotsHorizontal>
+        <HiDotsHorizontal />
       </h2>
       {reminders.map((section, index) => (
         <div key={index} className="mb-3">

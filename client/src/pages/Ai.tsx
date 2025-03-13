@@ -8,7 +8,7 @@ import {
   IoSunnyOutline,
   IoBookOutline,
 } from "react-icons/io5";
-import { FaRegCopy } from "react-icons/fa"; // Copy icon
+import { FaRegCopy } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -36,7 +36,8 @@ const Ai = () => {
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const currentModel = FREE_MODELS[currentModelIndex];
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);  const { theme } = useTheme();
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -72,9 +73,7 @@ const Ai = () => {
   }, [pendingAiContent, isPaused]);
 
   const handleSend = async (e?: FormEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
+    if (e) e.preventDefault();
     if (!input.trim() && messages.length === 0) return;
     const userMessage: Message = {
       role: "user",
@@ -85,14 +84,14 @@ const Ai = () => {
     setIsTyping(true);
     setIsPaused(false);
     try {
-      setMessages((prev) => [...prev, { role: "ai", content: "..." }]); // Add typing animation
+      setMessages((prev) => [...prev, { role: "ai", content: "..." }]);
       const aiResponse = await fetchAIResponse(
         currentModel,
         userMessage.content
       );
       setMessages((prev) => {
         const newMessages = [...prev];
-        newMessages[newMessages.length - 1] = { role: "ai", content: "" }; // Replace "..." with real message
+        newMessages[newMessages.length - 1] = { role: "ai", content: "" };
         return newMessages;
       });
       setPendingAiContent(aiResponse);
@@ -112,13 +111,12 @@ const Ai = () => {
   const handlePause = () => {
     if (intervalId) {
       clearInterval(intervalId);
-      setPendingAiContent(""); // Clear pending AI content
+      setPendingAiContent("");
       setIsTyping(false);
       setIsPaused(true);
     }
   };
 
-  // Function to render formatted message with Markdown support
   const renderMessage = (msg: Message) => {
     return (
       <ReactMarkdown
@@ -146,14 +144,26 @@ const Ai = () => {
                 </SyntaxHighlighter>
               </div>
             ) : (
-              <code className="bg-gray-200 text-black px-1 py-0.5 rounded">
+              <code
+                className={`px-1 py-0.5 rounded ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white"
+                    : "bg-gray-200 text-black"
+                }`}
+              >
                 {children}
               </code>
             );
           },
           blockquote({ children }) {
             return (
-              <blockquote className="border-l-4 border-gray-500 pl-3 italic text-gray-600">
+              <blockquote
+                className={`border-l-4 pl-3 italic ${
+                  theme === "dark"
+                    ? "border-gray-500 text-gray-300"
+                    : "border-gray-500 text-gray-600"
+                }`}
+              >
                 {children}
               </blockquote>
             );
@@ -187,7 +197,6 @@ const Ai = () => {
     );
   };
 
-  // Function to handle box selection and start a conversation
   const handleBoxSelect = async (commands: string[]) => {
     const selectedCommand =
       commands[Math.floor(Math.random() * commands.length)];
@@ -195,13 +204,12 @@ const Ai = () => {
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
     setIsPaused(false);
-
     try {
-      setMessages((prev) => [...prev, { role: "ai", content: "..." }]); // Typing animation
+      setMessages((prev) => [...prev, { role: "ai", content: "..." }]);
       const aiResponse = await fetchAIResponse(currentModel, selectedCommand);
       setMessages((prev) => {
         const newMessages = [...prev];
-        newMessages[newMessages.length - 1] = { role: "ai", content: "" }; // Clear placeholder
+        newMessages[newMessages.length - 1] = { role: "ai", content: "" };
         return newMessages;
       });
       setPendingAiContent(aiResponse);
@@ -218,7 +226,6 @@ const Ai = () => {
     }
   };
 
-  // Define commands for each box
   const boxCommands = [
     [
       "Tell me a joke!",
@@ -237,20 +244,28 @@ const Ai = () => {
     ],
   ];
 
-  const getMessageClasses = (role: "user" | "ai") => 
-    `mb-3 p-3 rounded-lg max-w-[90%] md:max-w-[70%] lg:max-w-[50%] ${
-      role === "user" 
-        ? "bg-blue-500 text-white self-end rounded-tr-none md:rounded-tr-lg lg:rounded-tr-none" 
-        : "bg-gray-200 text-black self-start rounded-tl-none md:rounded-tl-lg lg:rounded-tl-none"
-    }`;
+  const getMessageClasses = (role: "user" | "ai") => {
+    const baseClasses =
+      "mb-3 p-3 rounded-lg max-w-[90%] md:max-w-[70%] lg:max-w-[50%]";
+    if (role === "user") {
+      return `${baseClasses} bg-blue-500 text-white self-end rounded-tr-none md:rounded-tr-lg lg:rounded-tr-none`;
+    } else {
+      const bgClass = theme === "dark" ? "bg-gray-700" : "bg-gray-200";
+      const textClass = theme === "dark" ? "text-white" : "text-black";
+      return `${baseClasses} ${bgClass} ${textClass} self-start rounded-tl-none md:rounded-tl-lg lg:rounded-tl-none`;
+    }
+  };
 
   return (
-    <main className="relative border border-black/30 h-[calc(100vh-5rem)] mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide">
-      {/* Background Grid */}
+    <main
+      className={`transition-all duration-300 ${
+        theme === "dark" ? "border-white/30" : "border-black/30"
+      } relative border  h-[calc(100vh-5rem)] mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide`}
+    >
       <div className="absolute inset-0 z-0">
         <img
           className={`w-full h-full object-cover ${
-            theme === "dark" ? "invert  " : ""
+            theme === "dark" ? "invert" : ""
           }`}
           draggable="false"
           src={grid}
@@ -258,37 +273,47 @@ const Ai = () => {
         />
       </div>
 
-      {/* Chat Messages */}
       <div className="flex-1 flex flex-col p-2 md:p-4 overflow-y-auto z-10 scrollbar-hide">
         {messages.length === 0 ? (
-          // Responsive start boxes
           <div className="flex flex-col items-center justify-center text-center flex-1 px-2">
-            <h2 className="text-lg font-semibold mb-4">Start a Conversation</h2>
+            <h2
+              className={`text-lg font-semibold mb-4 ${
+                theme === "dark" ? "text-white" : "text-black"
+              }`}
+            >
+              Start a Conversation
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 w-full max-w-3xl">
               {boxCommands.map((commands, index) => (
                 <div
                   key={index}
-                  className="p-3 md:p-4 bg-white rounded-lg border border-black/30 cursor-pointer hover:bg-gray-100 transition duration-300 flex flex-col items-center justify-center"
+                  className={`p-3 md:p-4 rounded-lg border cursor-pointer transition duration-300 flex flex-col items-center justify-center ${
+                    theme === "dark"
+                      ? "bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
+                      : "bg-white border-black/30 text-black hover:bg-gray-100"
+                  }`}
                   onClick={() => handleBoxSelect(commands)}
                 >
-                  {index === 0 && <IoHappyOutline className="text-2xl md:text-3xl mb-2 text-blue-500" />}
-                  {index === 1 && <IoSunnyOutline className="text-2xl md:text-3xl mb-2 text-yellow-500" />}
-                  {index === 2 && <IoBookOutline className="text-2xl md:text-3xl mb-2 text-green-500" />}
+                  {index === 0 && (
+                    <IoHappyOutline className="text-2xl md:text-3xl mb-2 text-blue-500" />
+                  )}
+                  {index === 1 && (
+                    <IoSunnyOutline className="text-2xl md:text-3xl mb-2 text-yellow-500" />
+                  )}
+                  {index === 2 && (
+                    <IoBookOutline className="text-2xl md:text-3xl mb-2 text-green-500" />
+                  )}
                   <h3 className="text-sm md:text-md font-semibold">
-                    {['Humor', 'Weather', 'Books'][index]}
+                    {["Humor", "Weather", "Books"][index]}
                   </h3>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          // Messages list
           <>
             {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={getMessageClasses(msg.role)}
-              >
+              <div key={index} className={getMessageClasses(msg.role)}>
                 {renderMessage(msg)}
               </div>
             ))}
@@ -297,16 +322,23 @@ const Ai = () => {
         )}
       </div>
 
-      {/* Responsive Input Field */}
       <form
         onSubmit={handleSend}
-        className="p-2 md:p-4 border-t border-black/20 bg-white flex z-10 gap-2"
+        className={`p-2 md:p-4 border-t flex z-10 gap-2 ${
+          theme === "dark"
+            ? "bg-black border-gray-600"
+            : "bg-white border-black/20"
+        }`}
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 p-2 text-sm md:text-base border border-black/30 rounded-lg focus:outline-none"
+          className={`flex-1 p-2 text-sm md:text-base border rounded-lg focus:outline-none ${
+            theme === "dark"
+              ? "bg-black text-white border-gray-600 placeholder-gray-400"
+              : "bg-white text-black border-black/30 placeholder-gray-600"
+          }`}
           placeholder="Ask something..."
           disabled={isTyping && !isPaused}
         />

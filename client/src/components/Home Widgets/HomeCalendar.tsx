@@ -4,16 +4,16 @@ import {
   FaChevronRight,
   FaRegCalendarAlt,
 } from "react-icons/fa";
+import { useTheme } from "../theme-provider"; // Add this import
 
 const HomeCalendar = () => {
-  // Generate dates dynamically
+  const { theme } = useTheme(); // Use the theme hook
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today);
   const [startDate, setStartDate] = useState(
     new Date(today.setDate(today.getDate() - 3))
-  ); // Start 3 days before today
+  );
 
-  // Real event data with placeholder images
   const events = [
     {
       date: today.toDateString(),
@@ -25,7 +25,6 @@ const HomeCalendar = () => {
     },
   ];
 
-  // Function to get 7 days dynamically (centered around selectedDate)
   const getNextDays = () => {
     return Array.from({ length: 7 }, (_, i) => {
       const date = new Date(startDate);
@@ -45,8 +44,13 @@ const HomeCalendar = () => {
   };
 
   return (
-    <div className="border border-black/30 rounded-xl p-4 sm:p-5 w-full bg-white">
-      {/* Header */}
+    <div
+      className={`rounded-xl p-4 sm:p-5 w-full border transition-all duration-300 ${
+        theme === "dark"
+          ? "border-white/30 bg-black text-white"
+          : "border-black/30 bg-white text-black"
+      }`}
+    >
       <div className="flex justify-between items-center mb-4">
         <h2 className="flex items-center text-lg sm:text-xl font-semibold">
           <FaRegCalendarAlt className="text-purple-500 mr-2" /> Calendar
@@ -58,7 +62,6 @@ const HomeCalendar = () => {
           <FaChevronRight className="text-gray-500 cursor-pointer" />
         </div>
       </div>
-      {/* Date Selector (7 days) */}
       <div className="flex items-center justify-between mb-4">
         <FaChevronLeft
           className="text-gray-500 cursor-pointer"
@@ -87,11 +90,15 @@ const HomeCalendar = () => {
           onClick={() => shiftDates("next")}
         />
       </div>
-      {/* Event Details */}
       {events
         .filter((event) => event.date === selectedDate.toDateString())
         .map((event, index) => (
-          <div key={index} className="p-4 bg-purple-100 rounded-lg">
+          <div
+            key={index}
+            className={`p-4 ${
+              theme === "dark" ? "bg-purple-900" : "bg-purple-200"
+            } rounded-lg`}
+          >
             <h3 className="font-semibold text-sm sm:text-base">
               {event.title}
             </h3>
