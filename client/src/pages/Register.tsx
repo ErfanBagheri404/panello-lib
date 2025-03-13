@@ -6,6 +6,7 @@ import login1 from "../assets/login1.jpeg";
 import login2 from "../assets/login2.jpeg";
 import login3 from "../assets/login3.jpeg";
 import { useGoogleAuth } from "../components/hooks/useGoogleLogin.ts";
+import { useTheme } from "../components/theme-provider.tsx";
 
 const images = [login1, login2, login3];
 
@@ -14,7 +15,8 @@ const Register = () => {
   const [fade, setFade] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const { googleLogin } = useGoogleAuth(); // Add this line
+  const { googleLogin } = useGoogleAuth();
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -26,20 +28,19 @@ const Register = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setFade(false);
-
       setTimeout(() => {
         setActiveIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % images.length;
-          setBgImage(images[nextIndex]); // Ensures correct image update
-          return nextIndex; // Updates active index properly
+          setBgImage(images[nextIndex]);
+          return nextIndex;
         });
-
         setFade(true);
       }, 400);
     }, 8000);
 
     return () => clearInterval(interval);
-  }, []); // Empty dependency array ensures this effect runs only once
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -61,11 +62,7 @@ const Register = () => {
       }
 
       const { token } = await res.json();
-
-      // Store token for authenticated requests
       localStorage.setItem("token", token);
-
-      // Redirect to dashboard or protected route
       window.location.href = "/dashboard";
     } catch (err: any) {
       setError(err.message);
@@ -74,7 +71,11 @@ const Register = () => {
   };
 
   return (
-    <main className="relative flex flex-col lg:flex-row p-5 h-screen">
+    <main
+      className={`relative flex flex-col lg:flex-row p-5 h-screen ${
+        theme === "dark" ? "bg-black" : "bg-white"
+      }`}
+    >
       {/* Content */}
       <div className="relative hidden lg:flex flex-1 flex-col items-center text-white p-5 rounded-xl h-full justify-between overflow-hidden">
         <div
@@ -89,20 +90,32 @@ const Register = () => {
         />
         <div className="flex items-center gap-2 justify-between w-full z-10">
           <img src={logo} alt="Logo" className="w-8" />
-          <button className="flex items-center gap-2 bg-white/30 px-3 py-1 rounded-full">
+          <button
+            className={`flex items-center gap-2 ${
+              theme === "dark" ? "bg-gray-800/30" : "bg-white/30"
+            } px-3 py-1 rounded-full`}
+          >
             Back to website <FaArrowRight />
           </button>
         </div>
         <div className="z-10 items-center justify-center text-center flex flex-col">
-          <span className="text-3xl font-normal my-4 text-center z-10">
+          <span
+            className={`text-3xl font-normal my-4 text-center z-10 ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            }`}
+          >
             Capturing Moments, <br /> Creating Memories
           </span>
-          <div className="flex gap-2 my-6 m-auto ">
+          <div className="flex gap-2 my-6 m-auto">
             {images.map((_, index) => (
               <div
                 key={index}
                 className={`h-1 w-10 rounded-full transition-all duration-500 ${
-                  activeIndex === index ? "bg-white w-16" : "bg-white/30"
+                  activeIndex === index
+                    ? "bg-white w-16"
+                    : theme === "dark"
+                    ? "bg-gray-400/50"
+                    : "bg-white/30"
                 }`}
               />
             ))}
@@ -113,7 +126,11 @@ const Register = () => {
       {/* Right Section */}
       <div className="relative z-10 flex-1 flex justify-center items-center p-10 h-full">
         <div className="w-full max-w-md space-y-6">
-          <h2 className="text-5xl font-medium text-gray-900">
+          <h2
+            className={`text-5xl font-medium ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            }`}
+          >
             Create an account
           </h2>
 
@@ -126,19 +143,27 @@ const Register = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, firstName: e.target.value })
                 }
-                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
+                className={`mt-1 block w-full rounded-md border ${
+                  theme === "dark"
+                    ? "border-gray-600 bg-gray-800"
+                    : "border-gray-300 bg-white"
+                } focus:border-blue-500 focus:ring-blue-500 p-2.5`}
                 placeholder="First name"
                 required
               />
               <input
-                type="text" // Changed from "lname"
+                type="text"
                 id="lastName"
                 name="lastName"
                 value={formData.lastName}
                 onChange={(e) =>
                   setFormData({ ...formData, lastName: e.target.value })
                 }
-                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
+                className={`mt-1 block w-full rounded-md border ${
+                  theme === "dark"
+                    ? "border-gray-600 bg-gray-800"
+                    : "border-gray-300 bg-white"
+                } focus:border-blue-500 focus:ring-blue-500 p-2.5`}
                 placeholder="Last name"
                 required
               />
@@ -152,7 +177,11 @@ const Register = () => {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 required
-                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
+                className={`mt-1 block w-full rounded-md border ${
+                  theme === "dark"
+                    ? "border-gray-600 bg-gray-800"
+                    : "border-gray-300 bg-white"
+                } focus:border-blue-500 focus:ring-blue-500 p-2.5`}
                 placeholder="Enter your email"
               />
             </div>
@@ -165,7 +194,11 @@ const Register = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className="mt-1 block w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 p-2.5 bg-white"
+                className={`mt-1 block w-full rounded-md border ${
+                  theme === "dark"
+                    ? "border-gray-600 bg-gray-800"
+                    : "border-gray-300 bg-white"
+                } focus:border-blue-500 focus:ring-blue-500 p-2.5`}
                 placeholder="Enter your password"
                 required
               />
@@ -182,10 +215,17 @@ const Register = () => {
               />
               <label
                 htmlFor="terms"
-                className="ml-2 block text-sm text-gray-900"
+                className={`ml-2 block text-sm ${
+                  theme === "dark" ? "text-gray-100" : "text-gray-900"
+                }`}
               >
                 I agree to the{" "}
-                <a href="#" className="text-blue-600 hover:text-blue-500">
+                <a
+                  href="#"
+                  className={`text-blue-600 hover:${
+                    theme === "dark" ? "text-blue-500" : "text-blue-500"
+                  }`}
+                >
                   Terms & Conditions
                 </a>
               </label>
@@ -195,20 +235,29 @@ const Register = () => {
             <button
               type="submit"
               className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md 
-        text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
-        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Create an account
             </button>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
           </form>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div
+                className={`w-full border-t ${
+                  theme === "dark" ? "border-gray-600" : "border-gray-300"
+                }`}
+              ></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">
+              <span
+                className={`px-2 ${
+                  theme === "dark"
+                    ? "bg-black text-gray-400"
+                    : "bg-white text-gray-500"
+                }`}
+              >
                 Or continue with
               </span>
             </div>
@@ -216,9 +265,16 @@ const Register = () => {
 
           <button
             onClick={() => googleLogin()}
-            className="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 border 
-      border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 
-      hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className={`w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 
+                border 
+                ${
+                  theme === "dark"
+                    ? "border-gray-600 bg-gray-800 text-white"
+                    : "border-gray-300 bg-white text-gray-700"
+                }
+                rounded-md text-sm font-medium 
+                hover:bg-${theme === "dark" ? "gray-700" : "gray-50"} 
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -241,11 +297,17 @@ const Register = () => {
             Continue with Google
           </button>
 
-          <p className="text-center text-sm text-gray-600">
+          <p
+            className={`text-center text-sm ${
+              theme === "dark" ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
             Already have an account?{" "}
             <a
               href="/login"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className={`font-medium text-blue-600 hover:${
+                theme === "dark" ? "text-blue-500" : "text-blue-500"
+              }`}
             >
               Log in
             </a>
