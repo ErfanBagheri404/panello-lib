@@ -15,7 +15,7 @@ const HomeTasks = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { theme } = useTheme(); // Use the theme hook
 
-  const [tasks, setTasks] = useState<Task[]>([
+ const [tasks, setTasks] = useState<Task[]>([
     {
       id: 1,
       name: "Team brainstorm",

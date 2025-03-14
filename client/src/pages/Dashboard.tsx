@@ -8,6 +8,7 @@ import HomeGraph from "../components/Home Widgets/HomeGraph";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useTheme } from "../components/theme-provider";
+import TaskManagerModal, { Task } from "../features/TaskManagerModal";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -46,11 +47,28 @@ const Dashboard = () => {
     const now = new Date();
     return `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
   };
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+   const [tasks, setTasks] = useState<Task[]>([
+      {
+        id: 1,
+        name: "Team brainstorm",
+        subtasks: ["Prepare agenda", "Invite team"],
+        color: "#4B00FF",
+      },
+      {
+        id: 2,
+        name: "Design review",
+        subtasks: ["Review new mockups", "Prepare feedback"],
+        color: "#FF5722",
+      },
+    ]);
+ 
   return (
     <main
       className={`relative border  h-screen mt-2.5 rounded-2xl overflow-auto scrollbar-hide ${
-        theme === "dark" ? "border-white/30" : "border-black/30"
+        theme === "dark"
+          ? "border-white/30 bg-black"
+          : "border-black/30 bg-white"
       } transition-all duration-300 `}
     >
       <div className="absolute inset-0 z-0">
@@ -105,7 +123,7 @@ const Dashboard = () => {
                 ? "bg-gray-800 text-white border-2 border-[#2CD9BF] hover:bg-gray-700"
                 : "bg-white text-black border-2 border-[#2CD9BF] hover:bg-gray-100"
             }`}
-            onClick={() => handleClick("/")}
+            onClick={() => setIsModalOpen(true)}
           >
             Create a new task
           </button>
@@ -132,6 +150,13 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <TaskManagerModal
+          onClose={() => setIsModalOpen(false)}
+          tasks={tasks}
+          setTasks={setTasks}
+        />
+      )}
     </main>
   );
 };
