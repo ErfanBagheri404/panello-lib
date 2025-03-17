@@ -3,14 +3,30 @@ import { useTheme } from "../theme-provider";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../user-provider";
 import axios from "axios";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import defaultUser from "../../assets/defaultUser.jpg";
+import darkwire from "../../assets/wireframeDark.png";
+import lightwire from "../../assets/wireframeLight.png";
+import systemwire from "../../assets/System.png";
+
+type ThemeOption = {
+  name: string;
+  src: string;
+  value: "system" | "light" | "dark";
+};
 
 const General = () => {
   const { user, setUser } = useUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
+  const themeOptions: ThemeOption[] = [
+    { name: "System", src: systemwire, value: "system" },
+    { name: "Light", src: lightwire, value: "light" },
+    { name: "Dark", src: darkwire, value: "dark" },
+  ];
+  const [selectedTheme, setSelectedTheme] =
+    useState<ThemeOption["value"]>("system");
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -56,6 +72,32 @@ const General = () => {
       console.error("Avatar removal failed:", error);
     }
   };
+
+  const handleThemeSelection = (chosenTheme: ThemeOption["value"]) => {
+    setSelectedTheme(chosenTheme);
+    if (chosenTheme === "system") {
+      const systemPreference = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
+      setTheme(systemPreference);
+    } else {
+      setTheme(chosenTheme);
+    }
+  };
+  useEffect(() => {
+    if (selectedTheme === "system") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const handleChange = () => {
+        setTheme(mediaQuery.matches ? "dark" : "light");
+      };
+      handleChange(); // Set initial theme
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    } else {
+      setTheme(selectedTheme);
+    }
+  }, [selectedTheme, setTheme]);
 
   return (
     <div className="space-y-6 transition-all duration-300">
@@ -126,45 +168,28 @@ const General = () => {
           </p>
         </div>
         <div className="flex flex-wrap gap-4 mt-2 lg:mt-0 lg:w-full">
-          {["System preference", "Light", "Dark"].map((themeOption) => (
+          {themeOptions.map(({ name, src, value }) => (
             <div
-              key={themeOption}
-              className={`w-32 h-20 border-2 p-2 flex items-center justify-center cursor-pointer transition ${
-                theme === "dark"
-                  ? "border-white/30 bg-gray-800 hover:bg-gray-700"
-                  : "border-gray-300 bg-white hover:bg-gray-100"
-              } ${
-                themeOption === "Dark" && theme === "dark"
-                  ? "border-blue-500"
-                  : ""
+              key={value}
+              className={`relative w-32 h-20 border-2 rounded-md flex items-center justify-center cursor-pointer transition overflow-hidden ${
+                selectedTheme === value ? "border-blue-500" : "border-gray-300"
               }`}
+              onClick={() => handleThemeSelection(value)}
             >
-              <span className="text-sm text-center">{themeOption}</span>
+              <img
+                src={src}
+                alt={`${name} mode`}
+                className="w-full h-full object-cover"
+              />
+              <span
+                className={`absolute text-sm ${
+                  value === "light" ? "text-black" : "text-white"
+                } }`}
+              >
+                {name}
+              </span>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Sidebar Feature */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-col lg:w-1/3">
-          <h3 className="text-lg font-medium">Sidebar feature</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            What shows in the desktop sidebar.
-          </p>
-        </div>
-        <div className="flex flex-col lg:w-full mt-2 lg:mt-0">
-          <select
-            className={`border rounded-md px-3 py-2 w-full lg:w-fit transition ${
-              theme === "dark"
-                ? "bg-gray-900 text-white border-white/30"
-                : "bg-white text-black border-black/30"
-            }`}
-          >
-            <option>Recent changes</option>
-            <option>Favorites</option>
-            <option>Shortcuts</option>
-          </select>
         </div>
       </div>
 
@@ -181,7 +206,7 @@ const General = () => {
         </div>
       </div>
 
-      {/* New Logout Option */}
+      {/* Logout Option */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
           <h3 className="text-lg font-medium">Account</h3>
@@ -197,20 +222,6 @@ const General = () => {
             Logout
           </button>
         </div>
-      </div>
-
-      {/* Dark Mode Toggle */}
-      <div className="flex justify-center lg:justify-start">
-        <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className={`px-4 py-2 border rounded-full transition ${
-            theme === "dark"
-              ? "bg-gray-800 text-white border-white/30 hover:bg-gray-700"
-              : "bg-gray-300 text-black border-black/30 hover:bg-gray-400"
-          }`}
-        >
-          {theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        </button>
       </div>
     </div>
   );
