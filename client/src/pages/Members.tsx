@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import grid from "../assets/Grid.svg";
 import logo from "../assets/logo.svg";
 import MembersList from "../components/Members/MembersList";
 import RolesList from "../components/Members/RolesList";
 import InviteMemberModal from "../features/InviteMemberModal";
 import { useTheme } from "../components/theme-provider";
+import axios from "axios";
 
 export interface Role {
-  id: number;
+  id: string;
   name: string;
   description: string;
 }
@@ -61,39 +62,27 @@ const initialMembers: Member[] = [
   },
 ];
 
-const initialRoles: Role[] = [
-  {
-    id: 1,
-    name: "owner",
-    description: "Full access to all settings and data.",
-  },
-  {
-    id: 2,
-    name: "co-owner",
-    description: "Same as Owner, except cannot remove the Owner.",
-  },
-  {
-    id: 3,
-    name: "administrator",
-    description: "Can manage users and settings but cannot delete the app.",
-  },
-  {
-    id: 4,
-    name: "moderator",
-    description: "Can manage user activity and enforce rules.",
-  },
-  {
-    id: 5,
-    name: "member",
-    description: "Standard access with no administrative rights.",
-  },
-];
 
 const Members = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [roles, setRoles] = useState<Role[]>(initialRoles);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [members, setMembers] = useState<Member[]>(initialMembers);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await axios.get("/api/roles", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setRoles(response.data);
+      } catch (error) {
+        console.error("Failed to fetch roles:", error);
+      }
+    };
+
+    fetchRoles();
+  }, []);
 
   return (
     <main

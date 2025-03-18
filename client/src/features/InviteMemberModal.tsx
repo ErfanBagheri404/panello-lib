@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import { useTheme } from "../components/theme-provider";
 
-interface Role {
+export interface Role {
   id: string;
   name: string;
+  description: string;
 }
 
 interface InviteMemberModalProps {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Role } from "../../pages/Members";
 import { useTheme } from "../theme-provider";
+import axios from "axios";
 
 interface RolesListProps {
   roles: Role[];
@@ -10,7 +11,7 @@ interface RolesListProps {
 const RolesList = ({ roles, setRoles }: RolesListProps) => {
   const { theme } = useTheme();
   const [allChecked, setAllChecked] = useState(false);
-  const [checkedRoles, setCheckedRoles] = useState<Set<number>>(new Set());
+  const [checkedRoles, setCheckedRoles] = useState<Set<string>>(new Set());
   const [selectedAction, setSelectedAction] = useState<string>("");
 
   const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,7 +24,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
 
   const handleSingleCheck = (
     event: React.ChangeEvent<HTMLInputElement>,
-    roleId: number
+    roleId: string
   ) => {
     const isChecked = event.target.checked;
     const updatedCheckedRoles = new Set(checkedRoles);
@@ -34,50 +35,38 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
     setAllChecked(updatedCheckedRoles.size === roles.length);
   };
 
-  const handleActionApply = () => {
+  const handleActionApply = async () => {
     if (!selectedAction || checkedRoles.size === 0) return;
 
     switch (selectedAction) {
       case "Delete":
-        setRoles((prev) => prev.filter((role) => !checkedRoles.has(role.id)));
+        await Promise.all(
+          Array.from(checkedRoles).map(async (roleId) => {
+            await axios.delete(`/api/roles/${roleId}`);
+          })
+        );
         break;
-
-      case "Edit":
-        checkedRoles.forEach((roleId) => {
-          const role = roles.find((r) => r.id === roleId);
-          if (role) {
-            const newName = prompt("Edit role name:", role.name);
-            const newDesc = prompt("Edit role description:", role.description);
-            if (newName && newDesc) {
-              setRoles((prev) =>
-                prev.map((r) =>
-                  r.id === roleId
-                    ? { ...r, name: newName, description: newDesc }
-                    : r
-                )
-              );
+        case "Duplicate":
+          checkedRoles.forEach((roleId) => {
+            const role = roles.find((r) => r.id === roleId);
+            if (role) {
+              setRoles((prev) => [
+                ...prev,
+                {
+                  ...role,
+                  id: Math.max(...prev.map((r) => parseInt(r.id))) + 1 + "", // Convert to string
+                  name: `${role.name} (Copy)`,
+                },
+              ]);
             }
-          }
-        });
-        break;
-
-      case "Duplicate":
-        checkedRoles.forEach((roleId) => {
-          const role = roles.find((r) => r.id === roleId);
-          if (role) {
-            setRoles((prev) => [
-              ...prev,
-              {
-                ...role,
-                id: Math.max(...prev.map((r) => r.id)) + 1,
-                name: `${role.name} (Copy)`,
-              },
-            ]);
-          }
-        });
-        break;
+          });
+          break;
     }
 
+    // Refresh roles after action
+    setRoles((prevRoles) =>
+      prevRoles.filter((role) => !checkedRoles.has(role.id))
+    );
     setCheckedRoles(new Set());
     setAllChecked(false);
   };
