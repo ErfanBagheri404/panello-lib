@@ -14,7 +14,7 @@ export interface Role {
 }
 
 export interface Member {
-  id: number;
+  id: string;
   name: string;
   role: string;
   dateAdded: string;
@@ -23,52 +23,13 @@ export interface Member {
   avatar: string;
 }
 
-const initialMembers: Member[] = [
-  {
-    id: 1,
-    name: "Tyrell Wellick",
-    role: "Owner",
-    dateAdded: "Apr 19, 08:01 AM",
-    status: "Online",
-    accountState: "Active",
-    avatar: "https://i.pravatar.cc/40?img=1",
-  },
-  {
-    id: 2,
-    name: "Tyrell Wellick",
-    role: "Co-Owner",
-    dateAdded: "Apr 19, 08:01 AM",
-    status: "Offline",
-    accountState: "Deactivated (Banned)",
-    avatar: "https://i.pravatar.cc/40?img=2",
-  },
-  {
-    id: 3,
-    name: "Tyrell Wellick",
-    role: "Administration",
-    dateAdded: "Apr 19, 08:01 AM",
-    status: "Online",
-    accountState: "Active",
-    avatar: "https://i.pravatar.cc/40?img=3",
-  },
-  {
-    id: 4,
-    name: "Tyrell Wellick",
-    role: "Administration",
-    dateAdded: "Apr 19, 08:01 AM",
-    status: "Online",
-    accountState: "Active",
-    avatar: "https://i.pravatar.cc/40?img=4",
-  },
-];
-
-
 const Members = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
-  const [members, setMembers] = useState<Member[]>(initialMembers);
+  const [members, setMembers] = useState<Member[]>([]); // Initialize as empty array
   const { theme } = useTheme();
 
+  // Fetch roles (existing)
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -80,8 +41,22 @@ const Members = () => {
         console.error("Failed to fetch roles:", error);
       }
     };
-
     fetchRoles();
+  }, []);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const response = await axios.get("/api/users/members", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        console.log("Members data received:", response.data);
+        setMembers(response.data);
+      } catch (error) {
+        console.error("Failed to fetch members:", error);
+      }
+    };
+    fetchMembers();
   }, []);
 
   return (
@@ -90,6 +65,7 @@ const Members = () => {
         theme === "dark" ? "border-white/30" : "border-black/30"
       } h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5`}
     >
+      {/* Rest of the JSX remains unchanged */}
       <div className="absolute inset-0 z-0">
         <img
           className={`w-full h-full object-cover ${
@@ -100,8 +76,6 @@ const Members = () => {
           alt="grid background"
         />
       </div>
-
-      {/* Invite Members Section */}
       <div
         className="p-7 z-10 rounded-xl text-white flex flex-col lg:flex-row justify-between items-center"
         style={{
@@ -122,7 +96,7 @@ const Members = () => {
           </p>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="lg:text-md text-sm w-full lg:w-fit  mt-5 bg-white text-black rounded-full px-3 py-1"
+            className="lg:text-md text-sm w-full lg:w-fit mt-5 bg-white text-black rounded-full px-3 py-1"
           >
             + Invite Members
           </button>
@@ -135,17 +109,12 @@ const Members = () => {
           alt="Flipped Logo"
         />
       </div>
-
       <MembersList members={members} setMembers={setMembers} roles={roles} />
-      <RolesList
-        roles={roles}
-        setRoles={setRoles} // Already correct in your code
-      />
-
+      <RolesList roles={roles} setRoles={setRoles} />
       <InviteMemberModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        roles={roles} // Already correct in your code
+        roles={roles}
       />
     </main>
   );
