@@ -9,6 +9,8 @@ import userRoutes from "./routes/users";
 import { configurePassport } from "./config/passport"; // Ensure you have this file configured
 import Role from "./models/Role";
 import roleRoutes from "./routes/roles";
+import taskRoutes from "./routes/tasks";
+import Task from "./models/Task";
 
 dotenv.config();
 
@@ -41,22 +43,34 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-  const seedRoles = async () => {
-    const existingRoles = await Role.find();
-    if (existingRoles.length) return;
-  
-    const initialRoles = [
-      { name: "owner", description: "Full access to all settings and data." },
-      { name: "co-owner", description: "Same as Owner, except cannot remove the Owner." },
-      { name: "administrator", description: "Can manage users and settings but cannot delete the app." },
-      { name: "moderator", description: "Can manage user activity and enforce rules." },
-      { name: "member", description: "Standard access with no administrative rights." },
-    ];
-  
-    await Role.insertMany(initialRoles);
-  };
-  
-  seedRoles();
+const seedRoles = async () => {
+  const existingRoles = await Role.find();
+  if (existingRoles.length) return;
+
+  const initialRoles = [
+    { name: "owner", description: "Full access to all settings and data." },
+    {
+      name: "co-owner",
+      description: "Same as Owner, except cannot remove the Owner.",
+    },
+    {
+      name: "administrator",
+      description: "Can manage users and settings but cannot delete the app.",
+    },
+    {
+      name: "moderator",
+      description: "Can manage user activity and enforce rules.",
+    },
+    {
+      name: "member",
+      description: "Standard access with no administrative rights.",
+    },
+  ];
+
+  await Role.insertMany(initialRoles);
+};
+
+seedRoles();
 
 // Configure sessions
 app.use(
@@ -76,10 +90,19 @@ app.use(passport.session());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/roles", roleRoutes);
+app.use("/api/tasks", taskRoutes);
 
 // A simple redirect for the base route.
 app.get("/", (req, res) => {
   res.redirect("/login");
+});
+app.get("/api/tasks", async (req, res) => {
+  try {
+    const tasks = await Task.find(); // Assuming Task is your Mongoose model
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 // Start the server on port 5000

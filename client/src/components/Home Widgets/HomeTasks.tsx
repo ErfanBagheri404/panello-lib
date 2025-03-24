@@ -2,91 +2,46 @@ import { useState } from "react";
 import { MdOutlineTaskAlt } from "react-icons/md";
 import { RxDragHandleDots2 } from "react-icons/rx";
 import TaskManagerModal from "../../features/TaskManagerModal";
-import { useTheme } from "../theme-provider"; // Add this import
-
-type Task = {
-  id: number;
-  name: string;
-  subtasks: string[];
-  color: string;
-};
+import { useTheme } from "../theme-provider";
+import { useTasks } from "../hooks/useTasks";
+import { ITask } from "../../types";
 
 const HomeTasks = () => {
+  const { tasks, createTask, updateTask, deleteTask } = useTasks();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { theme } = useTheme(); // Use the theme hook
+  const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
+  const { theme } = useTheme();
 
- const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: 1,
-      name: "Team brainstorm",
-      subtasks: ["Prepare agenda", "Invite team"],
-      color: "#4B00FF",
-    },
-    {
-      id: 2,
-      name: "Design review",
-      subtasks: ["Review new mockups", "Prepare feedback"],
-      color: "#FF5722",
-    },
-  ]);
 
-  const getRandomColor = (tasks: Task[]) => {
-    const colors = [
-      "#4B00FF",
-      "#FF5722",
-      "#009688",
-      "#E91E63",
-      "#FFEB3B",
-      "#3F51B5",
-      "#00bcd4",
-      "#4CAF50",
-      "#9C27B0",
-      "#FF9800",
-      "#009688",
-      "#795548",
-      "#607D8B",
-      "#CDDC39",
-      "#FF5722",
-      "#9E9E9E",
-      "#FFECB3",
-      "#B2EBF0",
-    ];
 
-    const usedColors = tasks.map((task) => task.color);
-    const availableColors = colors.filter(
-      (color) => !usedColors.includes(color)
-    );
-
-    if (availableColors.length > 0) {
-      return availableColors[
-        Math.floor(Math.random() * availableColors.length)
-      ];
+  const handleTaskSubmit = async (taskData: any) => {
+    try {
+      if (selectedTask) {
+        await updateTask(selectedTask._id, taskData);
+      } else {
+        await createTask(taskData);
+      }
+      setIsModalOpen(false);
+      setSelectedTask(null);
+    } catch (error) {
+      console.error("Error saving task:", error);
     }
-
-    return `#${Math.floor(Math.random() * 16777215)
-      .toString(16)
-      .padStart(6, "0")}`;
   };
 
-  const initializeColors = () => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => ({
-        ...task,
-        color: task.color || getRandomColor(prevTasks),
-      }))
-    );
+  const handleDeleteTask = async (id: string) => {
+    try {
+      await deleteTask(id);
+      setIsModalOpen(false);
+      setSelectedTask(null);
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
-
-  useState(() => {
-    initializeColors();
-  });
 
   return (
     <div
-      className={`p-5 transition-all duration-300  rounded-xl border ${
-        theme === "dark"
-          ? "border-white/30 bg-black"
-          : "border-black/30 bg-white"
+      className={`p-5 transition-all duration-300 rounded-xl border ${
+        theme === "dark" ? "border-white/30 bg-black" : "border-black/30 bg-white"
       }`}
     >
       <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
@@ -104,10 +59,13 @@ const HomeTasks = () => {
           <p className="font-medium text-md">Add a new task</p>
         </div>
         {tasks.map((task) => (
-          <div className="flex items-center gap-3" key={task.id}>
+          <div className="flex items-center gap-3" key={task._id}>
             <div
               className="w-12 h-12 rounded-xl hover:cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                setSelectedTask(task);
+                setIsModalOpen(true);
+              }}
               style={{
                 background: `linear-gradient(55deg, ${task.color} -25.4%, #000 137.29%)`,
               }}
@@ -115,9 +73,12 @@ const HomeTasks = () => {
             <div>
               <p
                 className="font-medium text-md hover:cursor-pointer"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  setSelectedTask(task);
+                  setIsModalOpen(true);
+                }}
               >
-                {task.name}
+                {task.title}
               </p>
               <p className="text-sm text-gray-500">
                 {task.subtasks.length} tasks • 0 members
@@ -128,9 +89,13 @@ const HomeTasks = () => {
       </div>
       {isModalOpen && (
         <TaskManagerModal
-          onClose={() => setIsModalOpen(false)}
-          tasks={tasks}
-          setTasks={setTasks}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedTask(null);
+          }}
+          task={selectedTask}
+          onSubmit={handleTaskSubmit}
+          onDelete={handleDeleteTask}
         />
       )}
     </div>
