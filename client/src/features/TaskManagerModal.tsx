@@ -104,7 +104,7 @@ const TaskManagerModal = ({
           {task ? "Edit Task" : "New Task"}
         </h2>
 
-        <div className="max-h-[70vh] overflow-y-auto pb-10 pr-2 scrollbar-hide">
+        <div className="max-h-[70vh] overflow-y-auto scrollbar-hide">
           <input
             type="text"
             className="w-full p-2 mb-4 rounded-lg border dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white"
@@ -113,7 +113,11 @@ const TaskManagerModal = ({
             onChange={(e) => setTitle(e.target.value)}
           />
 
-          <div className="space-y-2 mb-4">
+          <div
+            className={`space-y-2 mb-4 ${
+              subtasks.length === 0 ? "hidden" : ""
+            }`}
+          >
             <AnimatePresence>
               {subtasks.map((subtask) => (
                 <motion.div

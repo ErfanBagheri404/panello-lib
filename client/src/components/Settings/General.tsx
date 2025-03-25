@@ -25,8 +25,14 @@ const General = () => {
     { name: "Light", src: lightwire, value: "light" },
     { name: "Dark", src: darkwire, value: "dark" },
   ];
-  const [selectedTheme, setSelectedTheme] =
-    useState<ThemeOption["value"]>("system");
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption["value"]>(
+    () => {
+      return (
+        (localStorage.getItem("themePreference") as ThemeOption["value"]) ||
+        "system"
+      );
+    }
+  );
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -75,6 +81,7 @@ const General = () => {
 
   const handleThemeSelection = (chosenTheme: ThemeOption["value"]) => {
     setSelectedTheme(chosenTheme);
+    localStorage.setItem("themePreference", chosenTheme); // Persist the selection
     if (chosenTheme === "system") {
       const systemPreference = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
@@ -85,6 +92,7 @@ const General = () => {
       setTheme(chosenTheme);
     }
   };
+
   useEffect(() => {
     if (selectedTheme === "system") {
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -100,7 +108,7 @@ const General = () => {
   }, [selectedTheme, setTheme]);
 
   return (
-    <div className="space-y-6 transition-all duration-300">
+    <div className="space-y-6">
       {/* Profile Picture */}
       <div className="flex flex-col lg:flex-row lg:items-center">
         <div className="flex flex-col lg:w-1/3">
