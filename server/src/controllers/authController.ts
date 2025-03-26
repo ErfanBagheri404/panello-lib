@@ -159,3 +159,40 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+export const changePassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = (req as any).user.userId; // From authenticateUser middleware
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    // Check if the user has a password (Google users may not)
+    if (!user.password) {
+      res.status(400).json({ error: "Cannot change password for Google users" });
+      return;
+    }
+
+    // Verify the current password
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      res.status(401).json({ error: "Current password is incorrect" });
+      return;
+    }
+
+    // Update the password (pre-save hook will hash it)
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Password change error:", error);
+    res.status(500).json({ error: "Failed to change password" });
+  }
+};

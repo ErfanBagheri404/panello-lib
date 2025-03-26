@@ -7,6 +7,7 @@ import {
   googleAuth,
   googleAuthCallback,
   googleLogin,
+  changePassword,
 } from "../controllers/authController";
 
 const router = express.Router();
@@ -44,5 +45,6 @@ router.get("/profile", authenticateUser, getProfile);
 router.get("/google", googleAuth);
 router.get("/google/callback", googleAuthCallback);
 router.post("/google", googleLogin);
+router.put("/change-password", authenticateUser, changePassword);
 
 export default router;
