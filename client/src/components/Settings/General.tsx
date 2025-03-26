@@ -79,9 +79,9 @@ const General = () => {
       const systemPreference = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
-      setTheme(systemPreference); // "light" or "dark"
+      setTheme(systemPreference); 
     } else {
-      setTheme(chosenTheme as "light" | "dark"); // Explicitly cast to match Theme type
+      setTheme(chosenTheme as "light" | "dark"); 
     }
   };
 
@@ -91,13 +91,13 @@ const General = () => {
       if (savedPreference === "system") {
         const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
         const handleChange = () => {
-          setTheme(mediaQuery.matches ? "dark" : "light"); // "light" or "dark"
+          setTheme(mediaQuery.matches ? "dark" : "light"); 
         };
         handleChange();
         mediaQuery.addEventListener("change", handleChange);
         return () => mediaQuery.removeEventListener("change", handleChange);
       } else {
-        setTheme(savedPreference as "light" | "dark"); // Cast to match Theme type
+        setTheme(savedPreference as "light" | "dark"); 
       }
     }
   }, [setTheme]);

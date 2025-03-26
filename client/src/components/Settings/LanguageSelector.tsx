@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import { useTheme } from "../theme-provider"; // Ensure this provides "dark" and "light" theme states
+import { useTheme } from "../theme-provider"; 
 
 const LanguageSelector = () => {
-  const { theme } = useTheme(); // Get the theme state
+  const { theme } = useTheme(); 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState({
     name: "English US",

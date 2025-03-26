@@ -39,10 +39,9 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // useTasks hook handles fetching tasks from the API
   const { tasks, createTask, updateTask, deleteTask } = useTasks();
 
-  // Modal state and the currently selected task for editing (if any)
+
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 
@@ -92,7 +91,7 @@ const Sidebar = () => {
       rounded-2xl transition-all duration-300 overflow-y-auto scrollbar-hide 
       ${isOpen ? "lg:w-64" : "lg:w-20"}`}
       >
-        {/* Logo */}
+
         <div
           className={`lg:flex hidden items-center p-6 pb-0 gap-4 font-bold w-full ${
             isOpen ? "mb-2" : "mb-5"
@@ -116,7 +115,7 @@ const Sidebar = () => {
           </span>
         </div>
 
-        {/* Sidebar Navigation */}
+
         <nav
           className={`flex lg:flex-col flex-row py-2 lg:p-4 ${
             isOpen
@@ -135,7 +134,7 @@ const Sidebar = () => {
                   theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100"
                 } cursor-pointer w-full ${!isOpen && "justify-center"}`}
             >
-              {/* Icons adapt to theme */}
+
               <img
                 src={item.icon}
                 alt={item.label}
@@ -149,7 +148,7 @@ const Sidebar = () => {
                       : "none",
                 }}
               />
-              {/* Sidebar Text */}
+
               <span
                 className={`text-sm font-medium ${
                   theme === "dark" ? "text-white" : "text-black"
@@ -165,7 +164,7 @@ const Sidebar = () => {
           ))}
         </nav>
 
-        {/* Tasks Section */}
+
         {isOpen && (
           <div className="w-full p-4">
             <div className="flex justify-between items-center mb-5">
@@ -200,7 +199,6 @@ const Sidebar = () => {
               ))}
             </ul>
 
-            {/* Invite Members Card */}
             <div
               className="p-6 rounded-2xl text-white text-sm mt-[80px]"
               style={{
@@ -227,7 +225,6 @@ const Sidebar = () => {
           </div>
         )}
 
-        {/* Sidebar Toggle Button */}
         <div className="self-start lg:block hidden p-4 pt-0 w-full">
           <button
             onClick={() => setIsOpen(!isOpen)}

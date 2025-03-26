@@ -61,7 +61,6 @@ export const initialMessages: Message[] = [
     timestamp: "10:11 am",
     date: "2023-12-12",
   },
-  // Example message with file attachment
   {
     sender: "Karthik Jeeva",
     file: { name: "report.pdf", size: "2.1 MB" },

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useTheme } from "../theme-provider"; // Adjust path as needed
+import { useTheme } from "../theme-provider"; 
 
 interface FilterPopupProps {
   dateRange: { start: Date; end: Date };

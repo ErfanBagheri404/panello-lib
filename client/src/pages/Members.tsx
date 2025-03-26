@@ -26,10 +26,10 @@ export interface Member {
 const Members = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
-  const [members, setMembers] = useState<Member[]>([]); // Initialize as empty array
+  const [members, setMembers] = useState<Member[]>([]); 
   const { theme } = useTheme();
 
-  // Fetch roles (existing)
+ 
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -65,7 +65,7 @@ const Members = () => {
         theme === "dark" ? "border-white/30" : "border-black/30"
       } h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5`}
     >
-      {/* Rest of the JSX remains unchanged */}
+
       <div className="absolute inset-0 z-0">
         <img
           className={`w-full h-full object-cover ${

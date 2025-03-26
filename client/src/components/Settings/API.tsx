@@ -1,10 +1,10 @@
 import { useTheme } from "../theme-provider";
 const API = () => {
-  const { theme } = useTheme(); // Assuming this provides "light" or "dark"
+  const { theme } = useTheme(); 
 
   return (
     <div className="space-y-4 transition-all duration-300">
-      {/* MongoDB API Key Section */}
+
       <div className="space-y-2">
         <label
           className={`block font-medium ${
@@ -25,7 +25,7 @@ const API = () => {
         />
       </div>
 
-      {/* OpenRouter API Key Section */}
+
       <div className="space-y-2">
         <label
           className={`block font-medium ${
@@ -46,7 +46,7 @@ const API = () => {
         />
       </div>
 
-      {/* Button */}
+
       <button
         className={`px-4 py-2 rounded-full text-white transition ${
           theme === "dark"

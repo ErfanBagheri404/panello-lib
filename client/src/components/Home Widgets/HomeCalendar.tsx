@@ -4,10 +4,10 @@ import {
   FaChevronRight,
   FaRegCalendarAlt,
 } from "react-icons/fa";
-import { useTheme } from "../theme-provider"; // Add this import
+import { useTheme } from "../theme-provider"; 
 
 const HomeCalendar = () => {
-  const { theme } = useTheme(); // Use the theme hook
+  const { theme } = useTheme(); 
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today);
   const [startDate, setStartDate] = useState(

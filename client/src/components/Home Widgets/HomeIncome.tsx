@@ -1,10 +1,10 @@
 import { GrMoney } from "react-icons/gr";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { RxDragHandleDots2 } from "react-icons/rx";
-import { useTheme } from "../theme-provider"; // Add this import
+import { useTheme } from "../theme-provider"; 
 
 const HomeIncome = () => {
-  const { theme } = useTheme(); // Use the theme hook
+  const { theme } = useTheme(); 
 
   return (
     <div

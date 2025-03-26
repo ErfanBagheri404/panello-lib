@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { useTheme } from "../theme-provider"; // Adjust the path based on your project structure
+import { useTheme } from "../theme-provider"; 
 
 interface ViewSwitcherProps {
   currentView: "dayGridMonth" | "timeGridWeek" | "timeGridDay";
@@ -15,7 +15,7 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
   });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Update position when view changes
+
   useEffect(() => {
     if (containerRef.current) {
       const activeButton = containerRef.current.querySelector(
@@ -39,7 +39,7 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
     onChange(view);
   };
 
-  // Define theme-based styles
+
   const containerClass = `relative rounded-md border w-full lg:w-fit overflow-hidden text-center my-2 lg:my-0 ${
     theme === "dark"
       ? "bg-gray-800 border-white/30"

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useTheme } from "../theme-provider"; // Adjust path as needed
+import { useTheme } from "../theme-provider"; 
 
 interface OptionsPopupProps {
   onAddEvent: () => void;

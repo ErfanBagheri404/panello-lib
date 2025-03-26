@@ -6,7 +6,7 @@ import { RxDragHandleDots2 } from "react-icons/rx";
 import { useTheme } from "../theme-provider";
 
 type ReminderTask = {
-  id: string; // Unique identifier for each task
+  id: string; 
   text: string;
   completed: boolean;
   reminded: boolean;
@@ -53,7 +53,7 @@ const HomeReminder = () => {
     }
   };
 
-  // Initialize state with mock data
+ 
   const [reminders, setReminders] = useState<ReminderSection[]>(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -62,7 +62,7 @@ const HomeReminder = () => {
     const futureDate = new Date(today);
     futureDate.setDate(futureDate.getDate() + 5);
 
-    // Mock tasks with unique IDs
+
     const tasks: ReminderTask[] = [
       { id: "1", text: "Buy groceries", completed: false, reminded: false, date: today },
       { id: "2", text: "Call mom", completed: true, reminded: true, date: today },
@@ -71,7 +71,7 @@ const HomeReminder = () => {
       { id: "5", text: "Submit project report", completed: false, reminded: false, date: futureDate },
     ];
 
-    // Group tasks by section
+ 
     const sectionsMap: Record<string, ReminderTask[]> = {};
     tasks.forEach((task) => {
       const title = getSectionTitle(task.date);
@@ -99,7 +99,7 @@ const HomeReminder = () => {
     const date = new Date(selectedDate);
     const sectionTitle = getSectionTitle(date);
     const newTask: ReminderTask = {
-      id: Date.now().toString(), // Unique ID for new tasks
+      id: Date.now().toString(), 
       text: newReminderText,
       completed: false,
       reminded: false,
@@ -166,7 +166,7 @@ const HomeReminder = () => {
             ? { ...section, tasks: section.tasks.filter((task) => task.id !== taskId) }
             : section
         )
-        .filter((section) => section.tasks.length > 0) // Remove empty sections
+        .filter((section) => section.tasks.length > 0) 
     );
   };
 
@@ -224,7 +224,7 @@ const HomeReminder = () => {
             <div className="mt-2 pt-2 space-y-2">
               {section.tasks.map((task) => (
                 <div
-                  key={task.id} // Use unique task ID as key
+                  key={task.id} 
                   className={`flex items-center justify-between p-2 ${
                     theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100"
                   } ${
@@ -271,7 +271,7 @@ const HomeReminder = () => {
         </div>
       ))}
 
-      {/* Add Reminder Modal */}
+
       <div
         className={`fixed inset-0 flex items-center justify-center z-50 ${
           isModalOpen ? "visible" : "invisible"

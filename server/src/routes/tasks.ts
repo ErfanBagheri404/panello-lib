@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import Task from "../models/Task";
 import { authenticateUser } from "./auth";
 
-// Extend the Express Request interface to include the user property
+
 declare module 'express-serve-static-core' {
   interface Request {
     user?: { userId: string };
@@ -11,7 +11,7 @@ declare module 'express-serve-static-core' {
 
 const router = express.Router();
 
-// Get all tasks for the authenticated user
+
 router.get(
   "/",
   authenticateUser,
@@ -30,7 +30,7 @@ router.get(
   }
 );
 
-// Create a new task
+
 router.post(
   "/",
   authenticateUser,
@@ -53,7 +53,7 @@ router.post(
   }
 );
 
-// Update an existing task
+
 router.put(
   "/:id",
   authenticateUser,
@@ -80,7 +80,7 @@ router.put(
   }
 );
 
-// Delete a task
+
 router.delete(
   "/:id",
   authenticateUser,

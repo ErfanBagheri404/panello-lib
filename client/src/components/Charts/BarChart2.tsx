@@ -33,7 +33,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-// Exported BarChart component
+
 export default function BarChart2() {
   const { theme } = useTheme();
   return (

@@ -63,7 +63,7 @@ const userSchema = new Schema<IUser>(
   { timestamps: true } 
 );
 
-// Compare provided password with the hashed password
+
 userSchema.methods.comparePassword = async function (
   this: IUser,
   password: string
@@ -72,7 +72,7 @@ userSchema.methods.comparePassword = async function (
   return bcrypt.compare(password, this.password);
 };
 
-// Hash the password before saving
+
 userSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password") || !this.password) return next();
   try {

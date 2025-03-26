@@ -36,7 +36,7 @@ const Navbar = () => {
     menuItems.find((item) => item.path === location.pathname)?.label ||
     "Dashboard";
 
-  // Logout handler
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
@@ -67,7 +67,7 @@ const Navbar = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setUserProfile(response.data); // Corrected to setUserProfile
+        setUserProfile(response.data); 
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
@@ -94,7 +94,7 @@ const Navbar = () => {
         {currentPage}
       </h1>
 
-      {/* Profile Dropdown */}
+
       <div className="relative">
         <button
           onClick={(e) => {
@@ -146,7 +146,7 @@ const Navbar = () => {
           </svg>
         </button>
 
-        {/* Dropdown Menu */}
+
         {isDropdownOpen && (
           <div
             className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-100 ${

@@ -72,7 +72,7 @@ const TaskManagerModal = ({
     const taskData: Partial<ITask> = {
       title,
       subtasks,
-      color: task?.color || getRandomColor(), // Reuse existing color or generate new
+      color: task?.color || getRandomColor(), 
     };
     await onSubmit(taskData);
     onClose();

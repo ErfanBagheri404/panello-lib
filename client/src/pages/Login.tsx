@@ -25,7 +25,7 @@ const Login = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Check for saved credentials on component mount
+
     const savedEmail = localStorage.getItem("rememberedEmail");
     const savedPassword = localStorage.getItem("rememberedPassword");
     if (savedEmail && savedPassword) {
@@ -33,7 +33,7 @@ const Login = () => {
       setRememberMe(true);
     }
 
-    // Background image rotation
+
     const interval = setInterval(() => {
       setFade(false);
       setTimeout(() => {
@@ -72,7 +72,7 @@ const Login = () => {
       const { token } = await response.json();
       localStorage.setItem("token", token);
 
-      // Handle remember me functionality
+
       if (rememberMe) {
         localStorage.setItem("rememberedEmail", formData.email);
         localStorage.setItem("rememberedPassword", formData.password);

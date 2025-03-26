@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-// Middleware to authenticate JWT tokens.
+
 export const authenticateUser = (
   req: Request,
   res: Response,

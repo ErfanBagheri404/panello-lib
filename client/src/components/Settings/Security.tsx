@@ -1,26 +1,26 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-// Define the User interface
+
 interface User {
   googleId?: string;
   email: string;
-  // Add other properties as needed based on your API response
+
 }
 
 const Security = () => {
-  // Form state
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // User profile state
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user profile on component mount
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -46,7 +46,7 @@ const Security = () => {
     fetchUser();
   }, []);
 
-  // Handle form submission
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
@@ -81,7 +81,7 @@ const Security = () => {
     }
   };
 
-  // Render logic
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -90,7 +90,7 @@ const Security = () => {
     return <div>{error}</div>;
   }
 
-  // If user is a Google user, show a message instead of the form
+
   if (user.googleId) {
     return (
       <div>
@@ -99,7 +99,7 @@ const Security = () => {
     );
   }
 
-  // Render the password change form for non-Google users
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">

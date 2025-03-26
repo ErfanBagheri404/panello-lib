@@ -12,8 +12,8 @@ interface MembersListProps {
 const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
   const { theme } = useTheme();
   const [allChecked, setAllChecked] = useState(false);
-  const [checkedMembers, setCheckedMembers] = useState<Set<string>>(new Set()); // Changed to Set<string>
-  const [editingMemberId, setEditingMemberId] = useState<string | null>(null); // Changed to string | null
+  const [checkedMembers, setCheckedMembers] = useState<Set<string>>(new Set()); 
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null); 
   const [selectedAction, setSelectedAction] = useState<string>("");
 
   const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +28,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
 
   const handleSingleCheck = (
     event: React.ChangeEvent<HTMLInputElement>,
-    memberId: string // Changed to string
+    memberId: string
   ) => {
     const isChecked = event.target.checked;
     const updatedCheckedMembers = new Set(checkedMembers);
@@ -42,7 +42,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
   };
 
   const handleRoleChange = (memberId: string, newRole: string) => {
-    // Changed to string
+
     setMembers((prev) =>
       prev.map((member) =>
         member.id === memberId ? { ...member, role: newRole } : member
@@ -87,7 +87,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
     setAllChecked(false);
   };
 
-  // JSX remains unchanged except for type consistency
+
   return (
     <div
       className={`z-10 my-5 ${
@@ -133,7 +133,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
             <tbody>
               {members.map((member) => (
                 <tr
-                  key={member.id} // Now a string
+                  key={member.id} 
                   className={`${
                     members.indexOf(member) !== 0
                       ? "border-t " +

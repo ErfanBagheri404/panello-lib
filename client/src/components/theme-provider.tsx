@@ -34,7 +34,7 @@ export function ThemeProvider({
       : defaultTheme;
   });
 
-  // Effect to apply theme class to <html>
+
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove("light", "dark");
@@ -52,10 +52,9 @@ export function ThemeProvider({
 
     applyTheme(theme);
 
-    // Ensure Tailwind applies the correct default styles
+
     root.style.setProperty("color-scheme", theme === "dark" ? "dark" : "light");
 
-    // Listen for system theme changes
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
       if (theme === "system") applyTheme(e.matches ? "dark" : "light");

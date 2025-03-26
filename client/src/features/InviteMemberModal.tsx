@@ -36,7 +36,7 @@ const InviteMemberModal = ({
   const [emailError, setEmailError] = useState("");
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Handles step progression. If any error occurs, stops the flow.
+
   const handleNext = async () => {
     console.log("handleNext called, current step:", step);
     if (step === 1 && inviteData.email) {
@@ -88,7 +88,7 @@ const InviteMemberModal = ({
     }
   };
 
-  // Sends the invite to the backend.
+
   const handleInvite = async () => {
     console.log("handleInvite called with inviteData:", inviteData);
     try {

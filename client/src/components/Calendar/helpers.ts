@@ -1,4 +1,4 @@
-// helpers.ts
+
 import { useEffect } from "react";
 
 export interface CalendarEvent {

@@ -54,7 +54,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
                 ...prev,
                 {
                   ...role,
-                  id: Math.max(...prev.map((r) => parseInt(r.id))) + 1 + "", // Convert to string
+                  id: Math.max(...prev.map((r) => parseInt(r.id))) + 1 + "", 
                   name: `${role.name} (Copy)`,
                 },
               ]);
@@ -63,7 +63,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
           break;
     }
 
-    // Refresh roles after action
+   
     setRoles((prevRoles) =>
       prevRoles.filter((role) => !checkedRoles.has(role.id))
     );

@@ -14,7 +14,7 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType>({
   user: null,
-  setUser: () => {} // This is just a placeholder, gets overwritten by the provider
+  setUser: () => {} 
 });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {

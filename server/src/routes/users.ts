@@ -5,7 +5,7 @@ import { authenticateUser } from "./auth";
 
 const router = express.Router();
 
-// Updated MemberData interface
+
 interface MemberData {
   _id: string;
   firstName: string;
@@ -16,13 +16,13 @@ interface MemberData {
   avatar: string;
 }
 
-// Debug middleware
+
 router.use((req, res, next) => {
   console.log(`[Users Router] ${req.method} ${req.url}`);
   next();
 });
 
-// Check if user exists by email
+
 router.get(
   "/check-email",
   authenticateUser,
@@ -44,7 +44,7 @@ router.get(
   }
 );
 
-// Invite user endpoint
+
 router.put(
   "/invite",
   authenticateUser,
@@ -97,7 +97,7 @@ router.put(
   }
 );
 
-// Fetch members
+
 router.get("/members", authenticateUser, async (req, res) => {
   try {
     console.log("Fetching members...");

@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import passport from "passport";
 import axios from "axios";
 
-// Helper function to generate JWT token.
+
 const generateJWTToken = (user: any): string => {
   return jwt.sign(
     {
@@ -42,7 +42,7 @@ export const googleLogin = async (req: Request, res: Response) => {
       return;
     }
 
-    // Get user info from Google
+
     const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -60,7 +60,7 @@ export const googleLogin = async (req: Request, res: Response) => {
       avatar: response.data.picture || "/default-avatar.png",
     };
 
-    // Find or create the user
+
     const user = await User.findOneAndUpdate(
       { email: googleUser.email },
       {
@@ -131,10 +131,10 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-// This is used by the auth router to get the user profile.
+
 export const getProfile = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = (req as any).user; // Assuming middleware attaches user to req
+    const user = (req as any).user; 
     if (!user) {
       res.status(401).json({ error: "Unauthorized" });
       return;
@@ -153,7 +153,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
       role: foundUser.role,
       email: foundUser.email,
       isInvited: foundUser.isInvited,
-      googleId: foundUser.googleId, // Include googleId in the response
+      googleId: foundUser.googleId, 
     });
   } catch (error) {
     console.error("Error retrieving profile:", error);
@@ -165,9 +165,9 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
 export const changePassword = async (req: Request, res: Response): Promise<void> => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const userId = (req as any).user.userId; // From authenticateUser middleware
+    const userId = (req as any).user.userId;
 
-    // Find the user
+
     const user = await User.findById(userId);
     if (!user) {
       res.status(404).json({ error: "User not found" });
@@ -179,20 +179,20 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    // Check if the user has a password (Google users may not)
+
     if (!user.password) {
       res.status(400).json({ error: "Cannot change password for Google users" });
       return;
     }
 
-    // Verify the current password
+
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
       res.status(401).json({ error: "Current password is incorrect" });
       return;
     }
 
-    // Update the password (pre-save hook will hash it)
+
     user.password = newPassword;
     await user.save();
 

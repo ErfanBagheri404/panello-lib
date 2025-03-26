@@ -1,4 +1,4 @@
-import React from "react"; // Ensure React is imported
+import React from "react"; 
 import {
   BrowserRouter as Router,
   Routes,
@@ -21,7 +21,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const App = () => {
-  // Define the type for the children prop
+
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("token");
     return token ? <>{children}</> : <Navigate to="/login" />;
