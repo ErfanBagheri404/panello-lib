@@ -25,14 +25,11 @@ const General = () => {
     { name: "Light", src: lightwire, value: "light" },
     { name: "Dark", src: darkwire, value: "dark" },
   ];
-  const [selectedTheme, setSelectedTheme] = useState<ThemeOption["value"]>(
-    () => {
-      return (
-        (localStorage.getItem("themePreference") as ThemeOption["value"]) ||
-        "system"
-      );
-    }
-  );
+
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption["value"]>(() => {
+    const savedPreference = localStorage.getItem("themePreference");
+    return savedPreference ? (savedPreference as ThemeOption["value"]) : theme;
+  });
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -55,9 +52,7 @@ const General = () => {
         }
       );
 
-      setUser((prev) =>
-        prev ? { ...prev, avatar: response.data.avatar } : prev
-      );
+      setUser((prev) => (prev ? { ...prev, avatar: response.data.avatar } : prev));
     } catch (error) {
       console.error("Avatar update failed:", error);
     }
@@ -71,9 +66,7 @@ const General = () => {
         },
       });
 
-      setUser((prev) =>
-        prev ? { ...prev, avatar: response.data.avatar } : prev
-      );
+      setUser((prev) => (prev ? { ...prev, avatar: response.data.avatar } : prev));
     } catch (error) {
       console.error("Avatar removal failed:", error);
     }
@@ -81,31 +74,33 @@ const General = () => {
 
   const handleThemeSelection = (chosenTheme: ThemeOption["value"]) => {
     setSelectedTheme(chosenTheme);
-    localStorage.setItem("themePreference", chosenTheme); // Persist the selection
+    localStorage.setItem("themePreference", chosenTheme);
     if (chosenTheme === "system") {
-      const systemPreference = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
+      const systemPreference = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
-      setTheme(systemPreference);
+      setTheme(systemPreference); // "light" or "dark"
     } else {
-      setTheme(chosenTheme);
+      setTheme(chosenTheme as "light" | "dark"); // Explicitly cast to match Theme type
     }
   };
 
   useEffect(() => {
-    if (selectedTheme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      const handleChange = () => {
-        setTheme(mediaQuery.matches ? "dark" : "light");
-      };
-      handleChange(); // Set initial theme
-      mediaQuery.addEventListener("change", handleChange);
-      return () => mediaQuery.removeEventListener("change", handleChange);
-    } else {
-      setTheme(selectedTheme);
+    const savedPreference = localStorage.getItem("themePreference");
+    if (savedPreference) {
+      if (savedPreference === "system") {
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        const handleChange = () => {
+          setTheme(mediaQuery.matches ? "dark" : "light"); // "light" or "dark"
+        };
+        handleChange();
+        mediaQuery.addEventListener("change", handleChange);
+        return () => mediaQuery.removeEventListener("change", handleChange);
+      } else {
+        setTheme(savedPreference as "light" | "dark"); // Cast to match Theme type
+      }
     }
-  }, [selectedTheme, setTheme]);
+  }, [setTheme]);
 
   return (
     <div className="space-y-6">
@@ -192,7 +187,7 @@ const General = () => {
               <span
                 className={`absolute text-sm ${
                   value === "light" ? "text-black" : "text-white"
-                } }`}
+                }`}
               >
                 {name}
               </span>

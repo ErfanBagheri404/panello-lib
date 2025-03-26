@@ -134,15 +134,15 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 // This is used by the auth router to get the user profile.
 export const getProfile = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = (req as any).user;
+    const user = (req as any).user; // Assuming middleware attaches user to req
     if (!user) {
-      console.error("Unauthorized access to profile");
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
-    const foundUser = await User.findById(user.userId).select("firstName lastName avatar role email isInvited");
+    const foundUser = await User.findById(user.userId).select(
+      "firstName lastName avatar role email isInvited googleId"
+    );
     if (!foundUser) {
-      console.error("User not found with ID:", user.userId);
       res.status(404).json({ error: "User not found" });
       return;
     }
@@ -153,6 +153,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
       role: foundUser.role,
       email: foundUser.email,
       isInvited: foundUser.isInvited,
+      googleId: foundUser.googleId, // Include googleId in the response
     });
   } catch (error) {
     console.error("Error retrieving profile:", error);
@@ -170,6 +171,11 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
     const user = await User.findById(userId);
     if (!user) {
       res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    if (user.googleId) {
+      res.status(403).json({ error: "Password change is not allowed for Google users" });
       return;
     }
 

@@ -1,33 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
+// Define the User interface
+interface User {
+  googleId?: string;
+  email: string;
+  // Add other properties as needed based on your API response
+}
+
 const Security = () => {
+  // Form state
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // User profile state
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch user profile on component mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setError("You must be logged in to access this page");
+          setLoading(false);
+          return;
+        }
+
+        const response = await axios.get("/api/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUser(response.data);
+      } catch (err) {
+        setError("Failed to fetch user data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    // Check if new password and confirm password match
     if (newPassword !== confirmPassword) {
       setError("New passwords do not match");
       return;
     }
 
     try {
-      // Retrieve the JWT token from localStorage using the key "token"
       const token = localStorage.getItem("token");
-      if (!token) {
-        setError("You must be logged in to change your password");
-        return;
-      }
-
-      // Send PUT request to the backend
       await axios.put(
         "/api/auth/change-password",
         { currentPassword, newPassword },
@@ -37,14 +68,11 @@ const Security = () => {
           },
         }
       );
-
-      // On success, clear the form and show a success message
       setSuccess("Password changed successfully");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      // Handle errors from the backend
       if (axios.isAxiosError(err)) {
         setError(err.response?.data.error || "Failed to change password");
       } else {
@@ -53,6 +81,25 @@ const Security = () => {
     }
   };
 
+  // Render logic
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <div>{error}</div>;
+  }
+
+  // If user is a Google user, show a message instead of the form
+  if (user.googleId) {
+    return (
+      <div>
+        <p>Password change is not available for Google users.</p>
+      </div>
+    );
+  }
+
+  // Render the password change form for non-Google users
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">

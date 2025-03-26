@@ -41,7 +41,8 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
     setAllChecked(updatedCheckedMembers.size === members.length);
   };
 
-  const handleRoleChange = (memberId: string, newRole: string) => { // Changed to string
+  const handleRoleChange = (memberId: string, newRole: string) => {
+    // Changed to string
     setMembers((prev) =>
       prev.map((member) =>
         member.id === memberId ? { ...member, role: newRole } : member
@@ -156,7 +157,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
                       <img
                         src={member.avatar}
                         alt={member.name}
-                        className="w-8 h-8 rounded-full"
+                        className="w-8 h-8 rounded-full object-cover"
                       />
                       <span className="whitespace-nowrap">{member.name}</span>
                     </div>

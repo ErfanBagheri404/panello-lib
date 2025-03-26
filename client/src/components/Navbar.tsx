@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useTheme } from "./theme-provider"; // Assuming this is your custom theme hook
+import { useTheme } from "./theme-provider";
 import calendar from "../assets/Sidebar/Calendar.svg";
 import messages from "../assets/Sidebar/chat_bubble.svg";
 import home from "../assets/Sidebar/Home.svg";
@@ -11,7 +11,7 @@ import members from "../assets/Sidebar/Users.svg";
 import axios from "axios";
 
 const Navbar = () => {
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -198,18 +198,7 @@ const Navbar = () => {
             >
               Logout
             </button>
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className={`w-full text-left px-4 py-2 text-sm ${
-                theme === "dark"
-                  ? "text-white hover:bg-gray-700"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              {theme === "dark"
-                ? "Switch to Light Mode"
-                : "Switch to Dark Mode"}
-            </button>
+
           </div>
         )}
       </div>
