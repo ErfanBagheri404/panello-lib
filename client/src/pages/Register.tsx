@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { API_BASE_URL } from "../../config.ts";
-import logo from "../assets/logo.svg";
-import { FaArrowRight } from "react-icons/fa6";
-import login1 from "../assets/login1.jpeg";
-import login2 from "../assets/login2.jpeg";
-import login3 from "../assets/login3.jpeg";
+
 import { useGoogleAuth } from "../components/hooks/useGoogleLogin.ts";
 import { useTheme } from "../components/theme-provider.tsx";
+import ImgSwitcher from "../components/ImgSwitcher.tsx";
 
-const images = [login1, login2, login3];
 
 const Register = () => {
-  const [bgImage, setBgImage] = useState(login1);
-  const [fade, setFade] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);
+
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const { googleLogin } = useGoogleAuth();
   const { theme } = useTheme();
@@ -24,23 +18,6 @@ const Register = () => {
     password: "",
   });
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setActiveIndex((prevIndex) => {
-          const nextIndex = (prevIndex + 1) % images.length;
-          setBgImage(images[nextIndex]);
-          return nextIndex;
-        });
-        setFade(true);
-      }, 400);
-    }, 8000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -77,51 +54,7 @@ const Register = () => {
       }`}
     >
       {/* Content */}
-      <div className="relative hidden lg:flex flex-1 flex-col items-center text-white p-5 rounded-xl h-full justify-between overflow-hidden">
-        <div
-          className={`absolute inset-0 transition-opacity duration-500 ${
-            fade ? "opacity-100" : "opacity-30"
-          }`}
-          style={{
-            backgroundImage: `url(${bgImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-        <div className="flex items-center gap-2 justify-between w-full z-10">
-          <img src={logo} alt="Logo" className="w-8" />
-          <button
-            className={`flex items-center gap-2 ${
-              theme === "dark" ? "bg-gray-800/30" : "bg-white/30"
-            } px-3 py-1 rounded-full`}
-          >
-            Back to website <FaArrowRight />
-          </button>
-        </div>
-        <div className="z-10 items-center justify-center text-center flex flex-col">
-          <span
-            className={`text-3xl font-normal my-4 text-center z-10 ${
-              theme === "dark" ? "text-white" : "text-gray-900"
-            }`}
-          >
-            Capturing Moments, <br /> Creating Memories
-          </span>
-          <div className="flex gap-2 my-6 m-auto">
-            {images.map((_, index) => (
-              <div
-                key={index}
-                className={`h-1 w-10 rounded-full transition-all duration-500 ${
-                  activeIndex === index
-                    ? "bg-white w-16"
-                    : theme === "dark"
-                    ? "bg-gray-400/50"
-                    : "bg-white/30"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      <ImgSwitcher></ImgSwitcher>
 
       {/* Right Section */}
       <div className="relative z-10 flex-1 flex justify-center items-center p-10 h-full">
