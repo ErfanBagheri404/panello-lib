@@ -6,25 +6,27 @@ import session from "express-session";
 import passport from "passport";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
-import { configurePassport } from "./config/passport"; 
+import { configurePassport } from "./config/passport";
 import Role from "./models/Role";
 import roleRoutes from "./routes/roles";
 import taskRoutes from "./routes/tasks";
 import Task from "./models/Task";
+import { fetchAIResponse } from "./controllers/openRouterController";
 
 dotenv.config();
-
+const apiKey = process.env.OPENROUTER_API_KEY;
+const mongoURI = process.env.MONGO_URI;
+if (!apiKey) {
+  throw new Error("OPENROUTER_API_KEY is missing!");
+}
 const app = express();
-
 
 app.use((req, res, next) => {
   console.log(`[Server] ${req.method} ${req.url}`);
   next();
 });
 
-
 app.use(express.json());
-
 
 app.use(
   cors({
@@ -33,7 +35,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 if (!process.env.MONGO_URI) {
   throw new Error("MONGO_URI is not defined in the environment variables");
@@ -72,7 +73,6 @@ const seedRoles = async () => {
 
 seedRoles();
 
-
 app.use(
   session({
     secret: process.env.SESSION_SECRET!,
@@ -81,30 +81,27 @@ app.use(
   })
 );
 
-
 configurePassport();
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/tasks", taskRoutes);
-
+app.use("/api/openrouter", fetchAIResponse);
 
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
 app.get("/api/tasks", async (req, res) => {
   try {
-    const tasks = await Task.find(); 
+    const tasks = await Task.find();
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: "Server error" });
   }
 });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

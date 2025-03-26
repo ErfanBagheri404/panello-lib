@@ -9,9 +9,9 @@ import {
   googleLogin,
   changePassword,
 } from "../controllers/authController";
+import { fetchAIResponse } from "../controllers/openRouterController";
 
 const router = express.Router();
-
 
 export const authenticateUser = (
   req: Request,
@@ -46,5 +46,6 @@ router.get("/google", googleAuth);
 router.get("/google/callback", googleAuthCallback);
 router.post("/google", googleLogin);
 router.put("/change-password", authenticateUser, changePassword);
+router.post("/chat", fetchAIResponse);
 
 export default router;
