@@ -10,7 +10,7 @@ export interface IUser extends Document {
   avatar?: string;
   role: string;
   isInvited: boolean;
-  accountState: string; 
+  accountState: string;
   createdAt: Date;
   comparePassword: (password: string) => Promise<boolean>;
 }
@@ -43,7 +43,8 @@ const userSchema = new Schema<IUser>(
     },
     avatar: {
       type: String,
-      default: "./src/assets/defaultUser.jpg",
+      default:
+        "https://res.cloudinary.com/draufvx5a/image/upload/v1743061072/syy0koyk8gymiuyql07h.jpg",
     },
     role: {
       type: String,
@@ -60,9 +61,8 @@ const userSchema = new Schema<IUser>(
       default: "Active",
     },
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
-
 
 userSchema.methods.comparePassword = async function (
   this: IUser,
@@ -71,7 +71,6 @@ userSchema.methods.comparePassword = async function (
   if (!this.password) return false;
   return bcrypt.compare(password, this.password);
 };
-
 
 userSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password") || !this.password) return next();

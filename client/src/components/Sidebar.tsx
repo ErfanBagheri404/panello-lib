@@ -41,7 +41,6 @@ const Sidebar = () => {
 
   const { tasks, createTask, updateTask, deleteTask } = useTasks();
 
-
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 
@@ -91,7 +90,6 @@ const Sidebar = () => {
       rounded-2xl transition-all duration-300 overflow-y-auto scrollbar-hide 
       ${isOpen ? "lg:w-64" : "lg:w-20"}`}
       >
-
         <div
           className={`lg:flex hidden items-center p-6 pb-0 gap-4 font-bold w-full ${
             isOpen ? "mb-2" : "mb-5"
@@ -115,7 +113,6 @@ const Sidebar = () => {
           </span>
         </div>
 
-
         <nav
           className={`flex lg:flex-col flex-row py-2 lg:p-4 ${
             isOpen
@@ -134,7 +131,6 @@ const Sidebar = () => {
                   theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100"
                 } cursor-pointer w-full ${!isOpen && "justify-center"}`}
             >
-
               <img
                 src={item.icon}
                 alt={item.label}
@@ -164,9 +160,8 @@ const Sidebar = () => {
           ))}
         </nav>
 
-
         {isOpen && (
-          <div className="w-full p-4">
+          <div className="w-full p-6">
             <div className="flex justify-between items-center mb-5">
               <h3 className="text-lg font-medium">Tasks</h3>
               <button
@@ -213,7 +208,8 @@ const Sidebar = () => {
                 Panello
               </h4>
               <p className="mt-3 mb-3 text-white font-light">
-                New members will gain access to public Spaces, Docs, and Dashboards
+                New members will gain access to public Spaces, Docs, and
+                Dashboards
               </p>
               <button
                 onClick={() => navigate("/members")}

@@ -3,7 +3,10 @@ import User, { IUser } from "../models/User";
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import axios from "axios";
-
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const generateJWTToken = (user: any): string => {
   return jwt.sign(
@@ -22,15 +25,33 @@ export const googleAuth = passport.authenticate("google", {
   scope: ["profile", "email"],
 });
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+console.log("Cloudinary Config:", {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY ? "***" : "Missing", // Mask key for security
+  api_secret: process.env.CLOUDINARY_API_SECRET ? "***" : "Missing",
+});
+const storage = multer.memoryStorage();
+export const upload = multer({ storage });
+
 export const googleAuthCallback = (req: Request, res: Response) => {
-  passport.authenticate("google", { session: false }, (err: Error, user: IUser) => {
-    if (err || !user) {
-      console.error("Google auth callback error:", err);
-      return res.status(400).json({ error: "Google authentication failed" });
+  passport.authenticate(
+    "google",
+    { session: false },
+    (err: Error, user: IUser) => {
+      if (err || !user) {
+        console.error("Google auth callback error:", err);
+        return res.status(400).json({ error: "Google authentication failed" });
+      }
+      const token = generateJWTToken(user);
+      res.redirect(`${process.env.CLIENT_URL}/dashboard?token=${token}`);
     }
-    const token = generateJWTToken(user);
-    res.redirect(`${process.env.CLIENT_URL}/dashboard?token=${token}`);
-  })(req, res);
+  )(req, res);
 };
 
 export const googleLogin = async (req: Request, res: Response) => {
@@ -42,10 +63,12 @@ export const googleLogin = async (req: Request, res: Response) => {
       return;
     }
 
-
-    const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axios.get(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     if (!response.data?.sub || !response.data?.email) {
       console.error("Invalid Google response data:", response.data);
       res.status(400).json({ error: "Invalid Google response" });
@@ -55,11 +78,16 @@ export const googleLogin = async (req: Request, res: Response) => {
     const googleUser = {
       id: response.data.sub,
       email: response.data.email,
-      firstName: response.data.given_name || (response.data.name ? response.data.name.split(" ")[0] : "User"),
-      lastName: response.data.family_name || (response.data.name ? response.data.name.split(" ").slice(1).join(" ") : "User"),
+      firstName:
+        response.data.given_name ||
+        (response.data.name ? response.data.name.split(" ")[0] : "User"),
+      lastName:
+        response.data.family_name ||
+        (response.data.name
+          ? response.data.name.split(" ").slice(1).join(" ")
+          : "User"),
       avatar: response.data.picture || "/default-avatar.png",
     };
-
 
     const user = await User.findOneAndUpdate(
       { email: googleUser.email },
@@ -83,7 +111,10 @@ export const googleLogin = async (req: Request, res: Response) => {
   }
 };
 
-export const registerUser = async (req: Request, res: Response): Promise<void> => {
+export const registerUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { firstName, lastName, email, password } = req.body;
     const existingUser = await User.findOne({ email });
@@ -112,7 +143,10 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user || !user.password) {
-      console.error("Invalid login attempt, user not found or no password:", email);
+      console.error(
+        "Invalid login attempt, user not found or no password:",
+        email
+      );
       res.status(401).json({ error: "Invalid credentials" });
       return;
     }
@@ -131,10 +165,12 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-
-export const getProfile = async (req: Request, res: Response): Promise<void> => {
+export const getProfile = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const user = (req as any).user; 
+    const user = (req as any).user;
     if (!user) {
       res.status(401).json({ error: "Unauthorized" });
       return;
@@ -153,7 +189,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
       role: foundUser.role,
       email: foundUser.email,
       isInvited: foundUser.isInvited,
-      googleId: foundUser.googleId, 
+      googleId: foundUser.googleId,
     });
   } catch (error) {
     console.error("Error retrieving profile:", error);
@@ -161,12 +197,13 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-
-export const changePassword = async (req: Request, res: Response): Promise<void> => {
+export const changePassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { currentPassword, newPassword } = req.body;
     const userId = (req as any).user.userId;
-
 
     const user = await User.findById(userId);
     if (!user) {
@@ -175,23 +212,24 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
     }
 
     if (user.googleId) {
-      res.status(403).json({ error: "Password change is not allowed for Google users" });
+      res
+        .status(403)
+        .json({ error: "Password change is not allowed for Google users" });
       return;
     }
-
 
     if (!user.password) {
-      res.status(400).json({ error: "Cannot change password for Google users" });
+      res
+        .status(400)
+        .json({ error: "Cannot change password for Google users" });
       return;
     }
-
 
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
       res.status(401).json({ error: "Current password is incorrect" });
       return;
     }
-
 
     user.password = newPassword;
     await user.save();
@@ -200,5 +238,64 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
   } catch (error) {
     console.error("Password change error:", error);
     res.status(500).json({ error: "Failed to change password" });
+  }
+};
+// authController.ts
+export const updateAvatar = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ error: "No file uploaded" });
+      return;
+    }
+
+    const dataUri = `data:${
+      req.file.mimetype
+    };base64,${req.file.buffer.toString("base64")}`;
+    const result = await cloudinary.uploader.upload(dataUri, {
+      folder: "avatars",
+    });
+
+    const user = await User.findByIdAndUpdate(
+      (req as any).user.userId,
+      { avatar: result.secure_url },
+      { new: true }
+    );
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.json({ avatar: user.avatar });
+  } catch (error) {
+    console.error("Avatar update error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const removeAvatar = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const defaultAvatar = (User.schema.path("avatar") as any).defaultValue;
+    const user = await User.findByIdAndUpdate(
+      (req as any).user.userId,
+      { avatar: defaultAvatar },
+      { new: true }
+    );
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.json({ avatar: user.avatar });
+  } catch (error) {
+    console.error("Avatar removal error:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };

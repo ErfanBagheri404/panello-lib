@@ -26,10 +26,14 @@ const General = () => {
     { name: "Dark", src: darkwire, value: "dark" },
   ];
 
-  const [selectedTheme, setSelectedTheme] = useState<ThemeOption["value"]>(() => {
-    const savedPreference = localStorage.getItem("themePreference");
-    return savedPreference ? (savedPreference as ThemeOption["value"]) : theme;
-  });
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption["value"]>(
+    () => {
+      const savedPreference = localStorage.getItem("themePreference");
+      return savedPreference
+        ? (savedPreference as ThemeOption["value"])
+        : theme;
+    }
+  );
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -52,36 +56,27 @@ const General = () => {
         }
       );
 
-      setUser((prev) => (prev ? { ...prev, avatar: response.data.avatar } : prev));
+      // Update user state with new avatar URL
+      setUser((prev) =>
+        prev ? { ...prev, avatar: response.data.avatar } : prev
+      );
     } catch (error) {
       console.error("Avatar update failed:", error);
     }
   };
 
-  const handleRemoveAvatar = async () => {
-    try {
-      const response = await axios.delete("/api/auth/avatar", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      });
-
-      setUser((prev) => (prev ? { ...prev, avatar: response.data.avatar } : prev));
-    } catch (error) {
-      console.error("Avatar removal failed:", error);
-    }
-  };
 
   const handleThemeSelection = (chosenTheme: ThemeOption["value"]) => {
     setSelectedTheme(chosenTheme);
     localStorage.setItem("themePreference", chosenTheme);
     if (chosenTheme === "system") {
-      const systemPreference = window.matchMedia("(prefers-color-scheme: dark)").matches
+      const systemPreference = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
         ? "dark"
         : "light";
-      setTheme(systemPreference); 
+      setTheme(systemPreference);
     } else {
-      setTheme(chosenTheme as "light" | "dark"); 
+      setTheme(chosenTheme as "light" | "dark");
     }
   };
 
@@ -91,13 +86,13 @@ const General = () => {
       if (savedPreference === "system") {
         const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
         const handleChange = () => {
-          setTheme(mediaQuery.matches ? "dark" : "light"); 
+          setTheme(mediaQuery.matches ? "dark" : "light");
         };
         handleChange();
         mediaQuery.addEventListener("change", handleChange);
         return () => mediaQuery.removeEventListener("change", handleChange);
       } else {
-        setTheme(savedPreference as "light" | "dark"); 
+        setTheme(savedPreference as "light" | "dark");
       }
     }
   }, [setTheme]);
@@ -149,15 +144,6 @@ const General = () => {
             >
               Replace image
             </button>
-
-            {user?.avatar && (
-              <button
-                className="text-red-500 bg-red-100 dark:bg-red-900 px-3 py-1 rounded-lg transition hover:bg-red-200 dark:hover:bg-red-800"
-                onClick={handleRemoveAvatar}
-              >
-                Remove
-              </button>
-            )}
           </div>
         </div>
       </div>

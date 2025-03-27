@@ -8,6 +8,9 @@ import {
   googleAuthCallback,
   googleLogin,
   changePassword,
+  updateAvatar,
+  removeAvatar,
+  upload,
 } from "../controllers/authController";
 import { fetchAIResponse } from "../controllers/openRouterController";
 
@@ -47,5 +50,7 @@ router.get("/google/callback", googleAuthCallback);
 router.post("/google", googleLogin);
 router.put("/change-password", authenticateUser, changePassword);
 router.post("/chat", fetchAIResponse);
+router.put("/avatar", authenticateUser, upload.single("avatar"), updateAvatar);
+router.delete("/avatar", authenticateUser, removeAvatar);
 
 export default router;
