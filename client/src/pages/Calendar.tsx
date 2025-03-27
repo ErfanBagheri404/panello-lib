@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -19,6 +19,8 @@ import { OptionsPopup } from "../components/Calendar/OptionsPopup";
 import { CalendarControls } from "../components/Calendar/CalendarControls";
 import { ViewSwitcher } from "../components/Calendar/ViewSwitcher";
 import { useTheme } from "../components/theme-provider";
+import axios from "axios";
+import EventDetailsModal from "../features/EventDetailsModal";
 
 export const Calendar = () => {
   const calendarRef = useRef<FullCalendar>(null);
@@ -26,14 +28,14 @@ export const Calendar = () => {
     "dayGridMonth" | "timeGridWeek" | "timeGridDay"
   >("timeGridWeek");
   const { theme } = useTheme();
-
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null
+  );
+  const [openPopup, setOpenPopup] = useState<"filter" | "options" | null>(null);
   const filterPopupRef = useRef<HTMLDivElement>(null);
   const optionsPopupRef = useRef<HTMLDivElement>(null);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
   const optionsButtonRef = useRef<HTMLButtonElement>(null);
-
-  const [openPopup, setOpenPopup] = useState<"filter" | "options" | null>(null);
-
   const [dateRange, setDateRange] = useState({
     start: new Date(),
     end: new Date(Date.now() + 604800000),
@@ -57,21 +59,91 @@ export const Calendar = () => {
     setDateRange({ start, end });
     setOpenPopup(null);
   };
+  const handleEditClick = (event: CalendarEvent) => {
+    setOpenPopup("options");
 
-  const handleAddEvent = () => {
-    const newEvent: CalendarEvent = {
-      id: String(Date.now()),
-      title: "New Event",
-      start: new Date(),
-      end: new Date(Date.now() + 3600000),
-      color: getRandomColor(),
-    };
-    setEvents([...events, newEvent]);
+    const eventToEdit = events.find((e) => e.id === event.id);
+    if (eventToEdit) {
+      setEvents(
+        events.map((e) => (e.id === event.id ? { ...e, color: e.color } : e))
+      );
+    }
   };
 
-  const handleDeleteEvent = () => {
-    if (events.length > 0) {
-      setEvents(events.slice(0, -1));
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get("/api/events", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setEvents(
+          response.data.map((e: any) => ({
+            ...e,
+            id: e._id,
+            start: new Date(e.start),
+            end: new Date(e.end),
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  // Update event handlers to use API
+  const handleAddEvent = async (
+    eventData: Omit<CalendarEvent, "id" | "color">
+  ) => {
+    try {
+      const response = await axios.post(
+        "/api/events",
+        {
+          ...eventData,
+          color: getRandomColor(),
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+
+      setEvents([
+        ...events,
+        {
+          ...response.data,
+          id: response.data._id,
+          start: new Date(response.data.start),
+          end: new Date(response.data.end),
+        },
+      ]);
+    } catch (error) {
+      console.error("Error creating event:", error);
+    }
+  };
+
+  const handleEditEvent = async (updatedEvent: CalendarEvent) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`/api/events/${updatedEvent.id}`, updatedEvent, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setEvents(
+        events.map((e) => (e.id === updatedEvent.id ? updatedEvent : e))
+      );
+    } catch (error) {
+      console.error("Error updating event:", error);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`/api/events/${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setEvents(events.filter((e) => e.id !== eventId));
+    } catch (error) {
+      console.error("Error deleting event:", error);
     }
   };
 
@@ -184,8 +256,11 @@ export const Calendar = () => {
               <AnimatePresence>
                 {openPopup === "options" && (
                   <OptionsPopup
+                    events={events}
                     onAddEvent={handleAddEvent}
+                    onEditEvent={handleEditEvent}
                     onDeleteEvent={handleDeleteEvent}
+                    onClose={() => setOpenPopup(null)}
                   />
                 )}
               </AnimatePresence>
@@ -216,43 +291,42 @@ export const Calendar = () => {
           validRange={{ start: dateRange.start, end: dateRange.end }}
           eventContent={(arg) => (
             <div
+              className="rounded-lg p-0.5 m-1  cursor-pointer"
               style={{
-                color: "#fff",
-                borderRadius: "10px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                height: "100%",
-                borderBottomColor: "1px dashed",
+                backgroundColor: hexToRgba(arg.event.extendedProps.color, 0.9),
+                border: `1px solid ${arg.event.extendedProps.color}`,
               }}
             >
-              <span
-                style={{
-                  fontSize: "10px",
-                  backgroundColor: arg.event.extendedProps.color,
-                  borderBottom: "1px dashed black",
-                  padding: "5px",
-                }}
-              >
-                {formatTime(arg.event.start)} - {formatTime(arg.event.end)}
-              </span>
-              <div
-                style={{
-                  fontSize: "12px",
-                  padding: "5px",
-                  paddingTop: "1px",
-                  backgroundColor: hexToRgba(
-                    arg.event.extendedProps.color,
-                    0.3
-                  ),
-                }}
-              >
-                <div style={{ fontWeight: "bold" }}>{arg.event.title}</div>
+              <div className="flex flex-col gap-1">
+                <div className="text-xs font-semibold text-white/90">
+                  {formatTime(arg.event.start)} - {formatTime(arg.event.end)}
+                </div>
+                <div className="text-sm font-bold truncate text-white">
+                  {arg.event.title}
+                </div>
               </div>
             </div>
           )}
+          eventClick={(info) =>
+            setSelectedEvent(info.event as unknown as CalendarEvent)
+          }
         />
       </div>
+      {selectedEvent && (
+        <EventDetailsModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onEdit={() => {
+            setOpenPopup("options");
+            handleEditClick(selectedEvent);
+            setSelectedEvent(null);
+          }}
+          onDelete={() => {
+            handleDeleteEvent(selectedEvent.id);
+            setSelectedEvent(null);
+          }}
+        />
+      )}
     </main>
   );
 };
