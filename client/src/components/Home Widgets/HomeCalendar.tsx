@@ -26,8 +26,7 @@ const HomeCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(today);
   const [startDate, setStartDate] = useState(initialStartDate);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -46,9 +45,7 @@ const HomeCalendar = () => {
         setEvents(formattedEvents);
       } catch (err) {
         setError("Failed to load events");
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     fetchEvents();
