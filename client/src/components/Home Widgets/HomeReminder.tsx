@@ -141,7 +141,6 @@ const HomeReminder = () => {
     try {
       const task = reminders[sectionIndex].tasks.find((t) => t._id === taskId);
       if (!task) return;
-      
 
       await axios.put(
         `${API_URL}/${taskId}`,
@@ -152,14 +151,13 @@ const HomeReminder = () => {
           },
         }
       );
-  
 
-      setReminders(prev =>
+      setReminders((prev) =>
         prev.map((section, idx) =>
           idx === sectionIndex
             ? {
                 ...section,
-                tasks: section.tasks.map(t =>
+                tasks: section.tasks.map((t) =>
                   t._id === taskId ? { ...t, completed: !t.completed } : t
                 ),
               }
@@ -237,42 +235,56 @@ const HomeReminder = () => {
         </div>
       </h2>
 
-      {reminders.map((section, index) => (
-        <div key={index} className="">
-          <h3
-            className="font-semibold flex items-center cursor-pointer"
-            onClick={() => toggleSection(index)}
-          >
-            <FaAngleDown
-              className={`mr-2 transition-transform ${
-                openSections[index] ? "rotate-180" : ""
-              }`}
-            />
-            {section.title}
-            <span className="text-gray-500 ml-2">• {section.tasks.length}</span>
-          </h3>
-          {openSections[index] && (
-            <div className=" pt-2">
-              {section.tasks.map((task) => (
-                <div
-                  key={task._id}
-                  className={`flex items-center justify-between p-2 ${
-                    theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100"
-                  } ${
-                    task._id !== section.tasks[section.tasks.length - 1]._id
-                      ? "border-b"
-                      : ""
-                  }`}
-                >
-                  <span
-                    className={`text-sm ${
-                      task.completed && "line-through text-gray-400"
+      {reminders.length === 0 ? (
+        <div
+          className={`text-center flex items-center justify-center gap-2 p-4 ${
+            theme === "dark" ? "text-gray-400" : "text-gray-600"
+          }`}
+        >
+          Tap the <HiDotsHorizontal className="text-black"></HiDotsHorizontal>{" "}
+          button above to add your first reminder
+        </div>
+      ) : (
+        reminders.map((section, index) => (
+          <div key={index} className="gap-2 mt-2">
+            <h3
+              className="font-semibold flex items-center cursor-pointer"
+              onClick={() => toggleSection(index)}
+            >
+              <FaAngleDown
+                className={`mr-2 transition-transform ${
+                  openSections[index] ? "rotate-180" : ""
+                }`}
+              />
+              {section.title}
+              <span className="text-gray-500 ml-2">
+                • {section.tasks.length}
+              </span>
+            </h3>
+            {openSections[index] && (
+              <div className=" pt-2">
+                {section.tasks.map((task) => (
+                  <div
+                    key={task._id}
+                    className={`flex items-center justify-between p-2 ${
+                      theme === "dark"
+                        ? "hover:bg-gray-800"
+                        : "hover:bg-gray-100"
+                    } ${
+                      task._id !== section.tasks[section.tasks.length - 1]._id
+                        ? "border-b"
+                        : ""
                     }`}
                   >
-                    {task.title}
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    {/* <FaRegBell
+                    <span
+                      className={`text-sm ${
+                        task.completed && "line-through text-gray-400"
+                      }`}
+                    >
+                      {task.title}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      {/* <FaRegBell
                       className={`cursor-pointer ${
                         task.reminded
                           ? "text-yellow-500"
@@ -282,31 +294,32 @@ const HomeReminder = () => {
                       }`}
                       onClick={() => handleToggleRemind(index, task.id)}
                     /> */}
-                    <FaRegTrashAlt
-                      className={`cursor-pointer ${
-                        theme === "dark"
-                          ? "text-gray-400 hover:text-red-500"
-                          : "text-gray-600 hover:text-red-600"
-                      }`}
-                      onClick={() => handleDeleteTask(index, task._id)}
-                    />
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => handleToggleComplete(index, task._id)}
-                      className={`cursor-pointer ${
-                        theme === "dark"
-                          ? "accent-yellow-500"
-                          : "accent-blue-500"
-                      }`}
-                    />
+                      <FaRegTrashAlt
+                        className={`cursor-pointer ${
+                          theme === "dark"
+                            ? "text-gray-400 hover:text-red-500"
+                            : "text-gray-600 hover:text-red-600"
+                        }`}
+                        onClick={() => handleDeleteTask(index, task._id)}
+                      />
+                      <input
+                        type="checkbox"
+                        checked={task.completed}
+                        onChange={() => handleToggleComplete(index, task._id)}
+                        className={`cursor-pointer ${
+                          theme === "dark"
+                            ? "accent-yellow-500"
+                            : "accent-blue-500"
+                        }`}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
+                ))}
+              </div>
+            )}
+          </div>
+        ))
+      )}
 
       <div
         className={`fixed inset-0 flex items-center justify-center z-50 ${

@@ -45,7 +45,7 @@ const HomeCalendar = () => {
         setEvents(formattedEvents);
       } catch (err) {
         setError("Failed to load events");
-      } 
+      }
     };
 
     fetchEvents();
@@ -161,6 +161,18 @@ const HomeCalendar = () => {
             /> */}
           </div>
         ))}
+      {events.filter(
+        (event) =>
+          new Date(event.start).toDateString() === selectedDate.toDateString()
+      ).length === 0 && (
+        <div
+          className={`p-4 text-center ${
+            theme === "dark" ? "text-gray-400" : "text-gray-600"
+          }`}
+        >
+          No events for this date
+        </div>
+      )}
     </div>
   );
 };
