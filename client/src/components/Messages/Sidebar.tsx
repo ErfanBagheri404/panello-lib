@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </button>
             );
           })}
-          {groups.map((group) => {
+          {/* {groups.map((group) => {
             const groupButtonClass = `flex items-center gap-3 p-2 rounded-lg transition ${
               selectedGroup?.id === group.id
                 ? theme === "dark"
@@ -181,7 +181,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               </button>
             );
-          })}
+          })} */}
         </div>
       </div>
     </div>

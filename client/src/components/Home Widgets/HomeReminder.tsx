@@ -1,16 +1,18 @@
-import { useState } from "react";
-import { FaRegBell, FaRegTrashAlt, FaRegClock } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaRegTrashAlt, FaRegClock } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { RxDragHandleDots2 } from "react-icons/rx";
 import { useTheme } from "../theme-provider";
+import axios from "axios";
 
 type ReminderTask = {
-  id: string; 
-  text: string;
+  _id: string;
+  title: string;
+  description?: string;
   completed: boolean;
-  reminded: boolean;
   date: Date;
+  userId: string;
 };
 
 type ReminderSection = {
@@ -18,25 +20,62 @@ type ReminderSection = {
   tasks: ReminderTask[];
 };
 
+const API_URL = "http://localhost:5000/api/reminders";
+
 const HomeReminder = () => {
   const { theme } = useTheme();
+  const [reminders, setReminders] = useState<ReminderSection[]>([]);
+  const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
+  const [showMenu, setShowMenu] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newReminderText, setNewReminderText] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+
+  // Fetch reminders on mount with authentication
+  useEffect(() => {
+    const fetchReminders = async () => {
+      try {
+        const response = await axios.get(API_URL, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const tasks = response.data;
+        const grouped = groupTasksByDate(tasks);
+        setReminders(grouped);
+      } catch (error) {
+        console.error("Error fetching reminders:", error);
+      }
+    };
+    fetchReminders();
+  }, []);
 
   const getSectionTitle = (date: Date): string => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const inputDate = new Date(date);
     inputDate.setHours(0, 0, 0, 0);
-
     const diffTime = inputDate.getTime() - today.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
-
     if (diffDays === 0) return "Today";
     if (diffDays === 1) return "Tomorrow";
-
     const month = inputDate.toLocaleString("default", { month: "long" });
     const day = inputDate.getDate();
     const suffix = getDaySuffix(day);
     return `${month} ${day}${suffix}`;
+  };
+
+  const groupTasksByDate = (tasks: ReminderTask[]): ReminderSection[] => {
+    const sectionsMap: Record<string, ReminderTask[]> = {};
+    tasks.forEach((task) => {
+      const title = getSectionTitle(task.date);
+      if (!sectionsMap[title]) {
+        sectionsMap[title] = [];
+      }
+      sectionsMap[title].push(task);
+    });
+    return Object.entries(sectionsMap).map(([title, tasks]) => ({
+      title,
+      tasks,
+    }));
   };
 
   const getDaySuffix = (day: number): string => {
@@ -53,127 +92,115 @@ const HomeReminder = () => {
     }
   };
 
- 
-  const [reminders, setReminders] = useState<ReminderSection[]>(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const futureDate = new Date(today);
-    futureDate.setDate(futureDate.getDate() + 5);
-
-
-    const tasks: ReminderTask[] = [
-      { id: "1", text: "Buy groceries", completed: false, reminded: false, date: today },
-      { id: "2", text: "Call mom", completed: true, reminded: true, date: today },
-      { id: "3", text: "Finish homework", completed: false, reminded: true, date: today },
-      { id: "4", text: "Dentist appointment", completed: false, reminded: true, date: tomorrow },
-      { id: "5", text: "Submit project report", completed: false, reminded: false, date: futureDate },
-    ];
-
- 
-    const sectionsMap: Record<string, ReminderTask[]> = {};
-    tasks.forEach((task) => {
-      const title = getSectionTitle(task.date);
-      if (!sectionsMap[title]) {
-        sectionsMap[title] = [];
-      }
-      sectionsMap[title].push(task);
-    });
-
-    return Object.entries(sectionsMap).map(([title, tasks]) => ({
-      title,
-      tasks,
-    }));
-  });
-
-  const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
-  const [showMenu, setShowMenu] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newReminderText, setNewReminderText] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
-
-  const handleAddReminder = () => {
+  const handleAddReminder = async () => {
     if (!newReminderText.trim() || !selectedDate) return;
-
-    const date = new Date(selectedDate);
-    const sectionTitle = getSectionTitle(date);
-    const newTask: ReminderTask = {
-      id: Date.now().toString(), 
-      text: newReminderText,
-      completed: false,
-      reminded: false,
-      date,
-    };
-
-    setReminders((prev) => {
-      const existingSectionIndex = prev.findIndex((section) => section.title === sectionTitle);
+    try {
+      const response = await axios.post(
+        API_URL,
+        {
+          title: newReminderText,
+          date: selectedDate,
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      // Update state with new reminder
+      const newTask = response.data;
+      const sectionTitle = getSectionTitle(new Date(newTask.date));
+      const existingSectionIndex = reminders.findIndex(
+        (section) => section.title === sectionTitle
+      );
       if (existingSectionIndex !== -1) {
-        const updatedSections = prev.map((section, sIndex) =>
-          sIndex === existingSectionIndex
-            ? { ...section, tasks: [...section.tasks, newTask] }
-            : section
+        setReminders((prev) =>
+          prev.map((section, index) =>
+            index === existingSectionIndex
+              ? { ...section, tasks: [...section.tasks, newTask] }
+              : section
+          )
         );
-        return updatedSections;
+      } else {
+        setReminders((prev) => [
+          ...prev,
+          { title: sectionTitle, tasks: [newTask] },
+        ]);
       }
-      return [...prev, { title: sectionTitle, tasks: [newTask] }];
-    });
-
-    setNewReminderText("");
-    setSelectedDate("");
-    setIsModalOpen(false);
+      setNewReminderText("");
+      setSelectedDate("");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error creating reminder:", error);
+    }
   };
 
   const toggleSection = (index: number) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const handleToggleComplete = (sectionIndex: number, taskId: string) => {
-    setReminders((prev) =>
-      prev.map((section, sIndex) =>
-        sIndex === sectionIndex
-          ? {
-              ...section,
-              tasks: section.tasks.map((task) =>
-                task.id === taskId ? { ...task, completed: !task.completed } : task
-              ),
-            }
-          : section
-      )
-    );
-  };
+  const handleToggleComplete = async (sectionIndex: number, taskId: string) => {
+    try {
+      const task = reminders[sectionIndex].tasks.find((t) => t._id === taskId);
+      if (!task) return;
+      
 
-  const handleToggleRemind = (sectionIndex: number, taskId: string) => {
-    setReminders((prev) =>
-      prev.map((section, sIndex) =>
-        sIndex === sectionIndex
-          ? {
-              ...section,
-              tasks: section.tasks.map((task) =>
-                task.id === taskId ? { ...task, reminded: !task.reminded } : task
-              ),
-            }
-          : section
-      )
-    );
-  };
+      await axios.put(
+        `${API_URL}/${taskId}`,
+        { completed: !task.completed },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+  
 
-  const handleDeleteTask = (sectionIndex: number, taskId: string) => {
-    setReminders((prev) =>
-      prev
-        .map((section, sIndex) =>
-          sIndex === sectionIndex
-            ? { ...section, tasks: section.tasks.filter((task) => task.id !== taskId) }
+      setReminders(prev =>
+        prev.map((section, idx) =>
+          idx === sectionIndex
+            ? {
+                ...section,
+                tasks: section.tasks.map(t =>
+                  t._id === taskId ? { ...t, completed: !t.completed } : t
+                ),
+              }
             : section
         )
-        .filter((section) => section.tasks.length > 0) 
-    );
+      );
+    } catch (error) {
+      console.error("Error updating reminder:", error);
+    }
+  };
+
+  const handleDeleteTask = async (sectionIndex: number, taskId: string) => {
+    try {
+      await axios.delete(`${API_URL}/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setReminders((prev) =>
+        prev
+          .map((section, sIndex) =>
+            sIndex === sectionIndex
+              ? {
+                  ...section,
+                  tasks: section.tasks.filter((t) => t._id !== taskId),
+                }
+              : section
+          )
+          .filter((section) => section.tasks.length > 0)
+      );
+    } catch (error) {
+      console.error("Error deleting reminder:", error);
+    }
   };
 
   return (
     <div
       className={`rounded-xl p-5 border transition-all duration-300 ${
-        theme === "dark" ? "border-white/30 bg-black text-white" : "border-black/30 bg-white text-black"
+        theme === "dark"
+          ? "border-white/30 bg-black text-white"
+          : "border-black/30 bg-white text-black"
       }`}
     >
       <h2 className="flex items-center justify-between text-lg font-semibold mb-2">
@@ -189,7 +216,9 @@ const HomeReminder = () => {
           {showMenu && (
             <div
               className={`absolute right-0 top-6 rounded-md shadow-lg z-10 ${
-                theme === "dark" ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"
+                theme === "dark"
+                  ? "bg-gray-800 border border-gray-700"
+                  : "bg-white border border-gray-200"
               }`}
             >
               <button
@@ -209,35 +238,41 @@ const HomeReminder = () => {
       </h2>
 
       {reminders.map((section, index) => (
-        <div key={index} className="mb-3">
+        <div key={index} className="">
           <h3
             className="font-semibold flex items-center cursor-pointer"
             onClick={() => toggleSection(index)}
           >
             <FaAngleDown
-              className={`mr-2 transition-transform ${openSections[index] ? "rotate-180" : ""}`}
+              className={`mr-2 transition-transform ${
+                openSections[index] ? "rotate-180" : ""
+              }`}
             />
             {section.title}
             <span className="text-gray-500 ml-2">• {section.tasks.length}</span>
           </h3>
           {openSections[index] && (
-            <div className="mt-2 pt-2 space-y-2">
+            <div className=" pt-2">
               {section.tasks.map((task) => (
                 <div
-                  key={task.id} 
+                  key={task._id}
                   className={`flex items-center justify-between p-2 ${
                     theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100"
                   } ${
-                    task.id !== section.tasks[section.tasks.length - 1].id ? "border-b" : ""
+                    task._id !== section.tasks[section.tasks.length - 1]._id
+                      ? "border-b"
+                      : ""
                   }`}
                 >
                   <span
-                    className={`text-sm ${task.completed && "line-through text-gray-400"}`}
+                    className={`text-sm ${
+                      task.completed && "line-through text-gray-400"
+                    }`}
                   >
-                    {task.text}
+                    {task.title}
                   </span>
                   <div className="flex items-center space-x-2">
-                    <FaRegBell
+                    {/* <FaRegBell
                       className={`cursor-pointer ${
                         task.reminded
                           ? "text-yellow-500"
@@ -246,21 +281,23 @@ const HomeReminder = () => {
                           : "text-gray-600"
                       }`}
                       onClick={() => handleToggleRemind(index, task.id)}
-                    />
+                    /> */}
                     <FaRegTrashAlt
                       className={`cursor-pointer ${
                         theme === "dark"
                           ? "text-gray-400 hover:text-red-500"
                           : "text-gray-600 hover:text-red-600"
                       }`}
-                      onClick={() => handleDeleteTask(index, task.id)}
+                      onClick={() => handleDeleteTask(index, task._id)}
                     />
                     <input
                       type="checkbox"
                       checked={task.completed}
-                      onChange={() => handleToggleComplete(index, task.id)}
+                      onChange={() => handleToggleComplete(index, task._id)}
                       className={`cursor-pointer ${
-                        theme === "dark" ? "accent-yellow-500" : "accent-blue-500"
+                        theme === "dark"
+                          ? "accent-yellow-500"
+                          : "accent-blue-500"
                       }`}
                     />
                   </div>
@@ -270,7 +307,6 @@ const HomeReminder = () => {
           )}
         </div>
       ))}
-
 
       <div
         className={`fixed inset-0 flex items-center justify-center z-50 ${
@@ -300,6 +336,7 @@ const HomeReminder = () => {
           />
           <input
             type="date"
+            min={new Date().toISOString().split("T")[0]}
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             className={`w-full mb-6 p-2 rounded border ${
@@ -312,7 +349,9 @@ const HomeReminder = () => {
             <button
               onClick={() => setIsModalOpen(false)}
               className={`px-4 py-2 rounded ${
-                theme === "dark" ? "text-white hover:bg-gray-700" : "text-black hover:bg-gray-100"
+                theme === "dark"
+                  ? "text-white hover:bg-gray-700"
+                  : "text-black hover:bg-gray-100"
               }`}
             >
               Cancel

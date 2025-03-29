@@ -13,6 +13,7 @@ import taskRoutes from "./routes/tasks";
 import Task from "./models/Task";
 import { fetchAIResponse } from "./controllers/openRouterController";
 import eventRoutes from "./routes/events";
+import reminderRoutes from "./routes/reminder";
 
 dotenv.config();
 const apiKey = process.env.OPENROUTER_API_KEY;
@@ -92,6 +93,8 @@ app.use("/api/roles", roleRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/openrouter", fetchAIResponse);
 app.use("/api/events", eventRoutes);
+app.use("/api/reminders", reminderRoutes);
+
 
 app.get("/", (req, res) => {
   res.redirect("/login");
