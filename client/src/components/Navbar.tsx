@@ -10,7 +10,7 @@ import settings from "../assets/Sidebar/Settings.svg";
 import ai from "../assets/Sidebar/Sparkling.svg";
 import members from "../assets/Sidebar/Users.svg";
 import axios from "axios";
-import translations from "../data/translations"; 
+import translations from "../data/translations";
 
 const Navbar = () => {
   const { theme } = useTheme();
@@ -28,11 +28,31 @@ const Navbar = () => {
   const menuItems = [
     { icon: home, label: translations[language].navbar.home, path: "/" },
     { icon: ai, label: translations[language].navbar.aiTools, path: "/ai" },
-    { icon: members, label: translations[language].navbar.members, path: "/members" },
-    { icon: chart, label: translations[language].navbar.graphsAndCharts, path: "/graphs" },
-    { icon: calendar, label: translations[language].navbar.calendar, path: "/calendar" },
-    { icon: messages, label: translations[language].navbar.messages, path: "/messages" },
-    { icon: settings, label: translations[language].navbar.settings, path: "/settings" },
+    {
+      icon: members,
+      label: translations[language].navbar.members,
+      path: "/members",
+    },
+    {
+      icon: chart,
+      label: translations[language].navbar.graphsAndCharts,
+      path: "/graphs",
+    },
+    {
+      icon: calendar,
+      label: translations[language].navbar.calendar,
+      path: "/calendar",
+    },
+    {
+      icon: messages,
+      label: translations[language].navbar.messages,
+      path: "/messages",
+    },
+    {
+      icon: settings,
+      label: translations[language].navbar.settings,
+      path: "/settings",
+    },
   ];
 
   const currentPage =
@@ -112,7 +132,11 @@ const Navbar = () => {
               alt="Profile"
               className="w-10 h-10 rounded-full object-cover"
             />
-            <div className="absolute bg-green-500 rounded-full w-3 h-3 left-9 bottom-2"></div>
+            <div
+              className={`absolute bg-green-500 rounded-full w-3 h-3 ${
+                language === "fa" ? "right-2" : "left-9"
+              } bottom-2`}
+            ></div>
           </div>
           <div className="flex flex-col items-start">
             <span
@@ -190,7 +214,9 @@ const Navbar = () => {
             </a>
             <button
               onClick={handleLogout}
-              className={`w-full text-left px-4 py-2 text-sm ${
+              className={`w-full ${
+                language === "fa" ? "text-right" : "text-left"
+              } px-4 py-2 text-sm ${
                 theme === "dark"
                   ? "text-white hover:bg-gray-700"
                   : "text-gray-700 hover:bg-gray-100"
