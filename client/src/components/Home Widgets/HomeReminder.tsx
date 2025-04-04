@@ -58,11 +58,11 @@ const HomeReminder = () => {
     inputDate.setHours(0, 0, 0, 0);
     const diffTime = inputDate.getTime() - today.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
-  
+
     if (language === "fa") {
       if (diffDays === 0) return "امروز";
       if (diffDays === 1) return "فردا";
-  
+
       return inputDate.toLocaleDateString("fa-IR", {
         weekday: "long",
         year: "numeric",
@@ -72,14 +72,13 @@ const HomeReminder = () => {
     } else {
       if (diffDays === 0) return "Today";
       if (diffDays === 1) return "Tomorrow";
-  
+
       const month = inputDate.toLocaleString("default", { month: "long" });
       const day = inputDate.getDate();
       const suffix = getDaySuffix(day);
       return `${month} ${day}${suffix}`;
     }
   };
-  
 
   const groupTasksByDate = (tasks: ReminderTask[]): ReminderSection[] => {
     const sectionsMap: Record<string, ReminderTask[]> = {};
@@ -222,7 +221,9 @@ const HomeReminder = () => {
       <h2 className="flex items-center justify-between text-lg font-semibold mb-2">
         <div className="flex items-center">
           <RxDragHandleDots2 className="hidden" />
-          <FaRegClock className="text-yellow-500 mr-3" />
+          <FaRegClock
+            className={`text-yellow-500 ${language === "fa" ? "ml-2" : "mr-2"}`}
+          />
           {translations[language].reminders}
         </div>
         <div className="relative">
@@ -232,7 +233,9 @@ const HomeReminder = () => {
           />
           {showMenu && (
             <div
-              className={`absolute right-0 top-6 rounded-md shadow-lg z-10 ${
+              className={`absolute ${
+                language === "fa" ? "left-0" : "right-0"
+              } top-6 rounded-md shadow-lg z-10 ${
                 theme === "dark"
                   ? "bg-gray-800 border border-gray-700"
                   : "bg-white border border-gray-200"
@@ -283,7 +286,9 @@ const HomeReminder = () => {
               onClick={() => toggleSection(index)}
             >
               <FaAngleDown
-                className={`mr-2 transition-transform ${
+                className={`${
+                  language === "fa" ? "ml-2" : "mr-2"
+                } transition-transform ${
                   openSections[index] ? "rotate-180" : ""
                 }`}
               />
