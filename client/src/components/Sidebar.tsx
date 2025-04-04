@@ -137,7 +137,7 @@ const Sidebar = () => {
               <img
                 src={item.icon}
                 alt={item.label}
-                className="min-w-[24px] transition-all duration-300"
+                className={`min-w-[24px] transition-all duration-300 ${language === "fa" ? "scale-x-[-1]" : ""}`}
                 style={{
                   filter:
                     selectedItem === item.path
@@ -233,7 +233,7 @@ const Sidebar = () => {
           >
             <img
               src={sidebar}
-              className={`min-w-[24px] ${theme === "dark" ? "invert" : ""}`}
+              className={`min-w-[24px] transition-all duration-300 ${language === "fa" ? "scale-x-[-1]" : ""} ${theme === "dark" ? "invert" : ""}`}
               alt="Toggle Sidebar"
             />
             <span
