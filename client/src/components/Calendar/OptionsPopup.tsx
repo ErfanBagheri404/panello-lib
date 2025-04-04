@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../theme-provider";
 import { CalendarEvent } from "./helpers";
+import { useLanguage } from "../language-provider";
+import translations from "../../data/translations";
 
 interface EventModalProps {
   events: CalendarEvent[];
@@ -27,7 +29,7 @@ export const OptionsPopup = ({
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState("");  const { language } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,12 +107,16 @@ export const OptionsPopup = ({
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-xl font-bold mb-4">
-          {isEditing ? "Edit Event" : "Create Event"}
+          {isEditing
+            ? translations[language].editEvent
+            : translations[language].createEvent}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block mb-2">Event Title</label>
+            <label className="block mb-2">
+              {translations[language].eventTitle}
+            </label>
             <input
               type="text"
               value={title}
@@ -123,7 +129,9 @@ export const OptionsPopup = ({
           </div>
 
           <div>
-            <label className="block mb-2">Description</label>
+            <label className="block mb-2">
+              {translations[language].description}
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -137,7 +145,9 @@ export const OptionsPopup = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Start Date Input */}
             <div>
-              <label className="block mb-2">Start Date</label>
+              <label className="block mb-2">
+                {translations[language].startDate}
+              </label>
               <input
                 type="date"
                 value={startDate}
@@ -157,19 +167,25 @@ export const OptionsPopup = ({
 
             {/* Start Time Input */}
             <div>
-              <label className="block mb-2">Start Time</label>
+              <label className="block mb-2">
+                {translations[language].startTime}
+              </label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => {
                   setStartTime(e.target.value);
                   // Auto-adjust end time
-                  const startDateTime = new Date(`${startDate}T${e.target.value}`);
-                  const minEndDateTime = new Date(startDateTime.getTime() + 5400000);
+                  const startDateTime = new Date(
+                    `${startDate}T${e.target.value}`
+                  );
+                  const minEndDateTime = new Date(
+                    startDateTime.getTime() + 5400000
+                  );
                   const currentEndDateTime = new Date(`${endDate}T${endTime}`);
-                  
+
                   if (currentEndDateTime < minEndDateTime) {
-                    setEndDate(minEndDateTime.toISOString().split('T')[0]);
+                    setEndDate(minEndDateTime.toISOString().split("T")[0]);
                     setEndTime(minEndDateTime.toTimeString().substr(0, 5));
                   }
                 }}
@@ -184,7 +200,9 @@ export const OptionsPopup = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* End Date Input */}
             <div>
-              <label className="block mb-2">End Date</label>
+              <label className="block mb-2">
+                {translations[language].endDate}
+              </label>
               <input
                 type="date"
                 value={endDate}
@@ -192,11 +210,11 @@ export const OptionsPopup = ({
                   setEndDate(e.target.value);
                   const endDateTime = new Date(`${e.target.value}T${endTime}`);
                   const startDateTime = new Date(`${startDate}T${startTime}`);
-                  
+
                   if (endDateTime < startDateTime) {
                     setError("End date cannot be before start date");
                   } else {
-                    setError('');
+                    setError("");
                   }
                 }}
                 className={`w-full p-2 rounded ${
@@ -208,20 +226,27 @@ export const OptionsPopup = ({
 
             {/* End Time Input */}
             <div>
-              <label className="block mb-2">End Time</label>
+              <label className="block mb-2">
+                {translations[language].endTime}
+              </label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => {
                   const endDateTime = new Date(`${endDate}T${e.target.value}`);
                   const startDateTime = new Date(`${startDate}T${startTime}`);
-                  const duration = endDateTime.getTime() - startDateTime.getTime();
+                  const duration =
+                    endDateTime.getTime() - startDateTime.getTime();
 
                   if (duration < 5400000) {
-                    setError("Event duration must be at least 1 hour and 30 minutes");
+                    setError(
+                      "Event duration must be at least 1 hour and 30 minutes"
+                    );
                     // Auto-adjust end time
-                    const minEndDateTime = new Date(startDateTime.getTime() + 5400000);
-                    setEndDate(minEndDateTime.toISOString().split('T')[0]);
+                    const minEndDateTime = new Date(
+                      startDateTime.getTime() + 5400000
+                    );
+                    setEndDate(minEndDateTime.toISOString().split("T")[0]);
                     setEndTime(minEndDateTime.toTimeString().substr(0, 5));
                   } else {
                     setError("");
@@ -236,7 +261,11 @@ export const OptionsPopup = ({
             </div>
           </div>
 
-          {error && <div className="text-red-500 text-sm mt-2 col-span-full">{error}</div>}
+          {error && (
+            <div className="text-red-500 text-sm mt-2 col-span-full">
+              {translations[language].eventDurationError}
+            </div>
+          )}
 
           <div className="flex justify-end gap-4 mt-6">
             <button
@@ -246,7 +275,7 @@ export const OptionsPopup = ({
                 theme === "dark" ? "bg-gray-700" : "bg-gray-200"
               }`}
             >
-              Cancel
+              {translations[language].cancelButton}
             </button>
             <button
               type="submit"
@@ -254,13 +283,17 @@ export const OptionsPopup = ({
                 theme === "dark" ? "bg-blue-600" : "bg-blue-500"
               }`}
             >
-              {isEditing ? "Save Changes" : "Create Event"}
+              {isEditing
+                ? translations[language].saveChanges
+                : translations[language].createEvent}
             </button>
           </div>
         </form>
 
         <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-4">Existing Events</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            {translations[language].existingEvents}
+          </h3>
           <div className="space-y-4 max-h-64 overflow-y-auto scrollbar-hide">
             {events.map((event) => (
               <div
@@ -272,8 +305,8 @@ export const OptionsPopup = ({
                 <div>
                   <h4 className="font-medium">{event.title}</h4>
                   <p className="text-sm text-gray-500">
-                    {event.start.toLocaleString()} -{" "}
-                    {event.end.toLocaleString()}
+                    {event.start.toLocaleString(translations[language].locale)}{" "}
+                    - {event.end.toLocaleString(translations[language].locale)}
                   </p>
                   {event.description && (
                     <p className="text-sm mt-1">{event.description}</p>
@@ -286,7 +319,7 @@ export const OptionsPopup = ({
                       theme === "dark" ? "bg-gray-600" : "bg-gray-200"
                     }`}
                   >
-                    Edit
+                    {translations[language].editButton}
                   </button>
                   <button
                     onClick={() => onDeleteEvent(event.id)}
@@ -294,7 +327,7 @@ export const OptionsPopup = ({
                       theme === "dark" ? "bg-red-600" : "bg-red-500"
                     }`}
                   >
-                    Delete
+                    {translations[language].deleteButton}
                   </button>
                 </div>
               </div>

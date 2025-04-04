@@ -19,10 +19,13 @@ import { OptionsPopup } from "../components/Calendar/OptionsPopup";
 import { CalendarControls } from "../components/Calendar/CalendarControls";
 import { ViewSwitcher } from "../components/Calendar/ViewSwitcher";
 import { useTheme } from "../components/theme-provider";
+import { useLanguage } from "../components/language-provider";
+import translations from "../data/translations";
 import axios from "axios";
 import EventDetailsModal from "../features/EventDetailsModal";
 
 export const Calendar = () => {
+  const { language } = useLanguage();
   const calendarRef = useRef<FullCalendar>(null);
   const [view, setView] = useState<
     "dayGridMonth" | "timeGridWeek" | "timeGridDay"
@@ -157,22 +160,10 @@ export const Calendar = () => {
   };
 
   const formatDate = () => {
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
     const now = new Date();
-    return `${months[now.getMonth()]} ${now.getFullYear()}`;
+    return `${
+      translations[language].months[now.getMonth()]
+    } ${now.getFullYear()}`;
   };
 
   const togglePopup = (popup: "filter" | "options") => {
@@ -207,7 +198,7 @@ export const Calendar = () => {
               theme === "dark" ? "bg-blue-500" : "bg-black"
             } px-3 py-1 rounded-md text-white`}
           >
-            Today
+            {translations[language].todayButton}
           </button>
         </div>
 
@@ -227,7 +218,7 @@ export const Calendar = () => {
                 }`}
               >
                 <CiFilter />
-                Filter
+                {translations[language].filterButton}
               </button>
               <AnimatePresence>
                 {openPopup === "filter" && (
@@ -289,6 +280,7 @@ export const Calendar = () => {
           headerToolbar={false}
           eventMinHeight={20}
           validRange={{ start: dateRange.start, end: dateRange.end }}
+          locale={translations[language].locale}
           eventContent={(arg) => (
             <div
               className="rounded-lg p-0.5 m-1  cursor-pointer"
@@ -299,7 +291,8 @@ export const Calendar = () => {
             >
               <div className="flex flex-col gap-1">
                 <div className="text-xs font-semibold text-white/90">
-                  {formatTime(arg.event.start)} - {formatTime(arg.event.end)}
+                  {formatTime(arg.event.start, translations[language].locale)} -{" "}
+                  {formatTime(arg.event.end, translations[language].locale)}
                 </div>
                 <div className="text-sm font-bold truncate text-white">
                   {arg.event.title}

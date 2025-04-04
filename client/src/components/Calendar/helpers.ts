@@ -10,14 +10,17 @@ export interface CalendarEvent {
   color: string;
 }
 
-export const formatTime = (date: Date | null): string => {
+export const formatTime = (
+  date: Date | null,
+  locale: string = "en-US"
+): string => {
   if (!date) return "Unknown time";
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const period = hours >= 12 ? "pm" : "am";
-  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  return `${formattedHours}:${formattedMinutes}${period}`;
+  
+  return date.toLocaleTimeString(locale, {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: !locale.startsWith("fa") // Use 24h format for Farsi, 12h for others
+  });
 };
 
 export const getRandomColor = (): string => {

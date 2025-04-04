@@ -156,10 +156,30 @@ type Translations = {
     typeMessage: string;
     locale: string;
     restrictedMessage: string; // Added for the component
+    todayButton: string; // Add this
+    filterButton: string; // Add this
     settings: SettingsTranslations;
     languages: LanguagesTranslations;
     navbar: NavbarTranslations;
     sidebar: SidebarTranslations;
+    deleteButton: string; // Alphabetical order
+    editButton: string;
+    endLabel: string;
+    startLabel: string;
+    editEvent: string;
+    createEvent: string;
+    eventTitle: string;
+    startDate: string;
+    startTime: string;
+    endDate: string;
+    endTime: string;
+    eventDurationError: string;
+    saveChanges: string;
+    existingEvents: string;
+    description: string;
+    day: string;
+    week: string;
+    month: string;
   };
 };
 
@@ -343,6 +363,26 @@ const translations: Translations = {
       accessRestricted:
         "You haven't been invited to this workspace yet. Please contact your administrator for access.",
     },
+    todayButton: "Today",
+    filterButton: "Filter",
+    editButton: "Edit",
+    deleteButton: "Delete",
+    startLabel: "Start",
+    endLabel: "End",
+    editEvent: "Edit Event",
+    createEvent: "Create Event",
+    eventTitle: "Event Title",
+    startDate: "Start Date",
+    startTime: "Start Time",
+    endDate: "End Date",
+    endTime: "End Time",
+    eventDurationError: "Event duration must be at least 1 hour and 30 minutes",
+    saveChanges: "Save Changes",
+    existingEvents: "Existing Events",
+    description: "Description",
+    day: "Day",
+    week: "Week",
+    month: "Month",
   },
   fa: {
     welcome: "خوش آمدید، عرفان",
@@ -532,6 +572,26 @@ const translations: Translations = {
       accessRestricted:
         "شما هنوز به این فضای کاری دعوت نشده اید. لطفاً برای دسترسی با سرپرست خود تماس بگیرید。",
     },
+    todayButton: "امروز",
+    filterButton: "فیلتر",
+    editButton: "ویرایش",
+    deleteButton: "حذف",
+    startLabel: "شروع",
+    endLabel: "پایان",
+    editEvent: "ویرایش رویداد",
+    createEvent: "ایجاد رویداد",
+    eventTitle: "عنوان رویداد",
+    startDate: "تاریخ شروع",
+    startTime: "زمان شروع",
+    endDate: "تاریخ پایان",
+    endTime: "زمان پایان",
+    eventDurationError: "مدت زمان رویداد باید حداقل ۱ ساعت و ۳۰ دقیقه باشد",
+    saveChanges: "ذخیره تغییرات",
+    existingEvents: "رویدادهای موجود",
+    description: "توضیحات",
+    day: "روز",
+    week: "هفته",
+    month: "ماه",
   },
 } as const;
 

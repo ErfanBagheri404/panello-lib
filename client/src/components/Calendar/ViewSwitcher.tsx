@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { useTheme } from "../theme-provider"; 
+import { useTheme } from "../theme-provider";
+import translations from "../../data/translations";
+import { useLanguage } from "../language-provider";
 
 interface ViewSwitcherProps {
   currentView: "dayGridMonth" | "timeGridWeek" | "timeGridDay";
@@ -9,12 +11,12 @@ interface ViewSwitcherProps {
 
 export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
   const { theme } = useTheme();
+  const { language } = useLanguage();
   const [activeTabPosition, setActiveTabPosition] = useState({
     left: 0,
     width: 0,
   });
   const containerRef = useRef<HTMLDivElement>(null);
-
 
   useEffect(() => {
     if (containerRef.current) {
@@ -38,7 +40,6 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
     });
     onChange(view);
   };
-
 
   const containerClass = `relative rounded-md border w-full lg:w-fit overflow-hidden text-center my-2 lg:my-0 ${
     theme === "dark"
@@ -73,7 +74,7 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
           currentView === "timeGridDay" ? activeTextColor : inactiveTextColor
         }`}
       >
-        Day
+          {translations[language].day}
       </button>
       <button
         data-view="timeGridWeek"
@@ -82,7 +83,7 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
           currentView === "timeGridWeek" ? activeTextColor : inactiveTextColor
         }`}
       >
-        Week
+                  {translations[language].week}
       </button>
       <button
         data-view="dayGridMonth"
@@ -91,7 +92,7 @@ export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
           currentView === "dayGridMonth" ? activeTextColor : inactiveTextColor
         }`}
       >
-        Month
+                  {translations[language].month}
       </button>
     </div>
   );

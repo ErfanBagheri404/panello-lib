@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useTheme } from "../theme-provider"; 
+import { useTheme } from "../theme-provider";
+import translations from "../../data/translations";
+import { useLanguage } from "../language-provider";
 
 interface FilterPopupProps {
   dateRange: { start: Date; end: Date };
@@ -15,6 +17,7 @@ export const FilterPopup = ({
 }: FilterPopupProps) => {
   const { theme } = useTheme();
   const [localDateRange, setLocalDateRange] = useState(dateRange);
+  const { language } = useLanguage();
 
   useEffect(() => {
     setLocalDateRange(dateRange);
@@ -25,7 +28,9 @@ export const FilterPopup = ({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className={`absolute right-0 mt-2 rounded-lg shadow-lg p-4 z-[100] border ${
+      className={`absolute ${
+        language === "fa" ? "left-0" : "right-0"
+      } mt-2 rounded-lg shadow-lg p-4 z-[100] border ${
         theme === "dark"
           ? "bg-gray-800 text-white border-white/30"
           : "bg-white text-black border-black/30"
@@ -33,7 +38,7 @@ export const FilterPopup = ({
     >
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium">
-          Start Date:
+          {translations[language].startDate}
           <input
             type="date"
             value={localDateRange.start.toISOString().split("T")[0]}
@@ -51,7 +56,7 @@ export const FilterPopup = ({
           />
         </label>
         <label className="text-sm font-medium">
-          End Date:
+          {translations[language].endDate}
           <input
             type="date"
             value={localDateRange.end.toISOString().split("T")[0]}
@@ -73,7 +78,7 @@ export const FilterPopup = ({
             onClick={() => onApply(localDateRange.start, localDateRange.end)}
             className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
           >
-            Apply
+            {translations[language].applyAction}
           </button>
           <button
             onClick={onClose}
@@ -83,7 +88,7 @@ export const FilterPopup = ({
                 : "bg-gray-200 hover:bg-gray-300"
             }`}
           >
-            Cancel
+            {translations[language].cancelButton}
           </button>
         </div>
       </div>

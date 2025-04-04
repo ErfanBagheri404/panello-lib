@@ -72,7 +72,11 @@ const LanguageSelector = () => {
                 setIsOpen(false);
               }}
             >
-              <img src={lang.icon} alt={lang.name} className="w-5 h-5 mr-2" />
+              <img
+                src={lang.icon}
+                alt={lang.name}
+                className={`w-5 h-5 ${language === "fa" ? "ml-2" : "mr-2"}`}
+              />
               {lang.name}
             </button>
           ))}
