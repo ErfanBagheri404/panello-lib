@@ -173,7 +173,9 @@ const Navbar = () => {
 
         {isDropdownOpen && (
           <div
-            className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-100 ${
+            className={`absolute ${
+              language === "fa" ? "left-0" : "right-0"
+            } mt-2 w-48 rounded-md shadow-lg py-1 z-100 ${
               theme === "dark" ? "bg-black text-white" : "bg-white text-black"
             }`}
             ref={dropdownRef}

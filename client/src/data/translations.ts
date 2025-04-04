@@ -180,6 +180,17 @@ type Translations = {
     day: string;
     week: string;
     month: string;
+    inviteMember: string
+    emailAddress:string
+    emailPlaceholder: string
+    invalidEmail:string
+    userNotRegistered: string
+    selectRole: string
+    selectRolePlaceholder: string
+    nextButton: string
+    inviteButton: string
+    emailLabel: string
+    roleLabel: string
   };
 };
 
@@ -383,6 +394,17 @@ const translations: Translations = {
     day: "Day",
     week: "Week",
     month: "Month",
+    inviteMember: "Invite Member",
+    emailAddress: "Email Address",
+    emailPlaceholder: "user@example.com",
+    invalidEmail: "Invalid email",
+    userNotRegistered: "User not registered",
+    selectRole: "Select Role",
+    selectRolePlaceholder: "Select a role",
+    nextButton: "Next",
+    inviteButton: "Invite",
+    emailLabel: "Email",
+    roleLabel: "Role",
   },
   fa: {
     welcome: "خوش آمدید، عرفان",
@@ -592,6 +614,17 @@ const translations: Translations = {
     day: "روز",
     week: "هفته",
     month: "ماه",
+    inviteMember: "دعوت عضو",
+    emailAddress: "آدرس ایمیل",
+    emailPlaceholder: "user@example.com",
+    invalidEmail: "ایمیل نامعتبر",
+    userNotRegistered: "کاربر ثبت‌نام نکرده است",
+    selectRole: "انتخاب نقش",
+    selectRolePlaceholder: "یک نقش انتخاب کنید",
+    nextButton: "بعدی",
+    inviteButton: "دعوت",
+    emailLabel: "ایمیل",
+    roleLabel: "نقش",
   },
 } as const;
 

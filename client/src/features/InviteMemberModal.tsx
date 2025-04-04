@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import { useTheme } from "../components/theme-provider";
+import { useLanguage } from "../components/language-provider";
+import translations from "../data/translations";
 
 export interface Role {
   id: string;
@@ -35,7 +37,7 @@ const InviteMemberModal = ({
   });
   const [emailError, setEmailError] = useState("");
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+  const { language } = useLanguage();
 
   const handleNext = async () => {
     console.log("handleNext called, current step:", step);
@@ -88,7 +90,6 @@ const InviteMemberModal = ({
     }
   };
 
-
   const handleInvite = async () => {
     console.log("handleInvite called with inviteData:", inviteData);
     try {
@@ -139,7 +140,9 @@ const InviteMemberModal = ({
             exit={{ y: 50, opacity: 0 }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Invite Member</h2>
+              <h2 className="text-lg font-semibold">
+                {translations[language].inviteMember}
+              </h2>
               <button onClick={onClose}>
                 <IoClose size={24} />
               </button>
@@ -153,7 +156,9 @@ const InviteMemberModal = ({
                   animate={{ x: 0 }}
                   exit={{ x: -100 }}
                 >
-                  <label className="block text-sm mb-2">Email Address:</label>
+                  <label className="block text-sm mb-2">
+                    {translations[language].emailAddress}
+                  </label>
                   <input
                     type="email"
                     value={inviteData.email}
@@ -169,11 +174,13 @@ const InviteMemberModal = ({
                         ? "bg-gray-700 border-gray-600 text-gray-100"
                         : "bg-white border-black/30 text-gray-900"
                     }`}
-                    placeholder="user@example.com"
+                    placeholder={translations[language].emailPlaceholder}
                     required
                   />
                   {emailError && (
-                    <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {translations[language].userNotRegistered}
+                    </p>
                   )}
                 </motion.div>
               )}
@@ -185,7 +192,9 @@ const InviteMemberModal = ({
                   animate={{ x: 0 }}
                   exit={{ x: -100 }}
                 >
-                  <label className="block text-sm mb-2">Select Role:</label>
+                  <label className="block text-sm mb-2">
+                    {translations[language].selectRole}
+                  </label>
                   <select
                     className={`w-full p-2 border rounded-md ${
                       theme === "dark"
@@ -200,7 +209,9 @@ const InviteMemberModal = ({
                       }))
                     }
                   >
-                    <option value="">Select a role</option>
+                    <option value="">
+                      {translations[language].selectRolePlaceholder}
+                    </option>
                     {roles.map((role) => (
                       <option key={role.id} value={role.name}>
                         {role.name}
@@ -224,10 +235,12 @@ const InviteMemberModal = ({
                       className="w-16 h-16 rounded-full mb-2 object-cover"
                     />
                     <p>
-                      <strong>Email:</strong> {inviteData.email}
+                      <strong>{translations[language].emailLabel}:</strong>{" "}
+                      {inviteData.email}
                     </p>
                     <p>
-                      <strong>Role:</strong> {inviteData.role}
+                      <strong>{translations[language].roleLabel}:</strong>{" "}
+                      {inviteData.role}
                     </p>
                   </div>
                 </motion.div>
@@ -244,7 +257,7 @@ const InviteMemberModal = ({
                       : "bg-gray-200 text-gray-900"
                   }`}
                 >
-                  Back
+                  {translations[language].backButton}
                 </button>
               )}
               {step < 3 ? (
@@ -263,7 +276,7 @@ const InviteMemberModal = ({
                       : "bg-blue-500 text-white"
                   }`}
                 >
-                  Next
+                  {translations[language].nextButton}
                 </button>
               ) : (
                 <button
@@ -274,7 +287,7 @@ const InviteMemberModal = ({
                       : "bg-green-500 text-white"
                   }`}
                 >
-                  Invite
+                  {translations[language].inviteButton}
                 </button>
               )}
             </div>
