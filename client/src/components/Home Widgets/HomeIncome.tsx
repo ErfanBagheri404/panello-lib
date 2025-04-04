@@ -17,7 +17,7 @@ const HomeIncome = () => {
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-lg sm:text-md font-semibold">
-          <RxDragHandleDots2 className="hidden sm:inline-block" />
+          {/* <RxDragHandleDots2 className="hidden sm:inline-block" /> */}
           <GrMoney className="text-green-600" />
           {translations[language].totalIncome}
         </div>

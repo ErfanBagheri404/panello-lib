@@ -42,12 +42,14 @@ const HomeTasks = () => {
   return (
     <div
       className={`p-5 transition-all duration-300 rounded-xl border ${
-        theme === "dark" ? "border-white/30 bg-black" : "border-black/30 bg-white"
+        theme === "dark"
+          ? "border-white/30 bg-black"
+          : "border-black/30 bg-white"
       }`}
     >
       <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
-        <RxDragHandleDots2 />
-        <MdOutlineTaskAlt className="text-green-500" /> 
+        {/* <RxDragHandleDots2 /> */}
+        <MdOutlineTaskAlt className="text-green-500" />
         {translations[language].myTasks} {/* Translated */}
       </h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -85,10 +87,8 @@ const HomeTasks = () => {
                 {task.title}
               </p>
               <p className="text-sm text-gray-500">
-                {task.subtasks.length} 
-                {translations[language].tasks} {/* Translated */}
-                • 
-                0 
+                {task.subtasks.length}
+                {translations[language].tasks} {/* Translated */}• 0
                 {translations[language].members} {/* Translated */}
               </p>
             </div>

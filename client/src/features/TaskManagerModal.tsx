@@ -98,11 +98,14 @@ const TaskManagerModal = ({
         className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl p-6 rounded-2xl w-[90%] max-w-2xl shadow-2xl relative overflow-hidden"
       >
         <button
-          className="absolute top-3 right-3 text-2xl text-gray-700 dark:text-gray-300 hover:text-red-500 transition"
+          className={`absolute top-3 text-2xl text-gray-700 dark:text-gray-300 hover:text-red-500 transition ${
+            language === "fa" ? "left-3" : "right-3"
+          }`}
           onClick={onClose}
         >
           <IoClose />
         </button>
+
         <h2 className="text-2xl font-bold mb-5 text-gray-800 dark:text-white">
           {task
             ? translations[language].editTask
