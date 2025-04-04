@@ -8,12 +8,15 @@ import HomeGraph from "../components/Home Widgets/HomeGraph";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useTheme } from "../components/theme-provider";
+import { useLanguage } from "../components/language-provider";
 import TaskManagerModal, { Task } from "../features/TaskManagerModal";
+import translations from "../data/translations";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [, setSelectedItem] = useState<string>("");
   const { theme } = useTheme();
+  const { language } = useLanguage();
 
   const handleClick = (path: string) => {
     setSelectedItem(path);
@@ -21,48 +24,28 @@ const Dashboard = () => {
   };
 
   const formatDate = () => {
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
     const now = new Date();
-    return `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+    return `${translations[language].days[now.getDay()]}, ${
+      translations[language].months[now.getMonth()]
+    } ${now.getDate()}`;
   };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-   const [tasks, setTasks] = useState<Task[]>([
-      {
-        id: 1,
-        name: "Team brainstorm",
-        subtasks: ["Prepare agenda", "Invite team"],
-        color: "#4B00FF",
-      },
-      {
-        id: 2,
-        name: "Design review",
-        subtasks: ["Review new mockups", "Prepare feedback"],
-        color: "#FF5722",
-      },
-    ]);
- 
+  const [tasks, setTasks] = useState<Task[]>([
+    {
+      id: 1,
+      name: "Team brainstorm",
+      subtasks: ["Prepare agenda", "Invite team"],
+      color: "#4B00FF",
+    },
+    {
+      id: 2,
+      name: "Design review",
+      subtasks: ["Review new mockups", "Prepare feedback"],
+      color: "#FF5722",
+    },
+  ]);
+
   return (
     <main
       className={`relative border  h-screen mt-2.5 rounded-2xl overflow-auto scrollbar-hide ${
@@ -90,7 +73,7 @@ const Dashboard = () => {
             theme === "dark" ? "text-white" : "text-black"
           }`}
         >
-          Welcome Back, Erfan
+          {translations[language].welcome}
         </h1>
         <div className="flex flex-col lg:flex-row gap-6 z-10">
           <p
@@ -98,7 +81,7 @@ const Dashboard = () => {
               theme === "dark" ? "text-white" : "text-black"
             }`}
           >
-            What can I do for you today?
+            {translations[language].questionPrompt}
           </p>
           <button
             onClick={() => handleClick("/ai")}
@@ -115,7 +98,7 @@ const Dashboard = () => {
               alt=""
               style={{ filter: "brightness(0) invert(1)" }}
             />
-            <p className="text-white">Ask a Question</p>
+            <p className="text-white">{translations[language].askQuestion}</p>
           </button>
           <button
             className={`p-2 px-5 rounded-full hover:cursor-pointer ${
@@ -125,7 +108,7 @@ const Dashboard = () => {
             }`}
             onClick={() => setIsModalOpen(true)}
           >
-            Create a new task
+            {translations[language].createTask}
           </button>
           <button
             className={`p-2 px-5 rounded-full hover:cursor-pointer ${
@@ -135,7 +118,7 @@ const Dashboard = () => {
             }`}
             onClick={() => handleClick("/members")}
           >
-            Manage Members
+            {translations[language].manageMembers}
           </button>
         </div>
         <div className="flex flex-col lg:flex-row mt-10 gap-5">

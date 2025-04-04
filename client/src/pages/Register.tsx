@@ -148,7 +148,7 @@ const Register = () => {
               />
               <label
                 htmlFor="terms"
-                className={`ml-2 block text-sm ${
+                className={`ms-2 block text-sm ${
                   theme === "dark" ? "text-gray-100" : "text-gray-900"
                 }`}
               >

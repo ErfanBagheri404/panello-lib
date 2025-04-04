@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { IoClose } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { ITask } from "../types";
+import translations from "../data/translations";
+import { useLanguage } from "../components/language-provider";
 
 type TaskManagerModalProps = {
   onClose: () => void;
@@ -16,6 +18,7 @@ const TaskManagerModal = ({
   onSubmit,
   onDelete,
 }: TaskManagerModalProps) => {
+  const { language } = useLanguage(); // Added useLanguage hook
   const [title, setTitle] = useState(task?.title || "");
   const [subtasks, setSubtasks] = useState<string[]>(task?.subtasks || []);
   const [newSubtask, setNewSubtask] = useState("");
@@ -72,7 +75,7 @@ const TaskManagerModal = ({
     const taskData: Partial<ITask> = {
       title,
       subtasks,
-      color: task?.color || getRandomColor(), 
+      color: task?.color || getRandomColor(),
     };
     await onSubmit(taskData);
     onClose();
@@ -101,14 +104,16 @@ const TaskManagerModal = ({
           <IoClose />
         </button>
         <h2 className="text-2xl font-bold mb-5 text-gray-800 dark:text-white">
-          {task ? "Edit Task" : "New Task"}
+          {task
+            ? translations[language].editTask
+            : translations[language].newTask}
         </h2>
 
         <div className="max-h-[70vh] overflow-y-auto scrollbar-hide">
           <input
             type="text"
             className="w-full p-2 mb-4 rounded-lg border dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white"
-            placeholder="Task title"
+            placeholder={translations[language].taskTitle}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
@@ -132,7 +137,7 @@ const TaskManagerModal = ({
                     className="text-xs text-red-500 hover:text-red-600 transition"
                     onClick={() => handleDeleteSubtask(subtask)}
                   >
-                    Delete
+                    {translations[language].deleteSubtask}
                   </button>
                 </motion.div>
               ))}
@@ -143,7 +148,7 @@ const TaskManagerModal = ({
             <input
               type="text"
               className="flex-1 p-2 rounded-lg border dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white"
-              placeholder="New subtask"
+              placeholder={translations[language].newSubtaskInput}
               value={newSubtask}
               onChange={(e) => setNewSubtask(e.target.value)}
             />
@@ -151,7 +156,7 @@ const TaskManagerModal = ({
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition"
               onClick={handleAddSubtask}
             >
-              Add Subtask
+              {translations[language].addSubtask}
             </button>
           </div>
 
@@ -160,14 +165,16 @@ const TaskManagerModal = ({
               className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg font-medium transition"
               onClick={handleSubmit}
             >
-              {task ? "Update Task" : "Create Task"}
+              {task
+                ? translations[language].updateTask
+                : translations[language].createTaskButton}
             </button>
             {task && onDelete && (
               <button
                 className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium transition"
                 onClick={handleDelete}
               >
-                Delete Task
+                {translations[language].deleteTask}
               </button>
             )}
           </div>

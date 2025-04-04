@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "./theme-provider";
+import { useLanguage } from "./language-provider";
 import calendar from "../assets/Sidebar/Calendar.svg";
 import messages from "../assets/Sidebar/chat_bubble.svg";
 import home from "../assets/Sidebar/Home.svg";
@@ -9,9 +10,11 @@ import settings from "../assets/Sidebar/Settings.svg";
 import ai from "../assets/Sidebar/Sparkling.svg";
 import members from "../assets/Sidebar/Users.svg";
 import axios from "axios";
+import translations from "../data/translations"; 
 
 const Navbar = () => {
   const { theme } = useTheme();
+  const { language } = useLanguage(); // Get current language
   const location = useLocation();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -23,19 +26,18 @@ const Navbar = () => {
   } | null>(null);
 
   const menuItems = [
-    { icon: home, label: "Home", path: "/" },
-    { icon: ai, label: "AI Tools", path: "/ai" },
-    { icon: members, label: "Members", path: "/members" },
-    { icon: chart, label: "Graphs & Charts", path: "/graphs" },
-    { icon: calendar, label: "Calendar", path: "/calendar" },
-    { icon: messages, label: "Messages", path: "/messages" },
-    { icon: settings, label: "Settings", path: "/settings" },
+    { icon: home, label: translations[language].navbar.home, path: "/" },
+    { icon: ai, label: translations[language].navbar.aiTools, path: "/ai" },
+    { icon: members, label: translations[language].navbar.members, path: "/members" },
+    { icon: chart, label: translations[language].navbar.graphsAndCharts, path: "/graphs" },
+    { icon: calendar, label: translations[language].navbar.calendar, path: "/calendar" },
+    { icon: messages, label: translations[language].navbar.messages, path: "/messages" },
+    { icon: settings, label: translations[language].navbar.settings, path: "/settings" },
   ];
 
   const currentPage =
     menuItems.find((item) => item.path === location.pathname)?.label ||
-    "Dashboard";
-
+    translations[language].navbar.dashboard;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -67,7 +69,7 @@ const Navbar = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setUserProfile(response.data); 
+        setUserProfile(response.data);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
@@ -93,7 +95,6 @@ const Navbar = () => {
       >
         {currentPage}
       </h1>
-
 
       <div className="relative">
         <button
@@ -146,7 +147,6 @@ const Navbar = () => {
           </svg>
         </button>
 
-
         {isDropdownOpen && (
           <div
             className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-100 ${
@@ -186,7 +186,7 @@ const Navbar = () => {
               }`}
               onClick={() => navigate("/settings")}
             >
-              Settings
+              {translations[language].navbar.settings}
             </a>
             <button
               onClick={handleLogout}
@@ -196,9 +196,8 @@ const Navbar = () => {
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
-              Logout
+              {translations[language].navbar.logout}
             </button>
-
           </div>
         )}
       </div>

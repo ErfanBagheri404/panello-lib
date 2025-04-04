@@ -13,6 +13,8 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "../components/theme-provider";
+import { useLanguage } from "../components/language-provider"; // Added import
+import translations from "../data/translations"; // Import translations
 
 type Message = {
   role: "user" | "ai";
@@ -28,6 +30,7 @@ const FREE_MODELS = [
 ];
 
 const Ai = () => {
+  const { language } = useLanguage(); // Added useLanguage hook
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [pendingAiContent, setPendingAiContent] = useState("");
@@ -84,7 +87,10 @@ const Ai = () => {
     setIsTyping(true);
     setIsPaused(false);
     try {
-      setMessages((prev) => [...prev, { role: "ai", content: "..." }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "ai", content: translations[language].loadingResponse },
+      ]);
       const aiResponse = await fetchAIResponse(
         currentModel,
         userMessage.content
@@ -101,7 +107,10 @@ const Ai = () => {
       setCurrentModelIndex(nextModelIndex);
       const fallbackMessage: Message = {
         role: "ai",
-        content: `Switched to ${FREE_MODELS[nextModelIndex]} due to an error. Please try again.`,
+        content: translations[language].modelSwitchError.replace(
+          "%model%",
+          FREE_MODELS[nextModelIndex]
+        ),
       };
       setMessages((prev) => [...prev, fallbackMessage]);
       setIsTyping(false);
@@ -197,7 +206,7 @@ const Ai = () => {
     );
   };
 
-  const handleBoxSelect = async (commands: string[]) => {
+  const handleBoxSelect = async (commands: readonly string[]) => {
     const selectedCommand =
       commands[Math.floor(Math.random() * commands.length)];
     const userMessage: Message = { role: "user", content: selectedCommand };
@@ -205,7 +214,10 @@ const Ai = () => {
     setIsTyping(true);
     setIsPaused(false);
     try {
-      setMessages((prev) => [...prev, { role: "ai", content: "..." }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "ai", content: translations[language].loadingResponse },
+      ]);
       const aiResponse = await fetchAIResponse(currentModel, selectedCommand);
       setMessages((prev) => {
         const newMessages = [...prev];
@@ -219,7 +231,10 @@ const Ai = () => {
       setCurrentModelIndex(nextModelIndex);
       const fallbackMessage: Message = {
         role: "ai",
-        content: `Switched to ${FREE_MODELS[nextModelIndex]} due to an error. Please try again.`,
+        content: translations[language].modelSwitchError.replace(
+          "%model%",
+          FREE_MODELS[nextModelIndex]
+        ),
       };
       setMessages((prev) => [...prev, fallbackMessage]);
       setIsTyping(false);
@@ -227,21 +242,9 @@ const Ai = () => {
   };
 
   const boxCommands = [
-    [
-      "Tell me a joke!",
-      "Why don't scientists trust atoms?",
-      "What has keys but can't open locks?",
-    ],
-    [
-      "What's the weather like today?",
-      "Is it going to rain tomorrow?",
-      "Can you describe the weather in New York?",
-    ],
-    [
-      "Recommend a book for me.",
-      "What's a good book to read?",
-      "Can you suggest a science fiction book?",
-    ],
+    translations[language].humorCommands,
+    translations[language].weatherCommands,
+    translations[language].bookCommands,
   ];
 
   const getMessageClasses = (role: "user" | "ai") => {
@@ -272,7 +275,6 @@ const Ai = () => {
           alt="grid background"
         />
       </div>
-
       <div className="flex-1 flex flex-col p-2 md:p-4 overflow-y-auto z-10 scrollbar-hide">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center flex-1 px-2">
@@ -281,7 +283,7 @@ const Ai = () => {
                 theme === "dark" ? "text-white" : "text-black"
               }`}
             >
-              Start a Conversation
+              {translations[language].startConversation}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 w-full max-w-3xl">
               {boxCommands.map((commands, index) => (
@@ -304,7 +306,7 @@ const Ai = () => {
                     <IoBookOutline className="text-2xl md:text-3xl mb-2 text-green-500" />
                   )}
                   <h3 className="text-sm md:text-md font-semibold">
-                    {["Humor", "Weather", "Books"][index]}
+                    {translations[language].categories[index]}
                   </h3>
                 </div>
               ))}
@@ -321,7 +323,6 @@ const Ai = () => {
           </>
         )}
       </div>
-
       <form
         onSubmit={handleSend}
         className={`p-2 md:p-4 border-t flex z-10 gap-2 ${
@@ -339,7 +340,7 @@ const Ai = () => {
               ? "bg-black text-white border-gray-600 placeholder-gray-400"
               : "bg-white text-black border-black/30 placeholder-gray-600"
           }`}
-          placeholder="Ask something..."
+          placeholder={translations[language].askPlaceholder}
           disabled={isTyping && !isPaused}
         />
         <button
@@ -355,7 +356,9 @@ const Ai = () => {
             <IoPause className="text-sm md:text-base" />
           ) : (
             <>
-              <span className="hidden md:inline">Send</span>
+              <span className="hidden md:inline">
+                {translations[language].send}
+              </span>
               <IoSend className="md:hidden text-sm" />
             </>
           )}

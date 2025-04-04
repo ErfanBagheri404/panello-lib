@@ -1,32 +1,29 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-
+import { useLanguage } from "../language-provider";
+import translations from "../../data/translations";
 
 interface User {
   googleId?: string;
   email: string;
-
 }
 
 const Security = () => {
-
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const { language } = useLanguage();
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          setError("You must be logged in to access this page");
+          setError(translations[language].settings.notLoggedInError);
           setLoading(false);
           return;
         }
@@ -38,14 +35,13 @@ const Security = () => {
         });
         setUser(response.data);
       } catch (err) {
-        setError("Failed to fetch user data");
+        setError(translations[language].settings.fetchUserError);
       } finally {
         setLoading(false);
       }
     };
     fetchUser();
-  }, []);
-
+  }, [language]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,7 +49,7 @@ const Security = () => {
     setSuccess("");
 
     if (newPassword !== confirmPassword) {
-      setError("New passwords do not match");
+      setError(translations[language].settings.passwordMismatchError);
       return;
     }
 
@@ -68,42 +64,40 @@ const Security = () => {
           },
         }
       );
-      setSuccess("Password changed successfully");
+      setSuccess(translations[language].settings.passwordChangeSuccess);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data.error || "Failed to change password");
+        setError(
+          err.response?.data.error ||
+            translations[language].settings.passwordChangeError
+        );
       } else {
-        setError("Failed to change password");
+        setError(translations[language].settings.passwordChangeError);
       }
     }
   };
 
-
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>{translations[language].settings.loading}</div>;
   }
 
   if (!user) {
     return <div>{error}</div>;
   }
 
-
   if (user.googleId) {
-    return (
-      <div>
-        <p>Password change is not available for Google users.</p>
-      </div>
-    );
+    return <div>{translations[language].settings.googleUserMessage}</div>;
   }
-
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <label className="block font-medium">Current Password</label>
+        <label className="block font-medium">
+          {translations[language].settings.currentPassword}
+        </label>
         <input
           type="password"
           value={currentPassword}
@@ -113,7 +107,9 @@ const Security = () => {
         />
       </div>
       <div className="space-y-2">
-        <label className="block font-medium">New Password</label>
+        <label className="block font-medium">
+          {translations[language].settings.newPassword}
+        </label>
         <input
           type="password"
           value={newPassword}
@@ -123,7 +119,9 @@ const Security = () => {
         />
       </div>
       <div className="space-y-2">
-        <label className="block font-medium">Confirm Password</label>
+        <label className="block font-medium">
+          {translations[language].settings.confirmPassword}
+        </label>
         <input
           type="password"
           value={confirmPassword}
@@ -138,7 +136,7 @@ const Security = () => {
         type="submit"
         className="px-4 py-2 bg-blue-500 text-white rounded-full"
       >
-        Change Password
+        {translations[language].settings.changePassword}
       </button>
     </form>
   );

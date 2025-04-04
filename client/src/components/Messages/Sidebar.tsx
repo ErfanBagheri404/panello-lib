@@ -2,6 +2,8 @@ import React from "react";
 import { FiMessageSquare, FiSearch } from "react-icons/fi";
 import { User, Group } from "../../types";
 import { useTheme } from "../theme-provider";
+import { useLanguage } from "../language-provider";
+import translations from "../../data/translations";
 
 interface SidebarProps {
   users: User[];
@@ -22,6 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onUserSelect,
   onGroupSelect,
 }) => {
+  const { language } = useLanguage(); // Added hook
   const { theme } = useTheme();
 
   return (
@@ -35,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex items-center gap-2 text-lg font-semibold mb-4">
         <FiMessageSquare className="text-blue-500" />
         <span className={theme === "dark" ? "text-white" : "text-black"}>
-          Messages
+          {translations[language].messages} {/* Messages heading */}
         </span>
       </div>
       <div className="space-y-4">
@@ -48,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           />
           <input
             type="text"
-            placeholder="Search"
+            placeholder={translations[language].searchPlaceholder}
             className={`w-full p-2 pl-10 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 ${
               theme === "dark"
                 ? "bg-gray-900 text-white border-white/30 placeholder-gray-400"
@@ -65,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 : "bg-blue-100 text-blue-600 border-black/30"
             }`}
           >
-            ALL
+            {translations[language].filterAll} {/* ALL */}
           </button>
           <button
             className={`px-3 py-1 rounded-full text-sm ${
@@ -74,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 : "text-gray-600 border-black/30 hover:bg-gray-100"
             }`}
           >
-            PEOPLE
+            {translations[language].filterPeople} {/* PEOPLE */}
           </button>
           <button
             className={`px-3 py-1 rounded-full text-sm ${
@@ -83,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 : "text-gray-600 border-black/30 hover:bg-gray-100"
             }`}
           >
-            GROUPS
+            {translations[language].filterGroups} {/* GROUPS */}
           </button>
         </div>
         {/* User & Group List */}
@@ -127,20 +130,25 @@ const Sidebar: React.FC<SidebarProps> = ({
                       theme === "dark" ? "text-gray-400" : "text-gray-500"
                     }`}
                   >
-                    <span>{user.online ? "Online" : "Offline"}</span>
+                    <span>
+                      {user.online
+                        ? translations[language].online
+                        : translations[language].offline}
+                    </span>
                     <span
                       className={
                         theme === "dark" ? "text-blue-300" : "text-blue-500"
                       }
                     >
-                      View Profile
+                      {translations[language].viewProfile} {/* View Profile */}
                     </span>
                   </div>
                 </div>
               </button>
             );
           })}
-          {/* {groups.map((group) => {
+
+          {groups.map((group) => {
             const groupButtonClass = `flex items-center gap-3 p-2 rounded-lg transition ${
               selectedGroup?.id === group.id
                 ? theme === "dark"
@@ -176,12 +184,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                       theme === "dark" ? "text-gray-400" : "text-gray-500"
                     }`}
                   >
-                    {group.members.length} members
+                    {group.members.length} {translations[language].members}{" "}
+                    {/* Members count */}
                   </div>
                 </div>
               </button>
             );
-          })} */}
+          })}
         </div>
       </div>
     </div>

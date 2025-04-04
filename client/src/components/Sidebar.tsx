@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "./theme-provider";
+import { useLanguage } from "./language-provider";
+import translations from "../data/translations";
 
 import logo from "../assets/Logo2.svg";
 import logo2 from "../assets/Logo.svg";
@@ -22,20 +24,11 @@ type MenuItem = {
   path: string;
 };
 
-const menuItems: MenuItem[] = [
-  { icon: home, label: "Home", path: "/dashboard" },
-  { icon: ai, label: "AI Tools", path: "/ai" },
-  { icon: members, label: "Members", path: "/members" },
-  { icon: chart, label: "Graphs & Charts", path: "/graphs" },
-  { icon: calendar, label: "Calendar", path: "/calendar" },
-  { icon: messages, label: "Messages", path: "/messages" },
-  { icon: settings, label: "Settings", path: "/settings" },
-];
-
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>("");
   const { theme } = useTheme();
+  const { language } = useLanguage(); // Get current language
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -43,6 +36,16 @@ const Sidebar = () => {
 
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
+
+  const menuItems: MenuItem[] = [
+    { icon: home, label: translations[language].sidebar.home, path: "/dashboard" },
+    { icon: ai, label: translations[language].sidebar.aiTools, path: "/ai" },
+    { icon: members, label: translations[language].sidebar.members, path: "/members" },
+    { icon: chart, label: translations[language].sidebar.graphsAndCharts, path: "/graphs" },
+    { icon: calendar, label: translations[language].sidebar.calendar, path: "/calendar" },
+    { icon: messages, label: translations[language].sidebar.messages, path: "/messages" },
+    { icon: settings, label: translations[language].sidebar.settings, path: "/settings" },
+  ];
 
   const handleTaskSubmit = async (taskData: any) => {
     try {
@@ -79,16 +82,16 @@ const Sidebar = () => {
 
   return (
     <>
-      <aside
+      <aside dir={language === "fa" ? "rtl" : "ltr"}
         className={`h-fit lg:h-full w-full flex lg:flex-col flex-row justify-between items-center 
-      ${
-        theme === "dark"
-          ? "bg-black text-white border-white/30"
-          : "bg-white text-black border-black/30"
-      }
-      border  
-      rounded-2xl transition-all duration-300 overflow-y-auto scrollbar-hide 
-      ${isOpen ? "lg:w-64" : "lg:w-20"}`}
+        ${
+          theme === "dark"
+            ? "bg-black text-white border-white/30"
+            : "bg-white text-black border-black/30"
+        }
+        border  
+        rounded-2xl transition-all duration-300 overflow-y-auto scrollbar-hide 
+        ${isOpen ? "lg:w-64" : "lg:w-20"}`}
       >
         <div
           className={`lg:flex hidden items-center p-6 pb-0 gap-4 font-bold w-full ${
@@ -109,7 +112,7 @@ const Sidebar = () => {
                 : "opacity-0 max-w-0 overflow-hidden"
             }`}
           >
-            Panello
+            {translations[language].sidebar.panello}
           </span>
         </div>
 
@@ -144,7 +147,6 @@ const Sidebar = () => {
                       : "none",
                 }}
               />
-
               <span
                 className={`text-sm font-medium ${
                   theme === "dark" ? "text-white" : "text-black"
@@ -152,7 +154,7 @@ const Sidebar = () => {
                   isOpen
                     ? "opacity-100 max-w-full"
                     : "opacity-0 max-w-0 overflow-hidden hidden"
-                } `}
+                }`}
               >
                 {item.label}
               </span>
@@ -163,7 +165,7 @@ const Sidebar = () => {
         {isOpen && (
           <div className="w-full p-6">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-lg font-medium">Tasks</h3>
+              <h3 className="text-lg font-medium">{translations[language].sidebar.tasks}</h3>
               <button
                 className="text-xs text-[#756CDF] bg-[#766cdf4f] px-2 py-1 rounded-full"
                 onClick={() => {
@@ -171,7 +173,7 @@ const Sidebar = () => {
                   setShowTaskModal(true);
                 }}
               >
-                + Add
+                {translations[language].sidebar.addTask}
               </button>
             </div>
 
@@ -205,17 +207,16 @@ const Sidebar = () => {
             >
               <h4 className="font-semibold text-lg text-white flex items-center gap-2">
                 <img src={logo2} width={20} height={20} />
-                Panello
+                {translations[language].sidebar.panello}
               </h4>
               <p className="mt-3 mb-3 text-white font-light">
-                New members will gain access to public Spaces, Docs, and
-                Dashboards
+                {translations[language].sidebar.inviteDescription}
               </p>
               <button
                 onClick={() => navigate("/members")}
                 className="px-3 py-1 bg-white text-black rounded-full text-md font-medium"
               >
-                + Invite Members
+                {translations[language].sidebar.inviteMembers}
               </button>
             </div>
           </div>
@@ -242,7 +243,7 @@ const Sidebar = () => {
                   : "opacity-0 max-w-0 overflow-hidden hidden"
               }`}
             >
-              {isOpen ? "Close Sidebar" : ""}
+              {isOpen ? translations[language].sidebar.closeSidebar : ""}
             </span>
           </button>
         </div>

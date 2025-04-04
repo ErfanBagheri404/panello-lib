@@ -43,7 +43,7 @@ export const FilterPopup = ({
                 start: new Date(e.target.value),
               }))
             }
-            className={`ml-2 border rounded p-1 ${
+            className={`ms-2 border rounded p-1 ${
               theme === "dark"
                 ? "bg-gray-700 text-white border-white/30"
                 : "bg-white text-black border-black/30"
@@ -61,7 +61,7 @@ export const FilterPopup = ({
                 end: new Date(e.target.value),
               }))
             }
-            className={`ml-2 border rounded p-1 ${
+            className={`ms-2 border rounded p-1 ${
               theme === "dark"
                 ? "bg-gray-700 text-white border-white/30"
                 : "bg-white text-black border-black/30"

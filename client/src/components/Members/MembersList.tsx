@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { IoEllipse } from "react-icons/io5";
 import { Member, Role } from "../../pages/Members";
 import { useTheme } from "../theme-provider";
+import { useLanguage } from "../language-provider"; // Add this import
+import translations from "../../data/translations";
 
 interface MembersListProps {
   members: Member[];
@@ -10,6 +12,7 @@ interface MembersListProps {
 }
 
 const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
+  const { language } = useLanguage(); // Added hook
   const { theme } = useTheme();
   const [allChecked, setAllChecked] = useState(false);
   const [checkedMembers, setCheckedMembers] = useState<Set<string>>(new Set()); 
@@ -42,7 +45,6 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
   };
 
   const handleRoleChange = (memberId: string, newRole: string) => {
-
     setMembers((prev) =>
       prev.map((member) =>
         member.id === memberId ? { ...member, role: newRole } : member
@@ -55,22 +57,22 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
     if (!selectedAction || checkedMembers.size === 0) return;
 
     switch (selectedAction) {
-      case "Ban":
+      case translations[language].banAction:
         setMembers((prev) =>
           prev.map((member) =>
             checkedMembers.has(member.id)
-              ? { ...member, accountState: "Deactivated (Banned)" }
+              ? { ...member, accountState: translations[language].deactivatedBanned }
               : member
           )
         );
         break;
-      case "Remove":
+      case translations[language].removeAction:
         setMembers((prev) =>
           prev.filter((member) => !checkedMembers.has(member.id))
         );
         break;
-      case "Change Role":
-        const newRole = prompt("Enter new role:");
+      case translations[language].changeRoleAction:
+        const newRole = prompt(translations[language].promptChangeRole);
         if (newRole) {
           setMembers((prev) =>
             prev.map((member) =>
@@ -87,14 +89,15 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
     setAllChecked(false);
   };
 
-
   return (
     <div
       className={`z-10 my-5 ${
         theme === "dark" ? "text-gray-100" : "text-gray-900"
       }`}
     >
-      <h3 className="text-lg font-semibold mb-2">Members</h3>
+      <h3 className="text-lg font-semibold mb-2">
+        {translations[language].membersListHeader} {/* Members header */}
+      </h3>
       <div
         className={`${
           theme === "dark"
@@ -117,16 +120,20 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
                     onChange={handleAllCheck}
                   />
                 </th>
-                <th className="p-3 whitespace-nowrap min-w-[200px]">Member</th>
-                <th className="p-3 whitespace-nowrap min-w-[150px]">Role</th>
-                <th className="p-3 whitespace-nowrap min-w-[150px]">
-                  Date added
+                <th className="p-3 whitespace-nowrap min-w-[200px]">
+                  {translations[language].memberHeader} {/* Member */}
                 </th>
                 <th className="p-3 whitespace-nowrap min-w-[150px]">
-                  Activity status
+                  {translations[language].roleHeader} {/* Role */}
+                </th>
+                <th className="p-3 whitespace-nowrap min-w-[150px]">
+                  {translations[language].dateAddedHeader} {/* Date added */}
+                </th>
+                <th className="p-3 whitespace-nowrap min-w-[150px]">
+                  {translations[language].activityStatusHeader} {/* Activity status */}
                 </th>
                 <th className="p-3 rounded-tr-xl rounded-br-xl whitespace-nowrap min-w-[200px]">
-                  Account state
+                  {translations[language].accountStateHeader} {/* Account state */}
                 </th>
               </tr>
             </thead>
@@ -207,7 +214,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
                   </td>
                   <td
                     className={`p-3 whitespace-nowrap ${
-                      member.accountState.includes("Deactivated")
+                      member.accountState.includes(translations[language].deactivatedBanned)
                         ? theme === "dark"
                           ? "text-red-400"
                           : "text-red-500"
@@ -223,7 +230,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
         </div>
       </div>
       <div className="flex lg:flex-row flex-col items-center mt-3 gap-2 text-center">
-        <span>Actions to do with selected users:</span>
+        <span>{translations[language].actionsSelectedUsers}</span> {/* Actions message */}
         <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
           <select
             className={`border ${
@@ -234,10 +241,10 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
             value={selectedAction}
             onChange={(e) => setSelectedAction(e.target.value)}
           >
-            <option value="">Options</option>
-            <option>Ban</option>
-            <option>Change Role</option>
-            <option>Remove</option>
+            <option value="">{translations[language].actionOptions}</option> {/* Options placeholder */}
+            <option>{translations[language].banAction}</option> {/* Ban */}
+            <option>{translations[language].changeRoleAction}</option> {/* Change Role */}
+            <option>{translations[language].removeAction}</option> {/* Remove */}
           </select>
           <button
             className={`px-3 py-1 rounded-md text-md ${
@@ -247,7 +254,7 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
             }`}
             onClick={handleActionApply}
           >
-            Apply
+            {translations[language].applyAction} {/* Apply */}
           </button>
         </div>
       </div>

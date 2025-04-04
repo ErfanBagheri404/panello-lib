@@ -6,6 +6,8 @@ import RolesList from "../components/Members/RolesList";
 import InviteMemberModal from "../features/InviteMemberModal";
 import { useTheme } from "../components/theme-provider";
 import axios from "axios";
+import { useLanguage } from "../components/language-provider"; // Added import
+import translations from "../data/translations"; // Import translations
 
 export interface Role {
   id: string;
@@ -24,12 +26,12 @@ export interface Member {
 }
 
 const Members = () => {
+  const { language } = useLanguage(); // Added useLanguage hook
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
-  const [members, setMembers] = useState<Member[]>([]); 
+  const [members, setMembers] = useState<Member[]>([]);
   const { theme } = useTheme();
 
- 
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -65,11 +67,10 @@ const Members = () => {
         theme === "dark" ? "border-white/30" : "border-black/30"
       } h-screen mt-2.5 rounded-2xl overflow-hidden flex flex-col scrollbar-hide p-6 gap-5`}
     >
-
       <div className="absolute inset-0 z-0">
         <img
           className={`w-full h-full object-cover ${
-            theme === "dark" ? "invert  " : ""
+            theme === "dark" ? "invert" : ""
           }`}
           draggable="false"
           src={grid}
@@ -87,18 +88,16 @@ const Members = () => {
       >
         <div>
           <h2 className="text-lg lg:text-xl font-medium text-white">
-            Want to have a new member for your group? Invite them through a few
-            steps!
+            {translations[language].inviteMembersPrompt}
           </h2>
           <p className="text-xs lg:text-sm my-3 text-white">
-            (Make sure you have already set the roles for your group and have
-            the member’s email)
+            {translations[language].inviteMembersNote}
           </p>
           <button
             onClick={() => setIsModalOpen(true)}
             className="lg:text-md text-sm w-full lg:w-fit mt-5 bg-white text-black rounded-full px-3 py-1"
           >
-            + Invite Members
+            {translations[language].inviteMembersButton}
           </button>
         </div>
         <img

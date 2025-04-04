@@ -5,6 +5,8 @@ import { HiDotsHorizontal } from "react-icons/hi";
 import { RxDragHandleDots2 } from "react-icons/rx";
 import { useTheme } from "../theme-provider";
 import axios from "axios";
+import translations from "../../data/translations";
+import { useLanguage } from "../language-provider";
 
 type ReminderTask = {
   _id: string;
@@ -30,6 +32,7 @@ const HomeReminder = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newReminderText, setNewReminderText] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const { language } = useLanguage();
 
   // Fetch reminders on mount with authentication
   useEffect(() => {
@@ -204,7 +207,8 @@ const HomeReminder = () => {
       <h2 className="flex items-center justify-between text-lg font-semibold mb-2">
         <div className="flex items-center">
           <RxDragHandleDots2 className="hidden" />
-          <FaRegClock className="text-yellow-500 mr-3" /> Reminders
+          <FaRegClock className="text-yellow-500 mr-3" />
+          {translations[language].reminders}
         </div>
         <div className="relative">
           <HiDotsHorizontal
@@ -228,7 +232,7 @@ const HomeReminder = () => {
                   theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
                 }`}
               >
-                Add New Reminder
+                {translations[language].addNewReminder}
               </button>
             </div>
           )}
@@ -241,8 +245,20 @@ const HomeReminder = () => {
             theme === "dark" ? "text-gray-400" : "text-gray-600"
           }`}
         >
-          Tap the <HiDotsHorizontal className="text-black"></HiDotsHorizontal>{" "}
-          button above to add your first reminder
+          {translations[language].noRemindersMessage
+            .split("%dots%")
+            .map((part, index) => (
+              <span className="flex  items-center gap-2" key={index}>
+                {part}
+                {index === 0 && (
+                  <HiDotsHorizontal
+                    className={`${
+                      theme === "dark" ? "text-white" : "text-black"
+                    }`}
+                  />
+                )}
+              </span>
+            ))}
         </div>
       ) : (
         reminders.map((section, index) => (
@@ -257,7 +273,7 @@ const HomeReminder = () => {
                 }`}
               />
               {section.title}
-              <span className="text-gray-500 ml-2">
+              <span className="text-gray-500 ms-2">
                 • {section.tasks.length}
               </span>
             </h3>
@@ -335,10 +351,12 @@ const HomeReminder = () => {
             theme === "dark" ? "bg-gray-800" : "bg-white"
           } ${isModalOpen ? "scale-100" : "scale-95"}`}
         >
-          <h3 className="text-lg font-semibold mb-4">Add New Reminder</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            {translations[language].addNewReminder}
+          </h3>
           <input
             type="text"
-            placeholder="Reminder text"
+            placeholder={translations[language].reminderTextPlaceholder}
             value={newReminderText}
             onChange={(e) => setNewReminderText(e.target.value)}
             className={`w-full mb-4 p-2 rounded border ${
@@ -367,13 +385,13 @@ const HomeReminder = () => {
                   : "text-black hover:bg-gray-100"
               }`}
             >
-              Cancel
+              {translations[language].cancelButton}
             </button>
             <button
               onClick={handleAddReminder}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              Add Reminder
+              {translations[language].addReminderButton}
             </button>
           </div>
         </div>

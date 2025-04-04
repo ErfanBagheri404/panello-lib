@@ -1,17 +1,18 @@
 import { useTheme } from "../theme-provider";
+import { useLanguage } from "../language-provider";
+import translations from "../../data/translations";
+
 const API = () => {
-  const { theme } = useTheme(); 
+  const { theme } = useTheme();
+  const { language } = useLanguage();
 
   return (
     <div className="space-y-4 transition-all duration-300">
-
       <div className="space-y-2">
         <label
-          className={`block font-medium ${
-            theme === "dark" ? "text-white" : "text-black"
-          }`}
+          className={`block font-medium ${theme === "dark" ? "text-white" : "text-black"}`}
         >
-          MongoDB API Key
+          {translations[language].settings.mongoDBApiKey}
         </label>
         <input
           type="text"
@@ -25,14 +26,11 @@ const API = () => {
         />
       </div>
 
-
       <div className="space-y-2">
         <label
-          className={`block font-medium ${
-            theme === "dark" ? "text-white" : "text-black"
-          }`}
+          className={`block font-medium ${theme === "dark" ? "text-white" : "text-black"}`}
         >
-          OpenRouter API Key
+          {translations[language].settings.openRouterApiKey}
         </label>
         <input
           type="text"
@@ -45,16 +43,13 @@ const API = () => {
           }`}
         />
       </div>
-
 
       <button
         className={`px-4 py-2 rounded-full text-white transition ${
-          theme === "dark"
-            ? "bg-blue-600 hover:bg-blue-700"
-            : "bg-blue-500 hover:bg-blue-600"
+          theme === "dark" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"
         }`}
       >
-        Apply API Keys
+        {translations[language].settings.applyApiKeys}
       </button>
     </div>
   );

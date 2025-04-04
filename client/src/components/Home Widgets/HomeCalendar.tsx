@@ -6,7 +6,8 @@ import {
 } from "react-icons/fa";
 import { useTheme } from "../theme-provider";
 import axios from "axios";
-
+import { useLanguage } from "../language-provider"; // Added import
+import translations from "../../data/translations";
 interface CalendarEvent {
   id: string;
   title: string;
@@ -17,6 +18,7 @@ interface CalendarEvent {
 }
 
 const HomeCalendar = () => {
+  const { language } = useLanguage(); // Added useLanguage hook
   const { theme } = useTheme();
   const today = new Date();
   // Set initial start date to 3 days before today to center current day
@@ -85,7 +87,7 @@ const HomeCalendar = () => {
 
   return (
     <div
-      className={`rounded-xl p-4 sm:p-5 w-full border ${
+      className={`rounded-xl p-4 sm:p-5 w-full border  ${
         theme === "dark"
           ? "border-white/30 bg-black text-white"
           : "border-black/30 bg-white text-black"
@@ -93,22 +95,24 @@ const HomeCalendar = () => {
     >
       <div className="flex justify-between items-center mb-4">
         <h2 className="flex items-center text-lg sm:text-xl font-semibold">
-          <FaRegCalendarAlt className="text-purple-500 mr-2" /> Calendar
+          <FaRegCalendarAlt className="text-purple-500 mr-2" />
+          {translations[language].calendar} {/* Translated */}
         </h2>
         <div className="flex items-center space-x-1">
           <span className="text-gray-700 text-sm sm:text-base">
-            {selectedDate.toLocaleString("en-US", { month: "long" })}
+            {translations[language].months[selectedDate.getMonth()]}{" "}
+            {/* Translated */}
           </span>
           <FaChevronRight className="text-gray-500 cursor-pointer" />
         </div>
       </div>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 scrollbar-hide">
         <FaChevronLeft
           className="text-gray-500 cursor-pointer"
           onClick={() => shiftDates("prev")}
         />
-        <div className="flex space-x-2 overflow-x-auto">
+        <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
           {weekDays.map((date, index) => (
             <button
               key={index}
@@ -120,7 +124,7 @@ const HomeCalendar = () => {
               }`}
             >
               <div className="text-xs sm:text-sm">
-                {date.toLocaleString("en-US", { weekday: "short" })}
+                {translations[language].days[date.getDay()]} {/* Translated */}
               </div>
               <div className="font-semibold">{date.getDate()}</div>
             </button>
@@ -142,7 +146,7 @@ const HomeCalendar = () => {
             key={event.id}
             className={`p-4 mb-3 ${
               theme === "dark" ? "bg-purple-900" : "bg-purple-200"
-            } rounded-lg`}
+            } rounded-lg `}
           >
             <h3 className="font-semibold text-sm sm:text-base">
               {event.title}
@@ -155,10 +159,6 @@ const HomeCalendar = () => {
                 {event.description}
               </p>
             )}
-            {/* <div
-              className="w-full h-1 mt-2 rounded-full"
-              style={{ backgroundColor: event.color }}
-            /> */}
           </div>
         ))}
       {events.filter(
@@ -166,11 +166,11 @@ const HomeCalendar = () => {
           new Date(event.start).toDateString() === selectedDate.toDateString()
       ).length === 0 && (
         <div
-          className={`p-4 text-center ${
+          className={`p-4 text-center  ${
             theme === "dark" ? "text-gray-400" : "text-gray-600"
           }`}
         >
-          No events for this date
+          {translations[language].noEventsMessage} {/* Translated */}
         </div>
       )}
     </div>

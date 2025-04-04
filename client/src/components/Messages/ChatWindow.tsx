@@ -2,6 +2,8 @@ import { User, Group, Message } from "../../types";
 import { formatDate } from "../../lib/dateUtils";
 import { FiSend, FiFile } from "react-icons/fi";
 import { useTheme } from "../theme-provider";
+import { useLanguage } from "../language-provider";
+import translations from "../../data/translations";
 
 interface ChatWindowProps {
   selectedUser: User | null;
@@ -16,6 +18,7 @@ interface ChatWindowProps {
 
 const ChatHeader = ({ user, onBack }: { user: User; onBack?: () => void }) => {
   const { theme } = useTheme();
+  const { language } = useLanguage(); // Added hook
   return (
     <div
       className={`flex items-center gap-3 pb-3 ${
@@ -41,7 +44,9 @@ const ChatHeader = ({ user, onBack }: { user: User; onBack?: () => void }) => {
               theme === "dark" ? "text-gray-400" : "text-gray-500"
             }`}
           >
-            {user.online ? "Online" : "Offline"}
+            {user.online
+              ? translations[language].online
+              : translations[language].offline}{" "}
           </p>
         </div>
         {onBack && (
@@ -53,7 +58,7 @@ const ChatHeader = ({ user, onBack }: { user: User; onBack?: () => void }) => {
                 : "text-gray-600 bg-gray-200 hover:bg-gray-300"
             }`}
           >
-            Back
+            {translations[language].backButton} {/* Back button */}
           </button>
         )}
       </div>
@@ -100,7 +105,7 @@ const MessageItem = ({ message }: MessageItemProps) => {
             />
             <div>
               <div
-                className={`text-sm lg:text-sm ${
+                className={`text-sm ${
                   theme === "dark" ? "text-white" : "text-black"
                 }`}
               >
@@ -139,6 +144,7 @@ interface MessageGroupProps {
 
 const MessageGroup = ({ date, messages }: MessageGroupProps) => {
   const { theme } = useTheme();
+  const { language } = useLanguage(); // Added hook
   return (
     <div className="space-y-4">
       <div
@@ -146,7 +152,7 @@ const MessageGroup = ({ date, messages }: MessageGroupProps) => {
           theme === "dark" ? "text-gray-400" : "text-gray-500"
         }`}
       >
-        {formatDate(date)}
+        {formatDate(date, language)} {/* Pass language to formatDate */}
       </div>
       {messages.map((msg, index) => (
         <MessageItem key={index} message={msg} />
@@ -186,6 +192,7 @@ const MessageInput = ({
   onSendMessage,
 }: MessageInputProps) => {
   const { theme } = useTheme();
+  const { language } = useLanguage(); // Added hook
   return (
     <div className="flex w-full mt-4 space-y-2">
       <div className="flex w-full justify-between items-center">
@@ -198,14 +205,14 @@ const MessageInput = ({
               ? "bg-gray-900 text-white border-white/30 placeholder-gray-400"
               : "bg-white text-black border-black/30 placeholder-gray-500"
           }`}
-          placeholder="Type a message..."
+          placeholder={translations[language].typeMessage}
           onKeyDown={(e) => e.key === "Enter" && onSendMessage()}
         />
         <button
           onClick={onSendMessage}
           className="p-2 lg:p-4 bg-blue-500 text-white rounded-md lg:rounded-lg flex items-center justify-center hover:bg-blue-600 transition"
         >
-          <FiSend className="w-[15px] h-[15px] lg:w-[20] lg:h-[20]" />
+          <FiSend className="w-[15px] h-[15px] lg:w-[20px] lg:h-[20px]" />
         </button>
       </div>
     </div>

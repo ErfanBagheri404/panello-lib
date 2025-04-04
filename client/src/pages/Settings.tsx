@@ -5,15 +5,27 @@ import API from "../components/Settings/API";
 import Security from "../components/Settings/Security";
 import General from "../components/Settings/General";
 import { useTheme } from "../components/theme-provider";
+import { useLanguage } from "../components/language-provider";
+import translations from "../data/translations";
 
 const Settings = () => {
-  const [selectedTab, setSelectedTab] = useState("general");
+  const [selectedTab, setSelectedTab] = useState<"general" | "security" | "api">("general");
   const { theme } = useTheme();
+  const { language } = useLanguage();
 
   const contentVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -20 },
+  };
+
+  const getTabTranslation = (tab: "general" | "security" | "api") => {
+    const tabTranslations = {
+      general: translations[language].settings.generalTab,
+      security: translations[language].settings.securityTab,
+      api: translations[language].settings.apiTab,
+    };
+    return tabTranslations[tab];
   };
 
   return (
@@ -28,7 +40,7 @@ const Settings = () => {
       <div className="absolute inset-0 z-0">
         <img
           className={`w-full h-full object-cover ${
-            theme === "dark" ? "invert  " : ""
+            theme === "dark" ? "invert" : ""
           }`}
           draggable="false"
           src={grid}
@@ -44,10 +56,12 @@ const Settings = () => {
             : "bg-white border-black/30"
         } border rounded-2xl p-4`}
       >
-        <h2 className="text-2xl font-bold">Settings</h2>
-        <span>Manage your account through here.</span>
+        <h2 className="text-2xl font-bold">
+          {translations[language].settings.title}
+        </h2>
+        <span>{translations[language].settings.manageAccount}</span>
         <div className="flex flex-wrap gap-3 mt-3">
-          {["general", "security", "api"].map((tab) => (
+          {(["general", "security", "api"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setSelectedTab(tab)}
@@ -59,7 +73,7 @@ const Settings = () => {
                   : "bg-white text-black border-black/30 hover:bg-gray-100"
               }`}
             >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {getTabTranslation(tab)}
             </button>
           ))}
         </div>

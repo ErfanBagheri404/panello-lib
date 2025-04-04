@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Role } from "../../pages/Members";
 import { useTheme } from "../theme-provider";
+import { useLanguage } from "../language-provider";
+import translations from "../../data/translations";
 import axios from "axios";
 
 interface RolesListProps {
@@ -9,6 +11,7 @@ interface RolesListProps {
 }
 
 const RolesList = ({ roles, setRoles }: RolesListProps) => {
+  const { language } = useLanguage(); // Added hook
   const { theme } = useTheme();
   const [allChecked, setAllChecked] = useState(false);
   const [checkedRoles, setCheckedRoles] = useState<Set<string>>(new Set());
@@ -39,31 +42,30 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
     if (!selectedAction || checkedRoles.size === 0) return;
 
     switch (selectedAction) {
-      case "Delete":
+      case translations[language].deleteAction:
         await Promise.all(
           Array.from(checkedRoles).map(async (roleId) => {
             await axios.delete(`/api/roles/${roleId}`);
           })
         );
         break;
-        case "Duplicate":
-          checkedRoles.forEach((roleId) => {
-            const role = roles.find((r) => r.id === roleId);
-            if (role) {
-              setRoles((prev) => [
-                ...prev,
-                {
-                  ...role,
-                  id: Math.max(...prev.map((r) => parseInt(r.id))) + 1 + "", 
-                  name: `${role.name} (Copy)`,
-                },
-              ]);
-            }
-          });
-          break;
+      case translations[language].duplicateAction:
+        checkedRoles.forEach((roleId) => {
+          const role = roles.find((r) => r.id === roleId);
+          if (role) {
+            setRoles((prev) => [
+              ...prev,
+              {
+                ...role,
+                id: Math.max(...prev.map((r) => parseInt(r.id))) + 1 + "",
+                name: `${role.name}${translations[language].duplicateSuffix}`, // Localized copy suffix
+              },
+            ]);
+          }
+        });
+        break;
     }
 
-   
     setRoles((prevRoles) =>
       prevRoles.filter((role) => !checkedRoles.has(role.id))
     );
@@ -77,7 +79,9 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
         theme === "dark" ? "text-gray-100" : "text-gray-900"
       }`}
     >
-      <h3 className="text-lg font-semibold mb-2">Roles</h3>
+      <h3 className="text-lg font-semibold mb-2">
+        {translations[language].rolesListHeader} {/* Roles header */}
+      </h3>
       <div
         className={`w-full rounded-xl border overflow-hidden p-3 ${
           theme === "dark"
@@ -100,8 +104,12 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
                     onChange={handleAllCheck}
                   />
                 </th>
-                <th className="p-3">Role</th>
-                <th className="p-3 rounded-tr-xl rounded-br-xl">Description</th>
+                <th className="p-3">{translations[language].roleHeader}</th>{" "}
+                {/* Role header */}
+                <th className="p-3 rounded-tr-xl rounded-br-xl">
+                  {translations[language].descriptionHeader}{" "}
+                  {/* Description header */}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -134,9 +142,9 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
           </table>
         </div>
       </div>
-
       <div className="flex lg:flex-row flex-col items-center mt-3 gap-2 text-center">
-        <span>Actions for selected roles:</span>
+        <span>{translations[language].actionsSelectedRoles}</span>{" "}
+        {/* Actions message */}
         <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
           <select
             className={`border rounded-md p-1 ${
@@ -147,10 +155,13 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
             value={selectedAction}
             onChange={(e) => setSelectedAction(e.target.value)}
           >
-            <option value="">Options</option>
-            <option>Delete</option>
-            <option>Edit</option>
-            <option>Duplicate</option>
+            <option value="">{translations[language].actionOptions}</option>{" "}
+            {/* Options placeholder */}
+            <option>{translations[language].deleteAction}</option>{" "}
+            {/* Delete */}
+            <option>{translations[language].editAction}</option> {/* Edit */}
+            <option>{translations[language].duplicateAction}</option>{" "}
+            {/* Duplicate */}
           </select>
           <button
             className={`px-3 py-1 rounded-md text-md ${
@@ -160,7 +171,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
             }`}
             onClick={handleActionApply}
           >
-            Apply
+            {translations[language].applyAction} {/* Apply */}
           </button>
         </div>
       </div>

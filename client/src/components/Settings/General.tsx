@@ -2,12 +2,15 @@ import LanguageSelector from "./LanguageSelector";
 import { useTheme } from "../theme-provider";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../user-provider";
+import { useLanguage } from "../language-provider";
+import translations from "../../data/translations";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import defaultUser from "../../assets/defaultUser.jpg";
 import darkwire from "../../assets/wireframeDark.png";
 import lightwire from "../../assets/wireframeLight.png";
 import systemwire from "../../assets/System.png";
+
 
 type ThemeOption = {
   name: string;
@@ -19,21 +22,19 @@ const General = () => {
   const { user, setUser } = useUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { theme, setTheme } = useTheme();
+  const { language } = useLanguage();
   const navigate = useNavigate();
+
   const themeOptions: ThemeOption[] = [
-    { name: "System", src: systemwire, value: "system" },
-    { name: "Light", src: lightwire, value: "light" },
-    { name: "Dark", src: darkwire, value: "dark" },
+    { name: translations[language].settings.systemTheme, src: systemwire, value: "system" },
+    { name: translations[language].settings.lightTheme, src: lightwire, value: "light" },
+    { name: translations[language].settings.darkTheme, src: darkwire, value: "dark" },
   ];
 
-  const [selectedTheme, setSelectedTheme] = useState<ThemeOption["value"]>(
-    () => {
-      const savedPreference = localStorage.getItem("themePreference");
-      return savedPreference
-        ? (savedPreference as ThemeOption["value"])
-        : theme;
-    }
-  );
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption["value"]>(() => {
+    const savedPreference = localStorage.getItem("themePreference");
+    return savedPreference ? (savedPreference as ThemeOption["value"]) : theme;
+  });
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -56,22 +57,17 @@ const General = () => {
         }
       );
 
-      // Update user state with new avatar URL
-      setUser((prev) =>
-        prev ? { ...prev, avatar: response.data.avatar } : prev
-      );
+      setUser((prev) => (prev ? { ...prev, avatar: response.data.avatar } : prev));
     } catch (error) {
       console.error("Avatar update failed:", error);
     }
   };
 
-
   const handleThemeSelection = (chosenTheme: ThemeOption["value"]) => {
     setSelectedTheme(chosenTheme);
     localStorage.setItem("themePreference", chosenTheme);
     if (chosenTheme === "system") {
-      const systemPreference = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
+      const systemPreference = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
       setTheme(systemPreference);
@@ -102,18 +98,16 @@ const General = () => {
       {/* Profile Picture */}
       <div className="flex flex-col lg:flex-row lg:items-center">
         <div className="flex flex-col lg:w-1/3">
-          <h3 className="text-lg font-medium">Profile Picture</h3>
+          <h3 className="text-lg font-medium">{translations[language].settings.profilePictureTitle}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Update your Profile Picture.
+            {translations[language].settings.profilePictureDescription}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 mt-2 lg:mt-0">
           <div className="flex items-center gap-6">
             <div
               className={`w-12 h-12 border flex items-center justify-center rounded-xl overflow-hidden ${
-                theme === "dark"
-                  ? "border-white/30 bg-gray-800"
-                  : "border-black/30 bg-gray-200"
+                theme === "dark" ? "border-white/30 bg-gray-800" : "border-black/30 bg-gray-200"
               }`}
             >
               <img
@@ -122,7 +116,6 @@ const General = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-
             <input
               type="file"
               ref={fileInputRef}
@@ -142,7 +135,7 @@ const General = () => {
               }`}
               onClick={() => fileInputRef.current?.click()}
             >
-              Replace image
+              {translations[language].settings.replaceImage}
             </button>
           </div>
         </div>
@@ -151,9 +144,9 @@ const General = () => {
       {/* Interface Theme */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
-          <h3 className="text-lg font-medium">Interface theme</h3>
+          <h3 className="text-lg font-medium">{translations[language].settings.interfaceThemeTitle}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Select or customize your UI theme.
+            {translations[language].settings.interfaceThemeDescription}
           </p>
         </div>
         <div className="flex flex-wrap gap-4 mt-2 lg:mt-0 lg:w-full">
@@ -165,16 +158,8 @@ const General = () => {
               }`}
               onClick={() => handleThemeSelection(value)}
             >
-              <img
-                src={src}
-                alt={`${name} mode`}
-                className="w-full h-full object-cover"
-              />
-              <span
-                className={`absolute text-sm ${
-                  value === "light" ? "text-black" : "text-white"
-                }`}
-              >
+              <img src={src} alt={`${name} mode`} className="w-full h-full object-cover" />
+              <span className={`absolute text-sm ${value === "light" ? "text-black" : "text-white"}`}>
                 {name}
               </span>
             </div>
@@ -185,9 +170,9 @@ const General = () => {
       {/* Language Selector */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
-          <h3 className="text-lg font-medium">Language</h3>
+          <h3 className="text-lg font-medium">{translations[language].settings.languageTitle}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Change Dashboard's language.
+            {translations[language].settings.languageDescription}
           </p>
         </div>
         <div className="flex w-full mt-2 lg:mt-0">
@@ -198,9 +183,9 @@ const General = () => {
       {/* Logout Option */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col lg:w-1/3">
-          <h3 className="text-lg font-medium">Account</h3>
+          <h3 className="text-lg font-medium">{translations[language].settings.accountTitle}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Manage your account settings.
+            {translations[language].settings.accountDescription}
           </p>
         </div>
         <div className="flex w-full mt-2 lg:mt-0">
@@ -208,7 +193,7 @@ const General = () => {
             className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200 w-full lg:w-fit"
             onClick={handleLogout}
           >
-            Logout
+            {translations[language].settings.logout}
           </button>
         </div>
       </div>

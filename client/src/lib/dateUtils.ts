@@ -1,8 +1,13 @@
-export const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+import translations from "../data/translations";
+
+export const formatDate = (date: string, language: "en" | "fa") => {
+  const dateObj = new Date(date);
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
   };
+  return dateObj.toLocaleString(translations[language].locale, options);
+};
