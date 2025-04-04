@@ -2,7 +2,49 @@
 body {
   font-family: "Inter", sans-serif;
 }
+
+/* Replace the Inter import with this */
+@font-face {
+  font-family: "Yekan Bakh Fanum";
+  src: url("./assets/fonts/yekan bakh fanum 04 regular.eot");
+  src: url("./assets/fonts/yekan bakh fanum 04 regular.eot?#iefix")
+      format("embedded-opentype"),
+    url("./assets/fonts/yekan bakh fanum 04 regular.woff") format("woff"),
+    url("./assets/fonts/yekan bakh fanum 04 regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yekan Bakh Fanum";
+  src: url("./assets/fonts/yekan bakh fanum 05 medium.eot");
+  src: url("./assets/fonts/yekan bakh fanum 05 medium.eot?#iefix")
+      format("embedded-opentype"),
+    url("./assets/fonts/yekan bakh fanum 05 medium.woff") format("woff"),
+    url("./assets/fonts/yekan bakh fanum 05 medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yekan Bakh Fanum";
+  src: url("./assets/fonts/yekan bakh fanum 06 bold.eot");
+  src: url("./assets/fonts/yekan bakh fanum 06 bold.eot?#iefix")
+      format("embedded-opentype"),
+    url("./assets/fonts/yekan bakh fanum 06 bold.woff") format("woff"),
+    url("./assets/fonts/yekan bakh fanum 06 bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
 @import "tailwindcss";
+
+body.en-lang {
+  font-family: "Inter", sans-serif;
+}
+body.fa-lang {
+  font-family: "Yekan Bakh Fanum", sans-serif;
+}
 
 .dashboard-home {
   background: linear-gradient(90deg, #2cd9bf 0%, #756cdf 100%);
@@ -74,7 +116,6 @@ body {
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
 }
-
 
 @theme inline {
   --color-background: var(--background);
