@@ -120,8 +120,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="text-left flex-1">
                   <div
                     className={`font-medium ${
-                      theme === "dark" ? "text-white" : "text-black"
-                    }`}
+                      language === "fa" ? "text-right" : "text-left"
+                    } ${theme === "dark" ? "text-white" : "text-black"}`}
                   >
                     {user.name}
                   </div>
