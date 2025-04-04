@@ -58,13 +58,28 @@ const HomeReminder = () => {
     inputDate.setHours(0, 0, 0, 0);
     const diffTime = inputDate.getTime() - today.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "Tomorrow";
-    const month = inputDate.toLocaleString("default", { month: "long" });
-    const day = inputDate.getDate();
-    const suffix = getDaySuffix(day);
-    return `${month} ${day}${suffix}`;
+  
+    if (language === "fa") {
+      if (diffDays === 0) return "امروز";
+      if (diffDays === 1) return "فردا";
+  
+      return inputDate.toLocaleDateString("fa-IR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } else {
+      if (diffDays === 0) return "Today";
+      if (diffDays === 1) return "Tomorrow";
+  
+      const month = inputDate.toLocaleString("default", { month: "long" });
+      const day = inputDate.getDate();
+      const suffix = getDaySuffix(day);
+      return `${month} ${day}${suffix}`;
+    }
   };
+  
 
   const groupTasksByDate = (tasks: ReminderTask[]): ReminderSection[] => {
     const sectionsMap: Record<string, ReminderTask[]> = {};
