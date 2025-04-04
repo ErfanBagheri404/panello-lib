@@ -11,7 +11,7 @@ interface RolesListProps {
 }
 
 const RolesList = ({ roles, setRoles }: RolesListProps) => {
-  const { language } = useLanguage(); // Added hook
+  const { language } = useLanguage();
   const { theme } = useTheme();
   const [allChecked, setAllChecked] = useState(false);
   const [checkedRoles, setCheckedRoles] = useState<Set<string>>(new Set());
@@ -58,7 +58,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
               {
                 ...role,
                 id: Math.max(...prev.map((r) => parseInt(r.id))) + 1 + "",
-                name: `${role.name}${translations[language].duplicateSuffix}`, // Localized copy suffix
+                name: `${role.name}${translations[language].duplicateSuffix}`,
               },
             ]);
           }
@@ -90,14 +90,23 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
         }`}
       >
         <div className="overflow-x-auto lg:overflow-visible">
-          <table className="w-full text-sm min-w-[600px]">
+          <table
+            className="w-full text-sm min-w-[600px]"
+            dir={language === "fa" ? "rtl" : "ltr"}
+          >
             <thead
-              className={`text-left ${
+              className={`text-left rtl:text-right ${
                 theme === "dark" ? "bg-gray-700" : "bg-gray-300"
               }`}
             >
               <tr>
-                <th className="p-3 rounded-tl-xl rounded-bl-xl items-center">
+                <th
+                  className={`p-3 items-center ${
+                    language === "fa"
+                      ? "rounded-tr-xl rounded-br-xl"
+                      : "rounded-tl-xl rounded-bl-xl"
+                  }`}
+                >
                   <input
                     type="checkbox"
                     checked={allChecked}
@@ -106,7 +115,13 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
                 </th>
                 <th className="p-3">{translations[language].roleHeader}</th>{" "}
                 {/* Role header */}
-                <th className="p-3 rounded-tr-xl rounded-br-xl">
+                <th
+                  className={`p-3 ${
+                    language === "fa"
+                      ? "rounded-tl-xl rounded-bl-xl"
+                      : "rounded-tr-xl rounded-br-xl"
+                  }`}
+                >
                   {translations[language].descriptionHeader}{" "}
                   {/* Description header */}
                 </th>
