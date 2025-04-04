@@ -15,8 +15,8 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
   const { language } = useLanguage(); // Added hook
   const { theme } = useTheme();
   const [allChecked, setAllChecked] = useState(false);
-  const [checkedMembers, setCheckedMembers] = useState<Set<string>>(new Set()); 
-  const [editingMemberId, setEditingMemberId] = useState<string | null>(null); 
+  const [checkedMembers, setCheckedMembers] = useState<Set<string>>(new Set());
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
   const [selectedAction, setSelectedAction] = useState<string>("");
 
   const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +61,10 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
         setMembers((prev) =>
           prev.map((member) =>
             checkedMembers.has(member.id)
-              ? { ...member, accountState: translations[language].deactivatedBanned }
+              ? {
+                  ...member,
+                  accountState: translations[language].deactivatedBanned,
+                }
               : member
           )
         );
@@ -106,41 +109,59 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
         } w-full rounded-xl border overflow-hidden p-3`}
       >
         <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
+          <table
+            className="min-w-full text-sm"
+            dir={language === "fa" ? "rtl" : "ltr"}
+          >
             <thead
-              className={`text-left ${
+              className={`text-left rtl:text-right ${
                 theme === "dark" ? "bg-gray-700" : "bg-gray-300"
               }`}
+              style={{ textAlign: "left" }}
             >
               <tr>
-                <th className="p-3 rounded-tl-xl rounded-bl-xl whitespace-nowrap w-[50px]">
+                <th
+                  className={`p-3 rtl:text-right ${
+                    language === "fa"
+                      ? "rounded-tr-xl rounded-br-xl"
+                      : "rounded-tl-xl rounded-bl-xl"
+                  } whitespace-nowrap w-[50px]`}
+                >
                   <input
                     type="checkbox"
                     checked={allChecked}
                     onChange={handleAllCheck}
                   />
                 </th>
-                <th className="p-3 whitespace-nowrap min-w-[200px]">
+                <th className="p-3 whitespace-nowrap rtl:text-right min-w-[200px]">
                   {translations[language].memberHeader} {/* Member */}
                 </th>
-                <th className="p-3 whitespace-nowrap min-w-[150px]">
+                <th className="p-3 whitespace-nowrap rtl:text-right min-w-[150px]">
                   {translations[language].roleHeader} {/* Role */}
                 </th>
-                <th className="p-3 whitespace-nowrap min-w-[150px]">
+                <th className="p-3 whitespace-nowrap rtl:text-right min-w-[150px]">
                   {translations[language].dateAddedHeader} {/* Date added */}
                 </th>
-                <th className="p-3 whitespace-nowrap min-w-[150px]">
-                  {translations[language].activityStatusHeader} {/* Activity status */}
+                <th className="p-3 whitespace-nowrap rtl:text-right min-w-[150px]">
+                  {translations[language].activityStatusHeader}{" "}
+                  {/* Activity status */}
                 </th>
-                <th className="p-3 rounded-tr-xl rounded-br-xl whitespace-nowrap min-w-[200px]">
-                  {translations[language].accountStateHeader} {/* Account state */}
+                <th
+                  className={`p-3 rtl:text-right ${
+                    language === "fa"
+                      ? "rounded-tl-xl rounded-bl-xl"
+                      : "rounded-tr-xl rounded-br-xl"
+                  } whitespace-nowrap min-w-[200px]`}
+                >
+                  {translations[language].accountStateHeader}{" "}
+                  {/* Account state */}
                 </th>
               </tr>
             </thead>
             <tbody>
               {members.map((member) => (
                 <tr
-                  key={member.id} 
+                  key={member.id}
                   className={`${
                     members.indexOf(member) !== 0
                       ? "border-t " +
@@ -214,7 +235,9 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
                   </td>
                   <td
                     className={`p-3 whitespace-nowrap ${
-                      member.accountState.includes(translations[language].deactivatedBanned)
+                      member.accountState.includes(
+                        translations[language].deactivatedBanned
+                      )
                         ? theme === "dark"
                           ? "text-red-400"
                           : "text-red-500"
@@ -230,7 +253,8 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
         </div>
       </div>
       <div className="flex lg:flex-row flex-col items-center mt-3 gap-2 text-center">
-        <span>{translations[language].actionsSelectedUsers}</span> {/* Actions message */}
+        <span>{translations[language].actionsSelectedUsers}</span>{" "}
+        {/* Actions message */}
         <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
           <select
             className={`border ${
@@ -241,10 +265,13 @@ const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
             value={selectedAction}
             onChange={(e) => setSelectedAction(e.target.value)}
           >
-            <option value="">{translations[language].actionOptions}</option> {/* Options placeholder */}
+            <option value="">{translations[language].actionOptions}</option>{" "}
+            {/* Options placeholder */}
             <option>{translations[language].banAction}</option> {/* Ban */}
-            <option>{translations[language].changeRoleAction}</option> {/* Change Role */}
-            <option>{translations[language].removeAction}</option> {/* Remove */}
+            <option>{translations[language].changeRoleAction}</option>{" "}
+            {/* Change Role */}
+            <option>{translations[language].removeAction}</option>{" "}
+            {/* Remove */}
           </select>
           <button
             className={`px-3 py-1 rounded-md text-md ${
