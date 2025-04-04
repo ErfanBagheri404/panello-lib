@@ -95,21 +95,29 @@ const HomeCalendar = () => {
     >
       <div className="flex justify-between items-center mb-4">
         <h2 className="flex items-center text-lg sm:text-xl font-semibold">
-          <FaRegCalendarAlt className="text-purple-500 mr-2" />
-          {translations[language].calendar} {/* Translated */}
+          <FaRegCalendarAlt
+            className={`text-purple-500 ${language === "fa" ? "ml-2" : "mr-2"}`}
+          />
+          {translations[language].calendar}
         </h2>
         <div className="flex items-center space-x-1">
           <span className="text-gray-700 text-sm sm:text-base">
             {translations[language].months[selectedDate.getMonth()]}{" "}
-            {/* Translated */}
           </span>
-          <FaChevronRight className="text-gray-500 cursor-pointer" />
+          <FaChevronRight
+            className={`text-gray-500 cursor-pointer transition-transform ${
+              language === "fa" ? "rotate-180" : ""
+            }`}
+            onClick={() => shiftDates("next")}
+          />
         </div>
       </div>
 
       <div className="flex items-center justify-between mb-4 scrollbar-hide">
         <FaChevronLeft
-          className="text-gray-500 cursor-pointer"
+          className={`text-gray-500 cursor-pointer transition-transform ${
+            language === "fa" ? "rotate-180" : ""
+          }`}
           onClick={() => shiftDates("prev")}
         />
         <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
@@ -124,14 +132,16 @@ const HomeCalendar = () => {
               }`}
             >
               <div className="text-xs sm:text-sm">
-                {translations[language].days[date.getDay()]} {/* Translated */}
+                {translations[language].days[date.getDay()]}
               </div>
               <div className="font-semibold">{date.getDate()}</div>
             </button>
           ))}
         </div>
         <FaChevronRight
-          className="text-gray-500 cursor-pointer"
+          className={`text-gray-500 cursor-pointer transition-transform ${
+            language === "fa" ? "rotate-180" : ""
+          }`}
           onClick={() => shiftDates("next")}
         />
       </div>
@@ -170,7 +180,7 @@ const HomeCalendar = () => {
             theme === "dark" ? "text-gray-400" : "text-gray-600"
           }`}
         >
-          {translations[language].noEventsMessage} {/* Translated */}
+          {translations[language].noEventsMessage}
         </div>
       )}
     </div>
