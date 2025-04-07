@@ -22,6 +22,7 @@ type MenuItem = {
   icon: string;
   label: string;
   path: string;
+  allowedRoles?: string[]; // Add this to specify which roles can see this item
 };
 
 const Sidebar = () => {
@@ -31,21 +32,80 @@ const Sidebar = () => {
   const { language } = useLanguage(); // Get current language
   const navigate = useNavigate();
   const location = useLocation();
+  const [userRole, setUserRole] = useState<string>("member"); // Default to member
 
   const { tasks, createTask, updateTask, deleteTask } = useTasks();
 
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 
+  // Fetch user role when component mounts
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("/api/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserRole(data.role);
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
+
   const menuItems: MenuItem[] = [
-    { icon: home, label: translations[language].sidebar.home, path: "/dashboard" },
+    {
+      icon: home,
+      label: translations[language].sidebar.home,
+      path: "/dashboard",
+    },
     { icon: ai, label: translations[language].sidebar.aiTools, path: "/ai" },
-    { icon: members, label: translations[language].sidebar.members, path: "/members" },
-    { icon: chart, label: translations[language].sidebar.graphsAndCharts, path: "/graphs" },
-    { icon: calendar, label: translations[language].sidebar.calendar, path: "/calendar" },
-    { icon: messages, label: translations[language].sidebar.messages, path: "/messages" },
-    { icon: settings, label: translations[language].sidebar.settings, path: "/settings" },
+    {
+      icon: members,
+      label: translations[language].sidebar.members,
+      path: "/members",
+      allowedRoles: ["owner", "co-owner", "administrator", "moderator"],
+    },
+    {
+      icon: chart,
+      label: translations[language].sidebar.graphsAndCharts,
+      path: "/graphs",
+      allowedRoles: ["owner", "co-owner", "administrator", "moderator"],
+    },
+    {
+      icon: calendar,
+      label: translations[language].sidebar.calendar,
+      path: "/calendar",
+    },
+    {
+      icon: messages,
+      label: translations[language].sidebar.messages,
+      path: "/messages",
+    },
+    {
+      icon: settings,
+      label: translations[language].sidebar.settings,
+      path: "/settings",
+      allowedRoles: ["owner", "co-owner", "administrator", "member"],
+    },
   ];
+
+  // Filter menu items based on user role
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (!item.allowedRoles) return true; // No role restriction
+    return item.allowedRoles.includes(userRole);
+  });
 
   const handleTaskSubmit = async (taskData: any) => {
     try {
@@ -82,7 +142,8 @@ const Sidebar = () => {
 
   return (
     <>
-      <aside dir={language === "fa" ? "rtl" : "ltr"}
+      <aside
+        dir={language === "fa" ? "rtl" : "ltr"}
         className={`h-fit lg:h-full w-full flex lg:flex-col flex-row justify-between items-center 
         ${
           theme === "dark"
@@ -125,7 +186,7 @@ const Sidebar = () => {
               : "items-center gap-4"
           } w-full flex-grow`}
         >
-          {menuItems.map((item, index) => (
+          {filteredMenuItems.map((item, index) => (
             <div
               key={index}
               onClick={() => handleMenuItemClick(item.path)}
@@ -137,7 +198,9 @@ const Sidebar = () => {
               <img
                 src={item.icon}
                 alt={item.label}
-                className={`min-w-[24px] transition-all duration-300 ${language === "fa" ? "scale-x-[-1]" : ""}`}
+                className={`min-w-[24px] transition-all duration-300 ${
+                  language === "fa" ? "scale-x-[-1]" : ""
+                }`}
                 style={{
                   filter:
                     selectedItem === item.path
@@ -165,7 +228,9 @@ const Sidebar = () => {
         {isOpen && (
           <div className="w-full p-6">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-lg font-medium">{translations[language].sidebar.tasks}</h3>
+              <h3 className="text-lg font-medium">
+                {translations[language].sidebar.tasks}
+              </h3>
               <button
                 className="text-xs text-[#756CDF] bg-[#766cdf4f] px-2 py-1 rounded-full"
                 onClick={() => {
@@ -233,7 +298,9 @@ const Sidebar = () => {
           >
             <img
               src={sidebar}
-              className={`min-w-[24px] transition-all duration-300 ${language === "fa" ? "scale-x-[-1]" : ""} ${theme === "dark" ? "invert" : ""}`}
+              className={`min-w-[24px] transition-all duration-300 ${
+                language === "fa" ? "scale-x-[-1]" : ""
+              } ${theme === "dark" ? "invert" : ""}`}
               alt="Toggle Sidebar"
             />
             <span

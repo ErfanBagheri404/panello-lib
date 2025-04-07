@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -39,6 +39,58 @@ const AppContent = () => {
     const token = localStorage.getItem("token");
     return token ? <>{children}</> : <Navigate to="/login" />;
   };
+
+  // New component for role-based access control
+  const RoleProtectedRoute = ({ 
+    children, 
+    allowedRoles 
+  }: { 
+    children: React.ReactNode, 
+    allowedRoles: string[] 
+  }) => {
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+      const fetchUserRole = async () => {
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/auth/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setUserRole(data.role);
+          } else {
+            console.error("Failed to fetch user role");
+          }
+        } catch (error) {
+          console.error("Error fetching user role:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchUserRole();
+    }, [token]);
+
+    if (!token) return <Navigate to="/login" />;
+    if (loading) return <div>Loading...</div>;
+    
+    // Check if user's role is in the allowed roles
+    const hasAccess = userRole && allowedRoles.includes(userRole);
+    
+    return hasAccess ? <>{children}</> : <Navigate to="/dashboard" />;
+  };
+
   const { direction, language } = useLanguage();
 
   return (
@@ -69,7 +121,17 @@ const AppContent = () => {
           >
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/ai" element={<Ai />} />
-            <Route path="/members" element={<Members />} />
+            
+            {/* Role-protected route for Members page */}
+            <Route 
+              path="/members" 
+              element={
+                <RoleProtectedRoute allowedRoles={["owner", "co-owner", "administrator", "moderator"]}>
+                  <Members />
+                </RoleProtectedRoute>
+              } 
+            />
+            
             <Route path="/graphs" element={<Graphs />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/messages" element={<Messages />} />
