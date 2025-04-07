@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "./theme-provider";
+import { useLanguage } from "../components/language-provider"; // Add this import
+import translations from "../data/translations"; // Add this import
 import login1 from "../assets/login1.jpeg";
 import login2 from "../assets/login2.jpeg";
 import login3 from "../assets/login3.jpeg";
@@ -9,6 +11,8 @@ import { FaArrowRight } from "react-icons/fa6";
 const images = [login1, login2, login3];
 
 const ImgSwitcher = () => {
+  const { language } = useLanguage();
+  const t = translations[language]; // Direct translation access
   const [activeIndex, setActiveIndex] = useState(0);
   const { theme } = useTheme();
 
@@ -50,13 +54,13 @@ const ImgSwitcher = () => {
             theme === "dark" ? "bg-gray-800/30" : "bg-white/30"
           } px-3 py-1 rounded-full backdrop-blur-sm`}
         >
-          Back to website <FaArrowRight />
+          {t.backToWebsite} <FaArrowRight />
         </button>
       </div>
 
       <div className="z-10 items-center justify-center text-center flex flex-col">
         <span className="text-3xl font-normal my-4 text-center text-white drop-shadow-lg">
-          Capturing Moments, <br /> Creating Memories
+          {t.slogan}
         </span>
         <div className="flex gap-2 my-6 m-auto">
           {images.map((_, index) => (

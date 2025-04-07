@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { API_BASE_URL } from "../../config.ts";
-
 import { useGoogleAuth } from "../components/hooks/useGoogleLogin.ts";
 import { useTheme } from "../components/theme-provider.tsx";
 import ImgSwitcher from "../components/ImgSwitcher.tsx";
-
+import { useLanguage } from "../components/language-provider.tsx";
+import translations from "../data/translations.ts";
 
 const Register = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
 
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const { googleLogin } = useGoogleAuth();
@@ -18,26 +20,23 @@ const Register = () => {
     password: "",
   });
   const [error, setError] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!acceptedTerms) {
-      setError("You must agree to the terms and conditions.");
+      setError(t.termsRequired); // Use translated error message
       return;
     }
-
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || "Registration failed");
+        throw new Error(errorData.error || t.registrationFailed);
       }
-
       const { token } = await res.json();
       localStorage.setItem("token", token);
       window.location.href = "/dashboard";
@@ -54,7 +53,7 @@ const Register = () => {
       }`}
     >
       {/* Content */}
-      <ImgSwitcher></ImgSwitcher>
+      <ImgSwitcher />
 
       {/* Right Section */}
       <div className="relative z-10 flex-1 flex justify-center items-center p-10 h-full">
@@ -64,7 +63,7 @@ const Register = () => {
               theme === "dark" ? "text-white" : "text-gray-900"
             }`}
           >
-            Create an account
+            {t.register}
           </h2>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
@@ -81,7 +80,7 @@ const Register = () => {
                     ? "border-gray-600 bg-gray-800"
                     : "border-gray-300 bg-white"
                 } focus:border-blue-500 focus:ring-blue-500 p-2.5`}
-                placeholder="First name"
+                placeholder={t.firstName}
                 required
               />
               <input
@@ -97,7 +96,7 @@ const Register = () => {
                     ? "border-gray-600 bg-gray-800"
                     : "border-gray-300 bg-white"
                 } focus:border-blue-500 focus:ring-blue-500 p-2.5`}
-                placeholder="Last name"
+                placeholder={t.lastName}
                 required
               />
             </div>
@@ -115,7 +114,7 @@ const Register = () => {
                     ? "border-gray-600 bg-gray-800"
                     : "border-gray-300 bg-white"
                 } focus:border-blue-500 focus:ring-blue-500 p-2.5`}
-                placeholder="Enter your email"
+                placeholder={t.email}
               />
             </div>
 
@@ -132,7 +131,7 @@ const Register = () => {
                     ? "border-gray-600 bg-gray-800"
                     : "border-gray-300 bg-white"
                 } focus:border-blue-500 focus:ring-blue-500 p-2.5`}
-                placeholder="Enter your password"
+                placeholder={t.password}
                 required
               />
             </div>
@@ -152,26 +151,28 @@ const Register = () => {
                   theme === "dark" ? "text-gray-100" : "text-gray-900"
                 }`}
               >
-                I agree to the{" "}
+                {t.agreeTerms}{" "}
                 <a
                   href="#"
                   className={`text-blue-600 hover:${
                     theme === "dark" ? "text-blue-500" : "text-blue-500"
                   }`}
                 >
-                  Terms & Conditions
+                  {t.termsAndConditions}
                 </a>
               </label>
             </div>
-            {error && <div className="text-red-500 text-sm">{error}</div>}
+            {error && (
+              <div className="text-red-500 text-sm">{error}</div>
+            )}
 
             <button
               type="submit"
-              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md 
+              className={`w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md 
                 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 
-                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
             >
-              Create an account
+              {t.register}
             </button>
           </form>
 
@@ -191,7 +192,7 @@ const Register = () => {
                     : "bg-white text-gray-500"
                 }`}
               >
-                Or continue with
+                {t.continueWith}
               </span>
             </div>
           </div>
@@ -227,7 +228,7 @@ const Register = () => {
                 fill="#EA4335"
               />
             </svg>
-            Continue with Google
+            {t.continueWithGoogle}
           </button>
 
           <p
@@ -235,14 +236,14 @@ const Register = () => {
               theme === "dark" ? "text-gray-400" : "text-gray-600"
             }`}
           >
-            Already have an account?{" "}
+            {t.haveAccount}{" "}
             <a
               href="/login"
               className={`font-medium text-blue-600 hover:${
                 theme === "dark" ? "text-blue-500" : "text-blue-500"
               }`}
             >
-              Log in
+              {t.login}
             </a>
           </p>
         </div>
