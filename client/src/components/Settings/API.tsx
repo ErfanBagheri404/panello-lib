@@ -12,7 +12,7 @@ const API = () => {
         <label
           className={`block font-medium ${theme === "dark" ? "text-white" : "text-black"}`}
         >
-          {translations[language].settings.mongoDBApiKey}
+          {translations[language].mongoDBApiKey}
         </label>
         <input
           type="text"
@@ -30,7 +30,7 @@ const API = () => {
         <label
           className={`block font-medium ${theme === "dark" ? "text-white" : "text-black"}`}
         >
-          {translations[language].settings.openRouterApiKey}
+          {translations[language].openRouterApiKey}
         </label>
         <input
           type="text"

@@ -207,8 +207,15 @@ type Translations = {
     noAccount: string;
     rememberMe: string;
     loginFailed: string;
-    backToWebsite: string
-    slogan: string
+    backToWebsite: string;
+    accessDenied: string;
+    apiKeysUpdated: string;
+    updateFailed: string;
+    mongoDBApiKey: string;
+    openRouterApiKey: string;
+    updating: string;
+    applyApiKeys: string;
+    slogan: string;
   };
 };
 
@@ -441,6 +448,13 @@ const translations: Translations = {
     loginFailed: "Login failed",
     backToWebsite: "Back to website",
     slogan: "Capturing Moments, Creating Memories",
+    accessDenied: "Access denied. Only owners can manage API keys.",
+    apiKeysUpdated: "API keys updated successfully.",
+    updateFailed: "Failed to update API keys.",
+    mongoDBApiKey: "MongoDB API Key",
+    openRouterApiKey: "OpenRouter API Key",
+    updating: "Updating...",
+    applyApiKeys: "Apply API Keys",
   },
   fa: {
     welcome: "خوش آمدید، عرفان",
@@ -679,6 +693,14 @@ const translations: Translations = {
     loginFailed: "ورود ناموفق",
     backToWebsite: "بازگشت به سایت",
     slogan: "گرفتن لحظات، ساختن یادگارها",
+    accessDenied:
+      "دسترسی ممنوع. فقط صاحبان می‌توانند کلیدهای API را مدیریت کنند.",
+    apiKeysUpdated: "کلیدهای API با موفقیت به‌روزرسانی شدند.",
+    updateFailed: "به‌روزرسانی کلیدهای API ناموفق بود.",
+    mongoDBApiKey: "کلید API MongoDB",
+    openRouterApiKey: "کلید API OpenRouter",
+    updating: "در حال به‌روزرسانی...",
+    applyApiKeys: "اعمال کلیدهای API",
   },
 } as const;
 
