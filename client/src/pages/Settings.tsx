@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import grid from "../assets/Grid.svg";
-import API from "../components/Settings/API";
 import Security from "../components/Settings/Security";
 import General from "../components/Settings/General";
 import { useTheme } from "../components/theme-provider";
@@ -99,7 +98,7 @@ const Settings = () => {
           >
             {selectedTab === "general" && <General />}
             {selectedTab === "security" && <Security />}
-            {selectedTab === "api" && <API />}
+            {/* {selectedTab === "api" && <API />} */} {/*needs work */}
           </motion.div>
         </AnimatePresence>
       </div>
