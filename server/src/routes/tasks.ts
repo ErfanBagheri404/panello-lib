@@ -12,23 +12,30 @@ declare module 'express-serve-static-core' {
 const router = express.Router();
 
 
-router.get(
-  "/",
-  authenticateUser,
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const userId = req.user?.userId;
-      if (!userId) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
-      }
-      const tasks = await Task.find({ user: userId });
-      res.json(tasks);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch tasks" });
+// Find the route handler for GET /api/tasks and update it:
+// Update the GET route to use authenticateUser and correct user ID access
+router.get('/', authenticateUser, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
     }
+    
+    // Find tasks where user is creator OR is in assignedTo array
+    const tasks = await Task.find({
+      $or: [
+        { user: userId },
+        { assignedTo: userId }
+      ]
+    });
+    
+    res.json(tasks);
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    res.status(500).json({ message: "Server error" });
   }
-);
+});
 
 
 router.post(

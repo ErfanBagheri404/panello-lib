@@ -61,7 +61,7 @@ const DashboardLayout = () => {
 
       <div
         className={`flex-1 flex flex-col ${
-          language === "fa" ? "mr-2.5" : "ml-2.5"
+          language === "fa" ? "lg:mr-2.5" : "lg:ml-2.5"
         } h-full`}
       >
         {/* Navbar */}

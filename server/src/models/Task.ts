@@ -10,6 +10,7 @@ export interface ITask extends Document {
   completed: boolean;
   createdAt: Date;
   updatedAt: Date;
+  assignedTo: IUser["_id"][];
 }
 
 const TaskSchema = new Schema<ITask>(
@@ -20,6 +21,7 @@ const TaskSchema = new Schema<ITask>(
     color: { type: String, default: "#4B00FF" },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     completed: { type: Boolean, default: false },
+    assignedTo: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );

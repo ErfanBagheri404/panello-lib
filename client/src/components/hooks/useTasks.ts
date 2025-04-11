@@ -8,17 +8,19 @@ export const useTasks = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Update your fetchTasks function in useTasks.ts
+  // Inside your fetchTasks function, make sure it's correctly fetching all tasks
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(API_URL, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.get("/api/tasks", {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      
+      // Set the tasks
       setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
-    } finally {
-      setLoading(false);
     }
   };
 

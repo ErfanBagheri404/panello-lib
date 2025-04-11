@@ -37,6 +37,7 @@ const HomeCalendar = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
 
+        // The backend should now return both created and shared events
         const formattedEvents = response.data.map((event: any) => ({
           ...event,
           start: new Date(event.start),
@@ -120,10 +121,11 @@ const HomeCalendar = () => {
           }`}
           onClick={() => shiftDates("prev")}
         />
+
         <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
-          {weekDays.map((date, index) => (
+          {weekDays.map((date) => (
             <button
-              key={index}
+              key={date.toISOString()}
               onClick={() => handleDateChange(date)}
               className={`p-2 w-12 sm:w-14 text-center rounded-lg transition-colors ${
                 selectedDate.toDateString() === date.toDateString()
@@ -171,6 +173,7 @@ const HomeCalendar = () => {
             )}
           </div>
         ))}
+
       {events.filter(
         (event) =>
           new Date(event.start).toDateString() === selectedDate.toDateString()

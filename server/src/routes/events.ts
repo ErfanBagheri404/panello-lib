@@ -6,19 +6,29 @@ import { authenticateUser } from "./auth";
 const router = express.Router();
 
 // Get all events for user
-router.get("/", authenticateUser, async (req: Request, res: Response): Promise<void> => {
-    try {
-        const events = await Event.find({ user: (req as any).user.userId });
-        res.json(events);
-    } catch (error) {
-        res.status(500).json({ error: "Server error" });
-    }
+router.get('/', authenticateUser, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user.userId; // Use the same user property format as other routes
+    
+    // Find events where user is creator OR is in sharedWith array
+    const events = await Event.find({
+      $or: [
+        { user: userId },
+        { sharedWith: userId }
+      ]
+    });
+    
+    res.json(events);
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 // Create new event
 router.post("/", authenticateUser, async (req: Request, res: Response): Promise<void> => {
     try {
-        const { title, description, start, end, color } = req.body;
+        const { title, description, start, end, color, sharedWith } = req.body;
         const event = new Event({
             title,
             description,
@@ -26,6 +36,7 @@ router.post("/", authenticateUser, async (req: Request, res: Response): Promise<
             end: new Date(end),
             color,
             user: (req as any).user.userId,
+            sharedWith: sharedWith || [] // Add support for sharedWith
         });
         await event.save();
         res.status(201).json(event);

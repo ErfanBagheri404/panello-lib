@@ -1,16 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../theme-provider";
 import { CalendarEvent } from "./helpers";
 import { useLanguage } from "../language-provider";
 import translations from "../../data/translations";
+import axios from "axios";
 
 interface EventModalProps {
   events: CalendarEvent[];
-  onAddEvent: (event: Omit<CalendarEvent, "id" | "color">) => void;
-  onEditEvent: (event: CalendarEvent) => void;
+  onAddEvent: (event: Omit<CalendarEvent, "id" | "color"> & { sharedWith?: string[] }) => void;
+  onEditEvent: (event: CalendarEvent & { sharedWith?: string[] }) => void;
   onDeleteEvent: (eventId: string) => void;
   onClose: () => void;
+}
+
+interface User {
+  id: string;
+  name: string;
+  avatar: string;
 }
 
 export const OptionsPopup = ({
@@ -29,9 +36,55 @@ export const OptionsPopup = ({
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [error, setError] = useState("");  const { language } = useLanguage();
+  const [error, setError] = useState("");
+  const { language } = useLanguage();
+  
+  // Add state for users
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Fetch users when component mounts
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoadingUsers(true);
+        
+        // Get current user ID
+        const currentUserResponse = await axios.get('/api/auth/me', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        
+        // Get all users
+        const usersResponse = await axios.get('/api/users/members', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        
+        // Filter out current user
+        const usersList = usersResponse.data.filter(
+          (user: any) => user.id !== currentUserResponse.data._id
+        );
+        
+        setUsers(usersList);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+    
+    fetchUsers();
+  }, []);
+
+  const handleUserToggle = (userId: string) => {
+    setSelectedUserIds(prev => {
+      return prev.includes(userId)
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId];
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const start = new Date(`${startDate}T${startTime}`);
     const end = new Date(`${endDate}T${endTime}`);
@@ -45,12 +98,13 @@ export const OptionsPopup = ({
     setError("");
 
     if (isEditing && currentEvent) {
-      const updatedEvent: CalendarEvent = {
+      const updatedEvent = {
         ...currentEvent,
         title,
         description,
         start,
         end,
+        sharedWith: selectedUserIds
       };
       onEditEvent(updatedEvent);
     } else {
@@ -59,6 +113,7 @@ export const OptionsPopup = ({
         description,
         start,
         end,
+        sharedWith: selectedUserIds
       });
     }
 
@@ -75,6 +130,13 @@ export const OptionsPopup = ({
     setStartTime(event.start.toTimeString().split(" ")[0].substring(0, 5));
     setEndDate(event.end.toISOString().split("T")[0]);
     setEndTime(event.end.toTimeString().split(" ")[0].substring(0, 5));
+    
+    // Set selected users if available
+    if ((event as any).sharedWith) {
+      setSelectedUserIds((event as any).sharedWith);
+    } else {
+      setSelectedUserIds([]);
+    }
   };
 
   const resetForm = () => {
@@ -86,6 +148,7 @@ export const OptionsPopup = ({
     setStartTime("");
     setEndDate("");
     setEndTime("");
+    setSelectedUserIds([]);
   };
 
   return (
@@ -142,6 +205,7 @@ export const OptionsPopup = ({
             />
           </div>
 
+          {/* Time and date inputs remain the same */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Start Date Input */}
             <div>
@@ -267,6 +331,45 @@ export const OptionsPopup = ({
             </div>
           )}
 
+          {/* Add user selection section */}
+          <div className={`mt-4 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+            <h3 className="text-lg font-semibold mb-2">
+              Share with Users
+            </h3>
+            <div className="max-h-60 overflow-y-auto border rounded-md p-2">
+              {loadingUsers ? (
+                <p>Loading users...</p>
+              ) : users.length === 0 ? (
+                <p className="text-gray-500">No users available</p>
+              ) : (
+                users.map(user => (
+                  <div 
+                    key={user.id} 
+                    className={`flex items-center p-2 rounded-md cursor-pointer ${
+                      selectedUserIds.includes(user.id) 
+                        ? theme === 'dark' ? 'bg-blue-900' : 'bg-blue-100' 
+                        : theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+                    }`}
+                    onClick={() => handleUserToggle(user.id)}
+                  >
+                    <input 
+                      type="checkbox" 
+                      checked={selectedUserIds.includes(user.id)}
+                      onChange={() => {}} // Handled by the div click
+                      className="mr-2"
+                    />
+                    <img 
+                      src={user.avatar} 
+                      alt={`${user.name}'s avatar`}
+                      className="w-8 h-8 rounded-full mr-2 object-cover"
+                    />
+                    <span>{user.name}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
           <div className="flex justify-end gap-4 mt-6">
             <button
               type="button"
@@ -310,6 +413,12 @@ export const OptionsPopup = ({
                   </p>
                   {event.description && (
                     <p className="text-sm mt-1">{event.description}</p>
+                  )}
+                  {/* Show shared users if any */}
+                  {(event as any).sharedWith && (event as any).sharedWith.length > 0 && (
+                    <p className="text-xs mt-1 text-blue-500">
+                      Shared with {(event as any).sharedWith.length} user(s)
+                    </p>
                   )}
                 </div>
                 <div className="flex gap-2">

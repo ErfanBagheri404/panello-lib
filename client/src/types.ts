@@ -1,8 +1,9 @@
 export interface User {
-  id: number;
+  id: string;
   name: string;
   pfp: string;
   online: boolean;
+  isCurrentUser?: boolean; // Add this optional property
 }
 
 export interface Group {
@@ -28,4 +29,5 @@ export interface ITask {
   completed: boolean;
   createdAt: string;
   updatedAt: string;
+  assignedTo?: string[]; // Add this property to match the server model
 }

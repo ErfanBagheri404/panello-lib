@@ -4,12 +4,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ITask } from "../types";
 import translations from "../data/translations";
 import { useLanguage } from "../components/language-provider";
+import axios from "axios";
 
+interface User {
+  id: string;
+  name: string;
+  avatar: string;
+}
+
+// Update the props type
 type TaskManagerModalProps = {
   onClose: () => void;
   task: ITask | null;
   onSubmit: (taskData: Partial<ITask>) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;
+  availableUsers?: User[]; // Add this prop
 };
 
 const TaskManagerModal = ({
@@ -17,12 +26,20 @@ const TaskManagerModal = ({
   task,
   onSubmit,
   onDelete,
+  availableUsers = [], // Default to empty array
 }: TaskManagerModalProps) => {
-  const { language } = useLanguage(); // Added useLanguage hook
+  const { language } = useLanguage();
   const [title, setTitle] = useState(task?.title || "");
   const [subtasks, setSubtasks] = useState<string[]>(task?.subtasks || []);
   const [newSubtask, setNewSubtask] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
+
+  // Add state for users
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>(
+    task?.assignedTo || []
+  );
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
   const getRandomColor = () => {
     const colors = [
@@ -44,6 +61,53 @@ const TaskManagerModal = ({
       "#B2EBF0",
     ];
     return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  // Fetch users when component mounts
+  // Modify the useEffect to use availableUsers if provided
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoadingUsers(true);
+
+        // If availableUsers is provided and not empty, use it
+        if (availableUsers && availableUsers.length > 0) {
+          setUsers(availableUsers);
+          setLoadingUsers(false);
+          return;
+        }
+
+        // Otherwise fetch users as before
+        const currentUserResponse = await axios.get("/api/auth/me", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+
+        const usersResponse = await axios.get("/api/users/members", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+
+        // Filter out current user
+        const usersList = usersResponse.data.filter(
+          (user: any) => user.id !== currentUserResponse.data._id
+        );
+
+        setUsers(usersList);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+
+    fetchUsers();
+  }, [availableUsers]); // Add availableUsers as dependency
+
+  const handleUserToggle = (userId: string) => {
+    setSelectedUserIds((prev) => {
+      return prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId];
+    });
   };
 
   useEffect(() => {
@@ -76,6 +140,7 @@ const TaskManagerModal = ({
       title,
       subtasks,
       color: task?.color || getRandomColor(),
+      assignedTo: selectedUserIds, // This is correct
     };
     await onSubmit(taskData);
     onClose();
@@ -161,6 +226,49 @@ const TaskManagerModal = ({
             >
               {translations[language].addSubtask}
             </button>
+          </div>
+
+          {/* Add user selection section */}
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">
+              Assign to Users
+            </h3>
+            <div className="max-h-60 overflow-y-auto border dark:border-gray-600 rounded-md p-2">
+              {loadingUsers ? (
+                <p className="text-gray-700 dark:text-gray-300">
+                  Loading users...
+                </p>
+              ) : users.length === 0 ? (
+                <p className="text-gray-500">No users available</p>
+              ) : (
+                users.map((user) => (
+                  <div
+                    key={user.id}
+                    className={`flex items-center p-2 rounded-md cursor-pointer ${
+                      selectedUserIds.includes(user.id)
+                        ? "bg-blue-100 dark:bg-blue-900"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                    }`}
+                    onClick={() => handleUserToggle(user.id)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedUserIds.includes(user.id)}
+                      onChange={() => {}} // Handled by the div click
+                      className="mr-2"
+                    />
+                    <img
+                      src={user.avatar}
+                      alt={`${user.name}'s avatar`}
+                      className="w-8 h-8 rounded-full mr-2 object-cover"
+                    />
+                    <span className="text-gray-800 dark:text-white">
+                      {user.name}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
           <div className="flex gap-3">

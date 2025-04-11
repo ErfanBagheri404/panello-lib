@@ -79,6 +79,8 @@ export const Calendar = () => {
         const response = await axios.get("/api/events", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
+        
+        // The backend should now return both created and shared events
         setEvents(
           response.data.map((e: any) => ({
             ...e,
