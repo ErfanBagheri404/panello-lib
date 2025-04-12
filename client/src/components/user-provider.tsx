@@ -1,16 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { UserContextType, UserProviderType } from '../types';
 
-interface User {
-  userId: string;
-  email: string;
-  avatar?: string;
-}
-
-interface UserContextType {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
-}
 
 const UserContext = createContext<UserContextType>({
   user: null,
@@ -18,7 +9,7 @@ const UserContext = createContext<UserContextType>({
 });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserProviderType | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {

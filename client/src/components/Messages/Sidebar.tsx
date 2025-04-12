@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { FiMessageSquare, FiSearch } from "react-icons/fi";
-import { User } from "../../types";
+import { SidebarProps, User } from "../../types";
 import { useTheme } from "../theme-provider";
 import { useLanguage } from "../language-provider";
 import translations from "../../data/translations";
 import axios from "axios";
 
-interface SidebarProps {
-  users: User[];
-  // groups: Group[]; // Commented out groups prop
-  selectedUser: User | null;
-  // selectedGroup: Group | null; // Commented out selectedGroup prop
-  onUserSelect: (user: User) => void;
-  // onGroupSelect: (group: Group) => void; // Commented out onGroupSelect prop
-  isOpen: boolean;
-}
+
 
 const Sidebar: React.FC<SidebarProps> = ({
   users: initialUsers,

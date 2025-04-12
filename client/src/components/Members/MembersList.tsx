@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 import { IoEllipse } from "react-icons/io5";
-import { Member, Role } from "../../pages/Members";
 import { useTheme } from "../theme-provider";
 import { useLanguage } from "../language-provider"; // Add this import
 import translations from "../../data/translations";
-
-interface MembersListProps {
-  members: Member[];
-  setMembers: React.Dispatch<React.SetStateAction<Member[]>>;
-  roles: Role[];
-}
+import { MembersListProps } from "../../types";
 
 const MembersList = ({ members, setMembers, roles }: MembersListProps) => {
   const { language } = useLanguage(); // Added hook

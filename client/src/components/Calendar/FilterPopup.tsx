@@ -3,12 +3,8 @@ import { useState, useEffect } from "react";
 import { useTheme } from "../theme-provider";
 import translations from "../../data/translations";
 import { useLanguage } from "../language-provider";
+import { FilterPopupProps } from "../../types";
 
-interface FilterPopupProps {
-  dateRange: { start: Date; end: Date };
-  onApply: (start: Date, end: Date) => void;
-  onClose: () => void;
-}
 
 export const FilterPopup = ({
   dateRange,

@@ -1,15 +1,6 @@
 // models/Event.ts
-import mongoose, { Document, Schema } from "mongoose";
-
-export interface IEvent extends Document {
-  title: string;
-  description?: string;
-  start: Date;
-  end: Date;
-  color: string;
-  user: mongoose.Types.ObjectId;
-  sharedWith: mongoose.Types.ObjectId[];
-}
+import mongoose, {  Schema } from "mongoose";
+import { IEvent } from "../types/express";
 
 const EventSchema: Schema = new Schema(
   {

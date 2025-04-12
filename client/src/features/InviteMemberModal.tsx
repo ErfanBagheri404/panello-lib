@@ -4,24 +4,8 @@ import { IoClose } from "react-icons/io5";
 import { useTheme } from "../components/theme-provider";
 import { useLanguage } from "../components/language-provider";
 import translations from "../data/translations";
+import { InviteData, InviteMemberModalProps } from "../types";
 
-export interface Role {
-  id: string;
-  name: string;
-  description: string;
-}
-
-interface InviteMemberModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  roles: Role[];
-}
-
-interface InviteData {
-  email: string;
-  role: string;
-  avatar: string;
-}
 
 const InviteMemberModal = ({
   isOpen,

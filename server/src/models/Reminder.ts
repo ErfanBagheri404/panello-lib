@@ -1,11 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { IReminder } from "../types/express";
 
-export interface IReminder extends Document {
-  title: string;
-  date: Date;
-  completed: boolean;
-  _id: mongoose.Types.ObjectId;
-}
 
 const ReminderSchema: Schema = new Schema(
   {

@@ -1,24 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../theme-provider";
-import { CalendarEvent } from "./helpers";
+import { CalendarEvent, EventModalProps, UserOptionsPopupType } from "../../types";
 import { useLanguage } from "../language-provider";
 import translations from "../../data/translations";
 import axios from "axios";
 
-interface EventModalProps {
-  events: CalendarEvent[];
-  onAddEvent: (event: Omit<CalendarEvent, "id" | "color"> & { sharedWith?: string[] }) => void;
-  onEditEvent: (event: CalendarEvent & { sharedWith?: string[] }) => void;
-  onDeleteEvent: (eventId: string) => void;
-  onClose: () => void;
-}
-
-interface User {
-  id: string;
-  name: string;
-  avatar: string;
-}
 
 export const OptionsPopup = ({
   events,
@@ -40,7 +27,7 @@ export const OptionsPopup = ({
   const { language } = useLanguage();
   
   // Add state for users
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserOptionsPopupType[]>([]);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 

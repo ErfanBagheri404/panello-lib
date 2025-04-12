@@ -1,19 +1,7 @@
 import express from "express";
-import mongoose from "mongoose";
 import User from "../models/User";
 import { authenticateUser } from "./auth";
-
 const router = express.Router();
-
-interface MemberData {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  createdAt: Date;
-  accountState: string;
-  avatar: string;
-}
 
 router.use((req, res, next) => {
   console.log(`[Users Router] ${req.method} ${req.url}`);

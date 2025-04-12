@@ -3,11 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useTheme } from "../theme-provider";
 import translations from "../../data/translations";
 import { useLanguage } from "../language-provider";
+import { ViewSwitcherProps } from "../../types";
 
-interface ViewSwitcherProps {
-  currentView: "dayGridMonth" | "timeGridWeek" | "timeGridDay";
-  onChange: (view: "dayGridMonth" | "timeGridWeek" | "timeGridDay") => void;
-}
 
 export const ViewSwitcher = ({ currentView, onChange }: ViewSwitcherProps) => {
   const { theme } = useTheme();

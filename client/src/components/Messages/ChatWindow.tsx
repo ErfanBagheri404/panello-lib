@@ -1,4 +1,4 @@
-import { User, Message } from "../../types";
+import { User, Message, ChatWindowProps, MessageGroupProps, MessageInputProps, MessageItemProps } from "../../types";
 import { formatDate } from "../../lib/dateUtils";
 import { FiSend } from "react-icons/fi";
 import { useTheme } from "../theme-provider";
@@ -8,15 +8,7 @@ import socket from "../../lib/socket";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-interface ChatWindowProps {
-  selectedUser: User | null;
-  messages: Message[];
-  input: string;
-  onInputChange: (text: string) => void;
-  onSendMessage: () => void;
-  onBackClick?: () => void;
-  isSidebarOpen: boolean;
-}
+
 
 const ChatHeader = ({ user, onBack }: { user: User; onBack?: () => void }) => {
   const { theme } = useTheme();
@@ -278,9 +270,7 @@ const ChatWindow = ({
 
 export default ChatWindow;
 
-interface MessageItemProps {
-  message: Message;
-}
+
 
 // Update the MessageItem component
 const MessageItem = ({ message }: MessageItemProps) => {
@@ -323,11 +313,7 @@ const MessageItem = ({ message }: MessageItemProps) => {
   );
 };
 
-interface MessageInputProps {
-  input: string;
-  onInputChange: (text: string) => void;
-  onSendMessage: () => void;
-}
+
 
 // Update the MessageInput component
 const MessageInput = ({
@@ -374,10 +360,7 @@ const MessageInput = ({
   );
 };
 
-interface MessageGroupProps {
-  date: string;
-  messages: Message[];
-}
+
 
 const MessageGroup = ({ date, messages }: MessageGroupProps) => {
   const { theme } = useTheme();

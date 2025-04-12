@@ -1,9 +1,6 @@
 
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-
-interface CalendarControlsProps {
-  onNavigate: (direction: "prev" | "next" | "today") => void;
-}
+import { CalendarControlsProps } from "../../types";
 
 export const CalendarControls = ({ onNavigate }: CalendarControlsProps) => (
   <div className="absolute top-0 lg:top-0 lg:left-0 flex gap-2 z-10">

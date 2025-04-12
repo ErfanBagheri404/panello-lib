@@ -1,14 +1,10 @@
 import React, { useState } from "react";
-import { Role } from "../../pages/Members";
 import { useTheme } from "../theme-provider";
 import { useLanguage } from "../language-provider";
 import translations from "../../data/translations";
 import axios from "axios";
+import { RolesListProps } from "../../types";
 
-interface RolesListProps {
-  roles: Role[];
-  setRoles: React.Dispatch<React.SetStateAction<Role[]>>;
-}
 
 const RolesList = ({ roles, setRoles }: RolesListProps) => {
   const { language } = useLanguage();

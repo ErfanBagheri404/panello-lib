@@ -1,17 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 import User, { IUser } from "./User";
+import { ITask } from "../types/express";
 
-export interface ITask extends Document {
-  title: string;
-  description?: string;
-  subtasks: string[];
-  color: string;
-  user: IUser["_id"];
-  completed: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  assignedTo: IUser["_id"][];
-}
 
 const TaskSchema = new Schema<ITask>(
   {

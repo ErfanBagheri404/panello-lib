@@ -2,15 +2,7 @@ import express, { Request, Response } from "express";
 import Task from "../models/Task";
 import { authenticateUser } from "./auth";
 
-
-declare module 'express-serve-static-core' {
-  interface Request {
-    user?: { userId: string };
-  }
-}
-
 const router = express.Router();
-
 
 // Find the route handler for GET /api/tasks and update it:
 // Update the GET route to use authenticateUser and correct user ID access

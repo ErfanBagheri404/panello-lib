@@ -3,12 +3,9 @@ import { FaChevronDown } from "react-icons/fa";
 import { useLanguage } from "../language-provider";
 import translations from "../../data/translations";
 import { useTheme } from "../theme-provider";
+import { LanguageOption } from "../../types";
 
-interface LanguageOption {
-  name: string;
-  code: "en" | "fa";
-  icon: string;
-}
+
 
 const LanguageSelector = () => {
   const { theme } = useTheme();

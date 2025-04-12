@@ -1,14 +1,7 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
+import { IMessage } from "../types/express";
 
-export interface IMessage extends Document {
-  sender: Types.ObjectId;
-  receiver: Types.ObjectId;
-  content: string;
-  type: "text" | "image" | "file";
-  isRead: boolean;
-  updatedAt: Date;
-  createdAt: Date;
-}
+
 
 const messageSchema = new Schema<IMessage>(
   {

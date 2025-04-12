@@ -2,11 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useLanguage } from "../language-provider";
 import translations from "../../data/translations";
+import { UserSecurityType } from "../../types";
 
-interface User {
-  googleId?: string;
-  email: string;
-}
 
 const Security = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -14,7 +11,7 @@ const Security = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserSecurityType | null>(null);
   const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
 

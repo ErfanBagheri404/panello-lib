@@ -8,22 +8,8 @@ import { useTheme } from "../components/theme-provider";
 import axios from "axios";
 import { useLanguage } from "../components/language-provider"; // Added import
 import translations from "../data/translations"; // Import translations
+import { Member, Role } from "../types";
 
-export interface Role {
-  id: string;
-  name: string;
-  description: string;
-}
-
-export interface Member {
-  id: string;
-  name: string;
-  role: string;
-  dateAdded: string;
-  status: string;
-  accountState: string;
-  avatar: string;
-}
 
 const Members = () => {
   const { language } = useLanguage(); // Added useLanguage hook

@@ -5,14 +5,10 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-
+import { LanguageContextType } from "../types";
 type Language = "en" | "fa";
 
-interface LanguageContextType {
-  language: Language;
-  direction: "ltr" | "rtl";
-  setLanguage: (lang: Language) => void;
-}
+
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
   undefined

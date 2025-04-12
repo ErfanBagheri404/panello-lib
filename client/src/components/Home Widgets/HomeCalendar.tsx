@@ -8,14 +8,8 @@ import { useTheme } from "../theme-provider";
 import axios from "axios";
 import { useLanguage } from "../language-provider"; // Added import
 import translations from "../../data/translations";
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  description?: string;
-  color: string;
-}
+import { CalendarEvent } from "../../types";
+
 
 const HomeCalendar = () => {
   const { language } = useLanguage(); // Added useLanguage hook

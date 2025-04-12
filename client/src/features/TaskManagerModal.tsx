@@ -1,16 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { IoClose } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
-import { ITask } from "../types";
+import { ITask, UserTaskManagerType } from "../types";
 import translations from "../data/translations";
 import { useLanguage } from "../components/language-provider";
 import axios from "axios";
-
-interface User {
-  id: string;
-  name: string;
-  avatar: string;
-}
 
 // Update the props type
 type TaskManagerModalProps = {
@@ -18,7 +12,7 @@ type TaskManagerModalProps = {
   task: ITask | null;
   onSubmit: (taskData: Partial<ITask>) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;
-  availableUsers?: User[]; // Add this prop
+  availableUsers?: UserTaskManagerType[]; // Add this prop
 };
 
 const TaskManagerModal = ({
@@ -35,7 +29,7 @@ const TaskManagerModal = ({
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Add state for users
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserTaskManagerType[]>([]);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>(
     task?.assignedTo || []
   );
