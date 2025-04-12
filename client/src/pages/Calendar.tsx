@@ -8,7 +8,7 @@ import { HiDotsHorizontal } from "react-icons/hi";
 import { AnimatePresence } from "framer-motion";
 import grid from "../assets/Grid.svg";
 import {
-  CalendarEvent,
+
   formatTime,
   getRandomColor,
   hexToRgba,
@@ -23,6 +23,7 @@ import { useLanguage } from "../components/language-provider";
 import translations from "../data/translations";
 import axios from "axios";
 import EventDetailsModal from "../features/EventDetailsModal";
+import { CalendarEvent } from "../types";
 
 export const Calendar = () => {
   const { language } = useLanguage();

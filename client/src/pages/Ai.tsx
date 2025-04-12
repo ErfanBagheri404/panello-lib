@@ -1,20 +1,16 @@
 import { useState, useRef, useEffect, FormEvent } from "react";
 import grid from "../assets/Grid.svg";
 import { fetchAIResponse } from "../api/openrouter";
-import {
-  IoSend,
-  IoPause,
-  IoHappyOutline,
-  IoSunnyOutline,
-  IoBookOutline,
-} from "react-icons/io5";
 import { FaRegCopy } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "../components/theme-provider";
-import { useLanguage } from "../components/language-provider"; // Added import
-import translations from "../data/translations"; // Import translations
+import { useLanguage } from "../components/language-provider";
+import translations from "../data/translations";
+import MessageList from "../components/ai/MessageList";
+import InputForm from "../components/ai/InputForm";
+import SuggestionBoxes from "../components/ai/SuggestionBoxes";
 
 type Message = {
   role: "user" | "ai";
@@ -30,7 +26,7 @@ const FREE_MODELS = [
 ];
 
 const Ai = () => {
-  const { language } = useLanguage(); // Added useLanguage hook
+  const { language } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [pendingAiContent, setPendingAiContent] = useState("");
@@ -75,17 +71,29 @@ const Ai = () => {
     };
   }, [pendingAiContent, isPaused]);
 
-  const handleSend = async (e?: FormEvent) => {
-    if (e) e.preventDefault();
-    if (!input.trim() && messages.length === 0) return;
+  const handleSend = async (inputOrEvent: string | FormEvent) => {
+    // If it's an event, prevent default behavior
+    if (typeof inputOrEvent !== 'string' && inputOrEvent?.preventDefault) {
+      inputOrEvent.preventDefault();
+    }
+    
+    // Determine the message content
+    const messageContent = typeof inputOrEvent === 'string' 
+      ? inputOrEvent 
+      : input;
+      
+    if (!messageContent.trim() && messages.length === 0) return;
+    
     const userMessage: Message = {
       role: "user",
-      content: input || messages[messages.length - 1].content,
+      content: messageContent || messages[messages.length - 1].content,
     };
+    
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsTyping(true);
     setIsPaused(false);
+    
     try {
       setMessages((prev) => [
         ...prev,
@@ -126,7 +134,7 @@ const Ai = () => {
     }
   };
 
-  const renderMessage = (msg: Message) => {
+   (msg: Message) => {
     return (
       <ReactMarkdown
         className="markdown"
@@ -206,7 +214,7 @@ const Ai = () => {
     );
   };
 
-  const handleBoxSelect = async (commands: readonly string[]) => {
+   async (commands: readonly string[]) => {
     const selectedCommand =
       commands[Math.floor(Math.random() * commands.length)];
     const userMessage: Message = { role: "user", content: selectedCommand };
@@ -247,7 +255,7 @@ const Ai = () => {
     translations[language].bookCommands,
   ];
 
-  const getMessageClasses = (role: "user" | "ai") => {
+   (role: "user" | "ai") => {
     const baseClasses =
       "mb-3 p-3 rounded-lg max-w-[90%] md:max-w-[70%] lg:max-w-[50%]";
     if (role === "user") {
@@ -277,93 +285,26 @@ const Ai = () => {
       </div>
       <div className="flex-1 flex flex-col p-2 md:p-4 overflow-y-auto z-10 scrollbar-hide">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center flex-1 px-2">
-            <h2
-              className={`text-lg font-semibold mb-4 ${
-                theme === "dark" ? "text-white" : "text-black"
-              }`}
-            >
-              {translations[language].startConversation}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 w-full max-w-3xl">
-              {boxCommands.map((commands, index) => (
-                <div
-                  key={index}
-                  className={`p-3 md:p-4 rounded-lg border cursor-pointer transition duration-300 flex flex-col items-center justify-center ${
-                    theme === "dark"
-                      ? "bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
-                      : "bg-white border-black/30 text-black hover:bg-gray-100"
-                  }`}
-                  onClick={() => handleBoxSelect(commands)}
-                >
-                  {index === 0 && (
-                    <IoHappyOutline className="text-2xl md:text-3xl mb-2 text-blue-500" />
-                  )}
-                  {index === 1 && (
-                    <IoSunnyOutline className="text-2xl md:text-3xl mb-2 text-yellow-500" />
-                  )}
-                  {index === 2 && (
-                    <IoBookOutline className="text-2xl md:text-3xl mb-2 text-green-500" />
-                  )}
-                  <h3 className="text-sm md:text-md font-semibold">
-                    {translations[language].categories[index]}
-                  </h3>
-                </div>
-              ))}
-            </div>
-          </div>
+          <SuggestionBoxes
+            boxCommands={boxCommands}
+            onSelect={handleSend}
+            theme={theme}
+            startText={translations[language].startConversation}
+            categories={translations[language].categories}
+          />
         ) : (
-          <>
-            {messages.map((msg, index) => (
-              <div key={index} className={getMessageClasses(msg.role)}>
-                {renderMessage(msg)}
-              </div>
-            ))}
-            <div ref={chatEndRef}></div>
-          </>
+          <MessageList messages={messages} theme={theme} />
         )}
       </div>
-      <form
-        onSubmit={handleSend}
-        className={`p-2 md:p-4 border-t flex z-10 gap-2 ${
-          theme === "dark"
-            ? "bg-black border-gray-600"
-            : "bg-white border-black/20"
-        }`}
-      >
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className={`flex-1 p-2 text-sm md:text-base border rounded-lg focus:outline-none ${
-            theme === "dark"
-              ? "bg-black text-white border-gray-600 placeholder-gray-400"
-              : "bg-white text-black border-black/30 placeholder-gray-600"
-          }`}
-          placeholder={translations[language].askPlaceholder}
-          disabled={isTyping && !isPaused}
-        />
-        <button
-          type="button"
-          className={`p-2 md:px-4 md:py-2 rounded-lg ${
-            isTyping
-              ? "bg-red-500 hover:bg-red-600"
-              : "bg-blue-500 hover:bg-blue-600"
-          } text-white disabled:opacity-50 flex items-center`}
-          onClick={isTyping ? handlePause : handleSend}
-        >
-          {isTyping ? (
-            <IoPause className="text-sm md:text-base" />
-          ) : (
-            <>
-              <span className="hidden md:inline">
-                {translations[language].send}
-              </span>
-              <IoSend className="md:hidden text-sm" />
-            </>
-          )}
-        </button>
-      </form>
+      <InputForm
+        onSend={handleSend}
+        onPause={handlePause}
+        isTyping={isTyping}
+        isPaused={isPaused}
+        theme={theme}
+        placeholder={translations[language].askPlaceholder}
+        sendText={translations[language].send}
+      />
     </main>
   );
 };
