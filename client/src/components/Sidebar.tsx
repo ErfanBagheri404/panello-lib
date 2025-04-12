@@ -3,9 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "./theme-provider";
 import { useLanguage } from "./language-provider";
 import translations from "../data/translations";
-
 import logo from "../assets/Logo2.svg";
-import logo2 from "../assets/Logo.svg";
+import logo2 from "../assets/logo.svg";
 import calendar from "../assets/Sidebar/Calendar.svg";
 import messages from "../assets/Sidebar/chat_bubble.svg";
 import home from "../assets/Sidebar/Home.svg";
