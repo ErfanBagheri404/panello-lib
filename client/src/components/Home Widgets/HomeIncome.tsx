@@ -1,6 +1,5 @@
 import { GrMoney } from "react-icons/gr";
 import { HiDotsHorizontal } from "react-icons/hi";
-import { RxDragHandleDots2 } from "react-icons/rx";
 import { useTheme } from "../theme-provider";
 import { useLanguage } from "../language-provider";
 import translations from "../../data/translations";

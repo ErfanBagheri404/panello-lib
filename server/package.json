@@ -3,7 +3,9 @@
     "version": "1.0.0",
     "main": "server.js",
     "scripts": {
-        "run": "ts-node src/server.ts"
+        "run": "ts-node src/server.ts",
+        "build": "tsc",
+        "start": "node dist/server.js"
     },
     "dependencies": {
         "@types/passport": "^1.0.17",

@@ -6,7 +6,7 @@ const API_URL = "http://localhost:5000/api/tasks";
 
 export const useTasks = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading,] = useState(true);
 
   // Update your fetchTasks function in useTasks.ts
   // Inside your fetchTasks function, make sure it's correctly fetching all tasks

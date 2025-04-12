@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { CalendarEvent, formatTime } from "../components/Calendar/helpers";
+import {  formatTime } from "../components/Calendar/helpers";
+import { CalendarEvent } from "../types";
 import { useTheme } from "../components/theme-provider";
 import { useLanguage } from "../components/language-provider";
 import translations from "../data/translations";

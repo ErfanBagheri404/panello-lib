@@ -1,10 +1,31 @@
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 import { MdOutlineTaskAlt } from "react-icons/md";
 import { RxDragHandleDots2 } from "react-icons/rx";
-import TaskManagerModal, { Task } from "../features/TaskManagerModal";
+import TaskManagerModal from "../features/TaskManagerModal";
+import { ITask } from "../types";
 
 const HomeTasks = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tasks, setTasks] = useState<ITask[]>([]);
+
+  // Function to handle task submission
+  const handleTaskSubmit = async (taskData: Partial<ITask>) => {
+    // Here you would typically make an API call to save the task
+    // For now, we'll just add it to the local state with a mock ID
+    const newTask: ITask = {
+      _id: Date.now().toString(), // Mock ID
+      title: taskData.title || "",
+      subtasks: taskData.subtasks || [],
+      color: taskData.color || "",
+      user: "", // This would come from your auth system
+      completed: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      assignedTo: taskData.assignedTo || []
+    };
+    
+    setTasks([...tasks, newTask]);
+  };
 
   return (
     <div className="p-5 bg-white rounded-xl border border-black/30">
@@ -44,10 +65,8 @@ const HomeTasks = () => {
       {isModalOpen && (
         <TaskManagerModal
           onClose={() => setIsModalOpen(false)}
-          tasks={[]}
-          setTasks={function (_value: SetStateAction<Task[]>): void {
-            throw new Error("Function not implemented.");
-          }}
+          task={null} // Pass null for a new task
+          onSubmit={handleTaskSubmit}
         />
       )}
     </div>
