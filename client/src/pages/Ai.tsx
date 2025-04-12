@@ -18,11 +18,11 @@ type Message = {
 };
 
 const FREE_MODELS = [
-  "deepseek/deepseek-r1-distill-llama-70b:free",
-  "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
-  "deepseek/deepseek-r1:free",
+  "anthropic/claude-3-haiku:free",
+  "mistralai/mistral-7b-instruct:free",
+  "meta-llama/llama-3-8b-instruct:free",
+  "google/gemma-7b-it:free",
   "deepseek/deepseek-chat:free",
-  "qwen/qwen2.5-vl-72b-instruct:free",
 ];
 
 const Ai = () => {
