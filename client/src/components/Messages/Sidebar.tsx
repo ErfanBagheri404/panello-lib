@@ -6,8 +6,6 @@ import { useLanguage } from "../language-provider";
 import translations from "../../data/translations";
 import axios from "axios";
 
-
-
 const Sidebar: React.FC<SidebarProps> = ({
   users: initialUsers,
   isOpen,
@@ -27,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       try {
         // Get current user ID with fallback to API
         let currentUserId = localStorage.getItem("userId");
-        
+
         if (!currentUserId) {
           const userResponse = await axios.get("/api/auth/me", {
             headers: {
@@ -57,10 +55,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         const fetchedMembers = filteredMembers.map((member: any) => ({
           id: member.id || member._id,
-          name: member.name || 
-              (member.firstName && member.lastName ? 
-                `${member.firstName} ${member.lastName}` : 
-                member.email || "Unknown User"),
+          name:
+            member.name ||
+            (member.firstName && member.lastName
+              ? `${member.firstName} ${member.lastName}`
+              : member.email || "Unknown User"),
           pfp: member.avatar || "/default-avatar.png",
           online: member.status === "Online" || member.isOnline || false,
         }));
@@ -78,13 +77,12 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleUserSelect = (user: User) => {
     try {
-      console.log(`Attempting to select user ${user.id} (${user.name})`);
       onUserSelect(user);
     } catch (error) {
       console.error("Failed to select user:", {
         userId: user.id,
         userName: user.name,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
       setError("Failed to start conversation. Check console for details.");
     }

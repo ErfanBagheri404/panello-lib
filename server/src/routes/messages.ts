@@ -41,7 +41,7 @@ export default (io: Server) => {
         return;
       }
 
-      console.log('Creating new message from', sender, 'to', receiver);
+      
       const message = new Message({
         sender,
         receiver,

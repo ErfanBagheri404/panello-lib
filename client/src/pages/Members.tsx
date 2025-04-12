@@ -10,7 +10,6 @@ import { useLanguage } from "../components/language-provider"; // Added import
 import translations from "../data/translations"; // Import translations
 import { Member, Role } from "../types";
 
-
 const Members = () => {
   const { language } = useLanguage(); // Added useLanguage hook
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,7 +37,7 @@ const Members = () => {
         const response = await axios.get("/api/users/members", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        console.log("Members data received:", response.data);
+
         setMembers(response.data);
       } catch (error) {
         console.error("Failed to fetch members:", error);

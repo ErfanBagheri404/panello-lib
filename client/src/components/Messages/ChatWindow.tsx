@@ -1,4 +1,11 @@
-import { User, Message, ChatWindowProps, MessageGroupProps, MessageInputProps, MessageItemProps } from "../../types";
+import {
+  User,
+  Message,
+  ChatWindowProps,
+  MessageGroupProps,
+  MessageInputProps,
+  MessageItemProps,
+} from "../../types";
 import { formatDate } from "../../lib/dateUtils";
 import { FiSend } from "react-icons/fi";
 import { useTheme } from "../theme-provider";
@@ -7,8 +14,6 @@ import translations from "../../data/translations";
 import socket from "../../lib/socket";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-
 
 const ChatHeader = ({ user, onBack }: { user: User; onBack?: () => void }) => {
   const { theme } = useTheme();
@@ -124,10 +129,11 @@ const ChatWindow = ({
     // Update socket listener for newMessage event
     socket.on("newMessage", (msg) => {
       console.log("Received new message via socket:", msg);
-      
+
       // Check if this message belongs to the current conversation
       if (
-        (msg.sender._id === currentUserId && msg.receiver === selectedUser.id) ||
+        (msg.sender._id === currentUserId &&
+          msg.receiver === selectedUser.id) ||
         (msg.sender._id === selectedUser.id && msg.receiver === currentUserId)
       ) {
         console.log("Adding new message to conversation");
@@ -143,9 +149,10 @@ const ChatWindow = ({
     // Also listen for the receiveMessage event (used in server.ts)
     socket.on("receiveMessage", (msg) => {
       console.log("Received message via receiveMessage event:", msg);
-      
+
       if (
-        (msg.sender._id === currentUserId && msg.receiver === selectedUser.id) ||
+        (msg.sender._id === currentUserId &&
+          msg.receiver === selectedUser.id) ||
         (msg.sender._id === selectedUser.id && msg.receiver === currentUserId)
       ) {
         console.log("Adding received message to conversation");
@@ -163,7 +170,6 @@ const ChatWindow = ({
   }, [selectedUser, currentUserId]);
 
   const formatMessage = (msg: any, currentUserId: string): Message => {
-    console.log("Formatting message:", msg, "Current user ID:", currentUserId);
     const isSentByCurrentUser = msg.sender._id === currentUserId;
     return {
       sender: isSentByCurrentUser ? "You" : msg.senderName || "Unknown",
@@ -177,11 +183,7 @@ const ChatWindow = ({
   };
 
   const handleSendMessage = async () => {
-    console.log("Attempting to send message...", {
-      input: input,
-      selectedUser: selectedUser,
-      currentUserId: currentUserId,
-    });
+
 
     if (!input.trim() || !selectedUser || !currentUserId) {
       console.log("Send message blocked - missing required data:", {
@@ -270,15 +272,11 @@ const ChatWindow = ({
 
 export default ChatWindow;
 
-
-
 // Update the MessageItem component
 const MessageItem = ({ message }: MessageItemProps) => {
   const { theme } = useTheme();
   const { language } = useLanguage();
   const isCurrentUser = message.sender === "You";
-
-  console.log("Message from:", message.sender, "isCurrentUser:", isCurrentUser);
 
   return (
     <div
@@ -294,7 +292,7 @@ const MessageItem = ({ message }: MessageItemProps) => {
               : `${
                   theme === "dark"
                     ? "bg-gray-800 text-white"
-                    : "bg-gray-100 text-white"  
+                    : "bg-gray-100 text-white"
                 } rounded-tl-none`
           }`}
         >
@@ -312,8 +310,6 @@ const MessageItem = ({ message }: MessageItemProps) => {
     </div>
   );
 };
-
-
 
 // Update the MessageInput component
 const MessageInput = ({
@@ -359,8 +355,6 @@ const MessageInput = ({
     </div>
   );
 };
-
-
 
 const MessageGroup = ({ date, messages }: MessageGroupProps) => {
   const { theme } = useTheme();
