@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import User, { IUser } from "./User";
+
 import { ITask } from "../types/express";
 
 

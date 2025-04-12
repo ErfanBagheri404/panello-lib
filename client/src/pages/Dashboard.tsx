@@ -9,8 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useTheme } from "../components/theme-provider";
 import { useLanguage } from "../components/language-provider";
-import TaskManagerModal, { Task } from "../features/TaskManagerModal";
+import TaskManagerModal from "../features/TaskManagerModal";
 import translations from "../data/translations";
+import { ITask } from "../types"; // Import ITask interface
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -31,18 +32,26 @@ const Dashboard = () => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>([
+  const [tasks] = useState<ITask[]>([ // Changed Task to ITask
     {
-      id: 1,
-      name: "Team brainstorm",
+      _id: "1", // Changed id to _id to match ITask interface
+      title: "Team brainstorm", // Changed name to title
       subtasks: ["Prepare agenda", "Invite team"],
       color: "#4B00FF",
+      user: "", // Added required field from ITask
+      completed: false, // Added required field from ITask
+      createdAt: new Date().toISOString(), // Added required field from ITask
+      updatedAt: new Date().toISOString(), // Added required field from ITask
     },
     {
-      id: 2,
-      name: "Design review",
+      _id: "2", // Changed id to _id
+      title: "Design review", // Changed name to title
       subtasks: ["Review new mockups", "Prepare feedback"],
       color: "#FF5722",
+      user: "", // Added required field from ITask
+      completed: false, // Added required field from ITask
+      createdAt: new Date().toISOString(), // Added required field from ITask
+      updatedAt: new Date().toISOString(), // Added required field from ITask
     },
   ]);
 
@@ -136,8 +145,9 @@ const Dashboard = () => {
       {isModalOpen && (
         <TaskManagerModal
           onClose={() => setIsModalOpen(false)}
-          tasks={tasks}
-          setTasks={setTasks}
+          task={tasks[0]} onSubmit={function (_taskData: Partial<ITask>): Promise<void> {
+            throw new Error("Function not implemented.");
+          } }          // Remove the setTasks prop as it's not expected by the component
         />
       )}
     </main>
