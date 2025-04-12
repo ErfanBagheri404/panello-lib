@@ -14,6 +14,7 @@ import {
 } from "../controllers/authController";
 import { fetchAIResponse } from "../controllers/openRouterController";
 import mongoose from "mongoose";
+import User from '../models/User';
 
 const router = express.Router();
 
@@ -53,5 +54,36 @@ router.put("/change-password", authenticateUser, changePassword);
 router.post("/chat", fetchAIResponse);
 router.put("/avatar", authenticateUser, upload.single("avatar"), updateAvatar);
 router.delete("/avatar", authenticateUser, removeAvatar);
+
+// Add this new route to get the current user
+// Fix the /me endpoint
+router.get('/me', async (req, res) => {
+  try {
+    // Get token from Authorization header
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      res.status(401).json({ error: 'No token provided' });
+      return;
+    }
+    
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string };
+    
+    // Find the user
+    const user = await User.findById(decoded.userId).select('-password');
+    
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+    
+    // Return user data
+    res.json(user);
+  } catch (error) {
+    console.error('Error in /me endpoint:', error);
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
 
 export default router;

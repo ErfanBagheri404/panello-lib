@@ -29,9 +29,27 @@ export const useTasks = () => {
   ) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(API_URL, taskData, {
+      
+      // Get current user ID
+      const currentUserResponse = await axios.get("/api/auth/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
+      const currentUserId = currentUserResponse.data._id;
+      
+      // Add current user to assignedTo if it doesn't already exist
+      const assignedTo = taskData.assignedTo || [];
+      if (!assignedTo.includes(currentUserId)) {
+        assignedTo.push(currentUserId);
+      }
+      
+      const response = await axios.post(API_URL, {
+        ...taskData,
+        assignedTo
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
       setTasks((prev) => [...prev, response.data]);
       return response.data;
     } catch (error) {

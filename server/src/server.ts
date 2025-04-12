@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import { Server } from "socket.io";
+import http from "http";
 import session from "express-session";
 import passport from "passport";
 import authRoutes from "./routes/auth";
@@ -14,13 +16,11 @@ import Task from "./models/Task";
 import { fetchAIResponse } from "./controllers/openRouterController";
 import eventRoutes from "./routes/events";
 import reminderRoutes from "./routes/reminder";
+import messagesRoutes from "./routes/messages";
+import Message from "./models/Message";
 
 dotenv.config();
-const apiKey = process.env.OPENROUTER_API_KEY;
-const mongoURI = process.env.MONGO_URI;
-if (!apiKey) {
-  throw new Error("OPENROUTER_API_KEY is missing!");
-}
+
 const app = express();
 
 app.use((req, res, next) => {
@@ -37,6 +37,14 @@ app.use(
     credentials: true,
   })
 );
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // or specify frontend URL
+    methods: ["GET", "POST"],
+  },
+});
 
 if (!process.env.MONGO_URI) {
   throw new Error("MONGO_URI is not defined in the environment variables");
@@ -87,14 +95,15 @@ configurePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/openrouter", fetchAIResponse);
 app.use("/api/events", eventRoutes);
 app.use("/api/reminders", reminderRoutes);
-
+// Update routes initialization
+app.use("/api/messages", messagesRoutes(io));
 
 app.get("/", (req, res) => {
   res.redirect("/login");
@@ -108,7 +117,40 @@ app.get("/api/tasks", async (req, res) => {
   }
 });
 
+
+io.on("connection", (socket) => {
+  console.log("🟢 New client connected:", socket.id);
+
+  socket.on("join", (userId) => {
+    console.log("👥 User joined room:", userId);
+    socket.join(userId);
+  });
+
+  socket.on("sendMessage", async (data) => {
+    const { senderId, receiverId, content, type } = data;
+
+    try {
+      const message = new Message({
+        sender: senderId,
+        receiver: receiverId,
+        content,
+        type: type || "text",
+      });
+
+      const savedMessage = await message.save();
+      const populatedMessage = await Message.findById(savedMessage._id).populate("sender", "name");
+      io.to(receiverId).emit("receiveMessage", populatedMessage);
+    } catch (err) {
+      console.error("❌ Error saving message:", err);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 Client disconnected:", socket.id);
+  });
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

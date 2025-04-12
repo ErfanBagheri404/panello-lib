@@ -5,7 +5,6 @@ import { authenticateUser } from "./auth";
 
 const router = express.Router();
 
-
 interface MemberData {
   _id: string;
   firstName: string;
@@ -16,12 +15,10 @@ interface MemberData {
   avatar: string;
 }
 
-
 router.use((req, res, next) => {
   console.log(`[Users Router] ${req.method} ${req.url}`);
   next();
 });
-
 
 router.get(
   "/check-email",
@@ -43,7 +40,6 @@ router.get(
     }
   }
 );
-
 
 router.put(
   "/invite",
@@ -97,7 +93,6 @@ router.put(
   }
 );
 
-
 router.get("/members", authenticateUser, async (req, res) => {
   try {
     console.log("Fetching members...");
@@ -105,7 +100,6 @@ router.get("/members", authenticateUser, async (req, res) => {
       .select("_id firstName lastName role createdAt accountState avatar")
       .lean()
       .exec();
-    console.log("Raw DB results:", members);
 
     const formattedMembers = members.map((user) => {
       const createdAt = user.createdAt || new Date();
@@ -126,7 +120,6 @@ router.get("/members", authenticateUser, async (req, res) => {
         avatar: user.avatar,
       };
     });
-    console.log("Formatted response:", formattedMembers);
     res.json(formattedMembers);
   } catch (error) {
     console.error("Failed to fetch members:", error);

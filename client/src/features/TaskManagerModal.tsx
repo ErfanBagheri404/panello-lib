@@ -82,16 +82,24 @@ const TaskManagerModal = ({
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
 
+        const currentUserId = currentUserResponse.data._id;
+
         const usersResponse = await axios.get("/api/users/members", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
 
         // Filter out current user
         const usersList = usersResponse.data.filter(
-          (user: any) => user.id !== currentUserResponse.data._id
+          (user: any) => user.id !== currentUserId
         );
 
         setUsers(usersList);
+        
+        // Add current user to selectedUserIds if creating a new task
+        if (!task && !selectedUserIds.includes(currentUserId)) {
+          setSelectedUserIds([...selectedUserIds, currentUserId]);
+        }
+        
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
@@ -100,7 +108,7 @@ const TaskManagerModal = ({
     };
 
     fetchUsers();
-  }, [availableUsers]); // Add availableUsers as dependency
+  }, [availableUsers, task, selectedUserIds]); // Add availableUsers as dependency
 
   const handleUserToggle = (userId: string) => {
     setSelectedUserIds((prev) => {
@@ -134,14 +142,30 @@ const TaskManagerModal = ({
     setSubtasks(subtasks.filter((st) => st !== subtask));
   };
 
+  // Update the handleSubmit function to ensure current user is included
   const handleSubmit = async () => {
     if (!title.trim()) return;
+    
+    // Get current user ID
+    const token = localStorage.getItem("token");
+    const currentUserResponse = await axios.get("/api/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const currentUserId = currentUserResponse.data._id;
+    
+    // Ensure current user is in the selectedUserIds
+    let finalSelectedUserIds = [...selectedUserIds];
+    if (!finalSelectedUserIds.includes(currentUserId)) {
+      finalSelectedUserIds.push(currentUserId);
+    }
+    
     const taskData: Partial<ITask> = {
       title,
       subtasks,
       color: task?.color || getRandomColor(),
-      assignedTo: selectedUserIds, // This is correct
+      assignedTo: finalSelectedUserIds,
     };
+    
     await onSubmit(taskData);
     onClose();
   };

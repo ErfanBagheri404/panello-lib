@@ -1,31 +1,102 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FiMessageSquare, FiSearch } from "react-icons/fi";
-import { User, Group } from "../../types";
+import { User } from "../../types";
 import { useTheme } from "../theme-provider";
 import { useLanguage } from "../language-provider";
 import translations from "../../data/translations";
+import axios from "axios";
 
 interface SidebarProps {
   users: User[];
-  groups: Group[];
+  // groups: Group[]; // Commented out groups prop
   selectedUser: User | null;
-  selectedGroup: Group | null;
+  // selectedGroup: Group | null; // Commented out selectedGroup prop
   onUserSelect: (user: User) => void;
-  onGroupSelect: (group: Group) => void;
+  // onGroupSelect: (group: Group) => void; // Commented out onGroupSelect prop
   isOpen: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
-  users,
+  users: initialUsers,
   isOpen,
-  groups,
+  // groups, // Commented out groups prop
   selectedUser,
-  selectedGroup,
+  // selectedGroup, // Commented out selectedGroup prop
   onUserSelect,
-  onGroupSelect,
+  // onGroupSelect, // Commented out onGroupSelect prop
 }) => {
-  const { language } = useLanguage(); // Added hook
+  const { language } = useLanguage();
   const { theme } = useTheme();
+  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [error, setError] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        // Get current user ID with fallback to API
+        let currentUserId = localStorage.getItem("userId");
+        
+        if (!currentUserId) {
+          const userResponse = await axios.get("/api/auth/me", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+          currentUserId = userResponse.data._id;
+          if (currentUserId) {
+            localStorage.setItem("userId", currentUserId);
+          }
+        }
+
+        const response = await axios.get(
+          "http://localhost:5000/api/users/members",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        const filteredMembers = response.data.filter((member: any) => {
+          const memberId = member.id || member._id;
+          return memberId && String(memberId) !== String(currentUserId);
+        });
+
+        const fetchedMembers = filteredMembers.map((member: any) => ({
+          id: member.id || member._id,
+          name: member.name || 
+              (member.firstName && member.lastName ? 
+                `${member.firstName} ${member.lastName}` : 
+                member.email || "Unknown User"),
+          pfp: member.avatar || "/default-avatar.png",
+          online: member.status === "Online" || member.isOnline || false,
+        }));
+
+        setUsers(fetchedMembers);
+        setError(undefined);
+      } catch (error) {
+        console.error("Failed to fetch members:", error);
+        setError("Failed to load members. Check console for details.");
+      }
+    };
+
+    fetchMembers();
+  }, [initialUsers]);
+
+  const handleUserSelect = (user: User) => {
+    try {
+      console.log(`Attempting to select user ${user.id} (${user.name})`);
+      onUserSelect(user);
+    } catch (error) {
+      console.error("Failed to select user:", {
+        userId: user.id,
+        userName: user.name,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      setError("Failed to start conversation. Check console for details.");
+    }
+  };
 
   return (
     <div
@@ -38,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex items-center gap-2 text-lg font-semibold mb-4">
         <FiMessageSquare className="text-blue-500" />
         <span className={theme === "dark" ? "text-white" : "text-black"}>
-          {translations[language].messages} {/* Messages heading */}
+          {translations[language].messages}
         </span>
       </div>
       <div className="space-y-4">
@@ -59,6 +130,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             }`}
           />
         </div>
+
         {/* Filter Tabs */}
         <div className="flex gap-2">
           <button
@@ -79,6 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             {translations[language].filterPeople} {/* PEOPLE */}
           </button>
+          {/* Commented out Groups filter button
           <button
             className={`px-3 py-1 rounded-full text-sm ${
               theme === "dark"
@@ -86,11 +159,17 @@ const Sidebar: React.FC<SidebarProps> = ({
                 : "text-gray-600 border-black/30 hover:bg-gray-100"
             }`}
           >
-            {translations[language].filterGroups} {/* GROUPS */}
+            {translations[language].filterGroups}
           </button>
+          */}
         </div>
-        {/* User & Group List */}
+
+        {/* User List */}
         <div className="flex flex-col gap-2 overflow-y-auto scrollbar-hide">
+          {error && (
+            <div className={`text-center py-2 text-red-500`}>{error}</div>
+          )}
+
           {users.map((user) => {
             const userButtonClass = `flex items-center gap-3 p-2 rounded-lg transition ${
               selectedUser?.id === user.id
@@ -105,13 +184,13 @@ const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={user.id}
                 className={userButtonClass}
-                onClick={() => onUserSelect(user)}
+                onClick={() => handleUserSelect(user)}
               >
                 <div className="relative">
                   <img
                     src={user.pfp}
                     alt={user.name}
-                    className="w-10 h-10 rounded-full border-2 border-white shadow-md"
+                    className="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover"
                   />
                   {user.online && (
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
@@ -140,7 +219,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         theme === "dark" ? "text-blue-300" : "text-blue-500"
                       }
                     >
-                      {translations[language].viewProfile} {/* View Profile */}
+                      {translations[language].viewProfile}
                     </span>
                   </div>
                 </div>
@@ -148,6 +227,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             );
           })}
 
+          {/* Commented out Groups section
           {groups.map((group) => {
             const groupButtonClass = `flex items-center gap-3 p-2 rounded-lg transition ${
               selectedGroup?.id === group.id
@@ -184,13 +264,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                       theme === "dark" ? "text-gray-400" : "text-gray-500"
                     }`}
                   >
-                    {group.members.length} {translations[language].members}{" "}
-                    {/* Members count */}
+                    {group.members.length} {translations[language].members}
                   </div>
                 </div>
               </button>
             );
           })}
+          */}
         </div>
       </div>
     </div>

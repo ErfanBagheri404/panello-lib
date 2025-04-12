@@ -23,10 +23,25 @@ const HomeTasks = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
+        
+        // Get current user
+        const currentUserResponse = await axios.get("/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        const currentUserId = currentUserResponse.data._id;
+        
+        // Get all users
         const response = await axios.get("/api/users/members", {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setUsers(response.data);
+        
+        // Filter out current user from the list
+        const filteredUsers = response.data.filter(
+          (user: any) => user.id !== currentUserId
+        );
+        
+        setUsers(filteredUsers);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
