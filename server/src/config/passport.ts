@@ -1,8 +1,9 @@
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import User, { IUser } from "../models/User";
+import User from "../models/User";
 import { CallbackError } from "mongoose";
+import { IUser } from "../types/express";
 
 export const configurePassport = () => {
 

@@ -23,30 +23,30 @@ const HomeTasks = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
-        
+
         // Get current user
         const currentUserResponse = await axios.get("/api/auth/me", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
-        
+
         const currentUserId = currentUserResponse.data._id;
-        
+
         // Get all users
         const response = await axios.get("/api/users/members", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
-        
+
         // Filter out current user from the list
         const filteredUsers = response.data.filter(
           (user: any) => user.id !== currentUserId
         );
-        
+
         setUsers(filteredUsers);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
-    
+
     fetchUsers();
   }, []);
 
@@ -55,9 +55,11 @@ const HomeTasks = () => {
       // Ensure assignedTo data is properly formatted
       const formattedTaskData = {
         ...taskData,
-        assignedTo: Array.isArray(taskData.assignedTo) ? taskData.assignedTo : []
+        assignedTo: Array.isArray(taskData.assignedTo)
+          ? taskData.assignedTo
+          : [],
       };
-      
+
       if (selectedTask) {
         await updateTask(selectedTask._id, formattedTaskData);
       } else {
@@ -72,6 +74,39 @@ const HomeTasks = () => {
 
   const handleDeleteTask = async (id: string) => {
     try {
+      // Get the task to be deleted
+      const taskToDelete = tasks.find((task) => task._id === id);
+
+      if (!taskToDelete) {
+        console.error("Task not found");
+        return;
+      }
+
+      // Get current user ID
+      const token = localStorage.getItem("token");
+      const currentUserResponse = await axios.get("/api/auth/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const currentUserId = currentUserResponse.data._id;
+
+      // Check if current user is the creator of the task
+      if (taskToDelete.user !== currentUserId) {
+        // Get creator's name
+        const usersResponse = await axios.get("/api/users/members", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const creator = usersResponse.data.find(
+          (user: any) => user.id === taskToDelete.user
+        );
+        const creatorName = creator
+          ? creator.name || creator.username || "the creator"
+          : "the creator";
+
+        alert(`Only ${creatorName} can delete this task.`);
+        return;
+      }
+
       await deleteTask(id);
       setIsModalOpen(false);
       setSelectedTask(null);

@@ -216,6 +216,7 @@ type Translations = {
     updating: string;
     applyApiKeys: string;
     slogan: string;
+    onlyCreatorCanDelete: string;
   };
 };
 
@@ -455,6 +456,7 @@ const translations: Translations = {
     openRouterApiKey: "OpenRouter API Key",
     updating: "Updating...",
     applyApiKeys: "Apply API Keys",
+    onlyCreatorCanDelete: "Only the creator of this task can delete it.",
   },
   fa: {
     welcome: "خوش آمدید، عرفان",
@@ -701,6 +703,7 @@ const translations: Translations = {
     openRouterApiKey: "کلید API OpenRouter",
     updating: "در حال به‌روزرسانی...",
     applyApiKeys: "اعمال کلیدهای API",
+    onlyCreatorCanDelete: "فقط سازنده وظیفه توانایی حذف آن را دارد",
   },
 } as const;
 

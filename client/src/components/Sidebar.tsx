@@ -9,7 +9,6 @@ import logo2 from "../assets/Logo.svg";
 import calendar from "../assets/Sidebar/Calendar.svg";
 import messages from "../assets/Sidebar/chat_bubble.svg";
 import home from "../assets/Sidebar/Home.svg";
-import chart from "../assets/Sidebar/Pie chart.svg";
 import settings from "../assets/Sidebar/Settings.svg";
 import sidebar from "../assets/Sidebar/Sidebar.svg";
 import ai from "../assets/Sidebar/Sparkling.svg";
@@ -77,12 +76,14 @@ const Sidebar = () => {
       path: "/members",
       allowedRoles: ["owner", "co-owner", "administrator", "moderator"],
     },
+    /* Temporarily commented out graphs menu item
     {
       icon: chart,
       label: translations[language].sidebar.graphsAndCharts,
       path: "/graphs",
       allowedRoles: ["owner", "co-owner", "administrator", "moderator"],
     },
+    */
     {
       icon: calendar,
       label: translations[language].sidebar.calendar,

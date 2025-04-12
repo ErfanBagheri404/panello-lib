@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import User, { IUser } from "../models/User";
+import User from "../models/User";
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import * as dotenv from "dotenv";
+import { IUser } from "../types/express";
 dotenv.config();
 
 const generateJWTToken = (user: any): string => {

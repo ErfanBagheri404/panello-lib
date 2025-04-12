@@ -4,20 +4,61 @@ import HomeTasks from "../components/Home Widgets/HomeTasks";
 import HomeReminder from "../components/Home Widgets/HomeReminder";
 import HomeIncome from "../components/Home Widgets/HomeIncome";
 import HomeCalendar from "../components/Home Widgets/HomeCalendar";
-import HomeGraph from "../components/Home Widgets/HomeGraph";
+// import HomeGraph from "../components/Home Widgets/HomeGraph";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "../components/theme-provider";
 import { useLanguage } from "../components/language-provider";
 import TaskManagerModal from "../features/TaskManagerModal";
 import translations from "../data/translations";
 import { ITask } from "../types"; // Import ITask interface
+import { useTasks } from "../components/hooks/useTasks";
+import axios from "axios";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [, setSelectedItem] = useState<string>("");
   const { theme } = useTheme();
   const { language } = useLanguage();
+  const [users, setUsers] = useState<any[]>([]);
+  const { createTask, refreshTasks: fetchTasks } = useTasks(); // Use refreshTasks as fetchTasks
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [, setLoadingUsers] = useState(false);
+
+  // Fetch users when component mounts
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoadingUsers(true);
+        const token = localStorage.getItem("token");
+        
+        // Get current user
+        const currentUserResponse = await axios.get("/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        const currentUserId = currentUserResponse.data._id;
+        
+        // Get all users
+        const response = await axios.get("/api/users/members", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        // Filter out current user from the list
+        const filteredUsers = response.data.filter(
+          (user: any) => user.id !== currentUserId
+        );
+        
+        setUsers(filteredUsers);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+    
+    fetchUsers();
+  }, []);
 
   const handleClick = (path: string) => {
     setSelectedItem(path);
@@ -31,29 +72,31 @@ const Dashboard = () => {
     } ${now.getDate()}`;
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tasks] = useState<ITask[]>([ // Changed Task to ITask
-    {
-      _id: "1", // Changed id to _id to match ITask interface
-      title: "Team brainstorm", // Changed name to title
-      subtasks: ["Prepare agenda", "Invite team"],
-      color: "#4B00FF",
-      user: "", // Added required field from ITask
-      completed: false, // Added required field from ITask
-      createdAt: new Date().toISOString(), // Added required field from ITask
-      updatedAt: new Date().toISOString(), // Added required field from ITask
-    },
-    {
-      _id: "2", // Changed id to _id
-      title: "Design review", // Changed name to title
-      subtasks: ["Review new mockups", "Prepare feedback"],
-      color: "#FF5722",
-      user: "", // Added required field from ITask
-      completed: false, // Added required field from ITask
-      createdAt: new Date().toISOString(), // Added required field from ITask
-      updatedAt: new Date().toISOString(), // Added required field from ITask
-    },
-  ]);
+  // Implement proper task submission handler
+  const handleTaskSubmit = async (taskData: Partial<ITask>): Promise<void> => {
+    try {
+      // Ensure all required fields are present and properly formatted
+      const formattedTaskData = {
+        title: taskData.title || "New Task", // Provide default title if undefined
+        subtasks: taskData.subtasks || [],
+        color: taskData.color, // Remove default color to use the one from TaskManagerModal
+        completed: taskData.completed || false,
+        assignedTo: Array.isArray(taskData.assignedTo) ? taskData.assignedTo : []
+      };
+      
+      await createTask({
+        ...formattedTaskData,
+        color: formattedTaskData.color || '#000000' // Ensure color is never undefined
+      });
+      
+      // Fetch tasks after creating a new one to refresh the list
+      await fetchTasks();
+      
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error saving task:", error);
+    }
+  };
 
   return (
     <main
@@ -134,7 +177,8 @@ const Dashboard = () => {
           <div className="flex flex-col w-full lg:w-1/2 gap-5">
             <HomeTasks />
             <HomeIncome />
-            <HomeGraph />
+            {/* <HomeGraph /> */}
+            <div>New widgets on their way...</div>
           </div>
           <div className="flex flex-col w-full lg:w-1/2 gap-5">
             <HomeReminder />
@@ -145,9 +189,9 @@ const Dashboard = () => {
       {isModalOpen && (
         <TaskManagerModal
           onClose={() => setIsModalOpen(false)}
-          task={tasks[0]} onSubmit={function (_taskData: Partial<ITask>): Promise<void> {
-            throw new Error("Function not implemented.");
-          } }          // Remove the setTasks prop as it's not expected by the component
+          task={null}
+          onSubmit={handleTaskSubmit}
+          availableUsers={users}
         />
       )}
     </main>

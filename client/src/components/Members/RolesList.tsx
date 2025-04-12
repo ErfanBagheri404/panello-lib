@@ -5,7 +5,6 @@ import translations from "../../data/translations";
 import axios from "axios";
 import { RolesListProps } from "../../types";
 
-
 const RolesList = ({ roles, setRoles }: RolesListProps) => {
   const { language } = useLanguage();
   const { theme } = useTheme();
@@ -76,7 +75,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
       }`}
     >
       <h3 className="text-lg font-semibold mb-2">
-        {translations[language].rolesListHeader} {/* Roles header */}
+        {translations[language].rolesListHeader}
       </h3>
       <div
         className={`w-full rounded-xl border overflow-hidden p-3 ${
@@ -109,8 +108,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
                     onChange={handleAllCheck}
                   />
                 </th>
-                <th className="p-3">{translations[language].roleHeader}</th>{" "}
-                {/* Role header */}
+                <th className="p-3">{translations[language].roleHeader}</th>
                 <th
                   className={`p-3 ${
                     language === "fa"
@@ -118,8 +116,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
                       : "rounded-tr-xl rounded-br-xl"
                   }`}
                 >
-                  {translations[language].descriptionHeader}{" "}
-                  {/* Description header */}
+                  {translations[language].descriptionHeader}
                 </th>
               </tr>
             </thead>
@@ -154,8 +151,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
         </div>
       </div>
       <div className="flex lg:flex-row flex-col items-center mt-3 gap-2 text-center">
-        <span>{translations[language].actionsSelectedRoles}</span>{" "}
-        {/* Actions message */}
+        <span>{translations[language].actionsSelectedRoles}</span>
         <div className="flex flex-row justify-between w-full lg:w-fit lg:gap-2">
           <select
             className={`border rounded-md p-1 ${
@@ -166,13 +162,10 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
             value={selectedAction}
             onChange={(e) => setSelectedAction(e.target.value)}
           >
-            <option value="">{translations[language].actionOptions}</option>{" "}
-            {/* Options placeholder */}
-            <option>{translations[language].deleteAction}</option>{" "}
-            {/* Delete */}
-            <option>{translations[language].editAction}</option> {/* Edit */}
-            <option>{translations[language].duplicateAction}</option>{" "}
-            {/* Duplicate */}
+            <option value="">{translations[language].actionOptions}</option>
+            <option>{translations[language].deleteAction}</option>
+            <option>{translations[language].editAction}</option>
+            <option>{translations[language].duplicateAction}</option>
           </select>
           <button
             className={`px-3 py-1 rounded-md text-md ${
@@ -182,7 +175,7 @@ const RolesList = ({ roles, setRoles }: RolesListProps) => {
             }`}
             onClick={handleActionApply}
           >
-            {translations[language].applyAction} {/* Apply */}
+            {translations[language].applyAction}
           </button>
         </div>
       </div>
