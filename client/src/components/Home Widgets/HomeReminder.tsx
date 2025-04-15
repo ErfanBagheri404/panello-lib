@@ -22,8 +22,6 @@ type ReminderSection = {
   tasks: ReminderTask[];
 };
 
-const API_URL = "http://localhost:5000/api/reminders";
-
 const HomeReminder = () => {
   const { theme } = useTheme();
   const [reminders, setReminders] = useState<ReminderSection[]>([]);
@@ -38,7 +36,7 @@ const HomeReminder = () => {
   useEffect(() => {
     const fetchReminders = async () => {
       try {
-        const response = await axios.get(API_URL, {
+        const response = await axios.get(`/api/reminders`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const tasks = response.data;
@@ -113,7 +111,7 @@ const HomeReminder = () => {
     if (!newReminderText.trim() || !selectedDate) return;
     try {
       const response = await axios.post(
-        API_URL,
+        `/api/reminders`,
         {
           title: newReminderText,
           date: selectedDate,
@@ -160,7 +158,7 @@ const HomeReminder = () => {
       if (!task) return;
 
       await axios.put(
-        `${API_URL}/${taskId}`,
+        `${`/api/reminders`}/${taskId}`,
         { completed: !task.completed },
         {
           headers: {
@@ -188,7 +186,7 @@ const HomeReminder = () => {
 
   const handleDeleteTask = async (sectionIndex: number, taskId: string) => {
     try {
-      await axios.delete(`${API_URL}/${taskId}`, {
+      await axios.delete(`${`/api/reminders`}/${taskId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { ITask } from "../../types";
 
-const API_URL = "http://localhost:5000/api/tasks";
 
 export const useTasks = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
@@ -43,7 +42,7 @@ export const useTasks = () => {
         assignedTo.push(currentUserId);
       }
       
-      const response = await axios.post(API_URL, {
+      const response = await axios.post(`/api/tasks`, {
         ...taskData,
         assignedTo
       }, {
@@ -61,7 +60,7 @@ export const useTasks = () => {
   const updateTask = async (id: string, taskData: Partial<ITask>) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.put(`${API_URL}/${id}`, taskData, {
+      const response = await axios.put(`${`/api/tasks`}/${id}`, taskData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks((prev) =>
@@ -77,7 +76,7 @@ export const useTasks = () => {
   const deleteTask = async (id: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`${API_URL}/${id}`, {
+      await axios.delete(`${`/api/tasks`}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks((prev) => prev.filter((task) => task._id !== id));

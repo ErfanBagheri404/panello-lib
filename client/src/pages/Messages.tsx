@@ -56,7 +56,7 @@ const Messages = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users/members", {
+        const response = await axios.get(`/api/users/members`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const fetchedUsers = response.data.map((member: any, index: number) => ({

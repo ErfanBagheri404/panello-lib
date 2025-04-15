@@ -1,12 +1,11 @@
 
 import { useGoogleLogin } from "@react-oauth/google";
-import { API_BASE_URL } from "../../../config";
 
 export const useGoogleAuth = () => {
   const googleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/auth/google`, {
+        const res = await fetch(`/api/auth/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token: response.access_token }),

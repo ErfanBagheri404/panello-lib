@@ -77,7 +77,7 @@ const InviteMemberModal = ({
   const handleInvite = async () => {
     console.log("handleInvite called with inviteData:", inviteData);
     try {
-      const response = await fetch("http://localhost:5000/api/users/invite", {
+      const response = await fetch(`/api/users/invite`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

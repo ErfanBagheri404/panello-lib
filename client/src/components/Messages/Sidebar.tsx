@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         }
 
         const response = await axios.get(
-          "http://localhost:5000/api/users/members",
+          `/api/users/members`,
           {
             headers: {
               "Content-Type": "application/json",

@@ -47,7 +47,7 @@ const General = () => {
       formData.append("avatar", file);
 
       const response = await axios.put(
-        "http://localhost:5000/api/auth/avatar",
+        `/api/auth/avatar`,
         formData,
         {
           headers: {

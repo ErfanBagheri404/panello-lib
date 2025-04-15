@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { API_BASE_URL } from "../../config.ts";
 import { useGoogleAuth } from "../components/hooks/useGoogleLogin.ts";
 import { useTheme } from "../components/theme-provider.tsx";
 import ImgSwitcher from "../components/ImgSwitcher.tsx";
@@ -28,7 +27,7 @@ const Register = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      const res = await fetch(`/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -162,9 +161,7 @@ const Register = () => {
                 </a>
               </label>
             </div>
-            {error && (
-              <div className="text-red-500 text-sm">{error}</div>
-            )}
+            {error && <div className="text-red-500 text-sm">{error}</div>}
 
             <button
               type="submit"

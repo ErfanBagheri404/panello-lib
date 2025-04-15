@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { API_BASE_URL } from "../../config.ts";
 import { useGoogleAuth } from "../components/hooks/useGoogleLogin.ts";
 import { useTheme } from "../components/theme-provider.tsx";
 import ImgSwitcher from "../components/ImgSwitcher.tsx";
@@ -36,7 +35,7 @@ const Login = () => {
       return;
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const response = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
