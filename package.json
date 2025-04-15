@@ -5,7 +5,8 @@
         "client": "npm run dev --prefix client",
         "server": "npm run run --prefix server",
         "dev": "concurrently \"npm run server\" \"npm run client\"",
-        "build:vercel": "npm install --prefix client && npm run build --prefix client && npm install --prefix server && npm run build --prefix server"
+        "build": "npm install --prefix client && npm run build --prefix client && npm install --prefix server && npm run build --prefix server",
+        "build:client": "npm install --prefix client && npm run build --prefix client"
     },
     "devDependencies": {
         "concurrently": "^8.0.2"

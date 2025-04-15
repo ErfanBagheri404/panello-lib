@@ -22,6 +22,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.4.3",
     "lucide-react": "^0.475.0",
+    "panello-lib": "file:..",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-draggable": "^4.4.6",
