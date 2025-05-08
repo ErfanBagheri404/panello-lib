@@ -24,6 +24,7 @@ const Dashboard = () => {
   const { createTask, refreshTasks: fetchTasks } = useTasks(); // Use refreshTasks as fetchTasks
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [, setLoadingUsers] = useState(false);
+  const [firstName, setFirstName] = useState<string>("");
 
   // Fetch users when component mounts
   useEffect(() => {
@@ -31,24 +32,29 @@ const Dashboard = () => {
       try {
         setLoadingUsers(true);
         const token = localStorage.getItem("token");
-        
+
         // Get current user
         const currentUserResponse = await axios.get("/api/auth/me", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
-        
+
         const currentUserId = currentUserResponse.data._id;
-        
+
+        // Get user's first name
+        if (currentUserResponse.data.firstName) {
+          setFirstName(currentUserResponse.data.firstName);
+        }
+
         // Get all users
         const response = await axios.get("/api/users/members", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
-        
+
         // Filter out current user from the list
         const filteredUsers = response.data.filter(
           (user: any) => user.id !== currentUserId
         );
-        
+
         setUsers(filteredUsers);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -56,7 +62,7 @@ const Dashboard = () => {
         setLoadingUsers(false);
       }
     };
-    
+
     fetchUsers();
   }, []);
 
@@ -81,17 +87,19 @@ const Dashboard = () => {
         subtasks: taskData.subtasks || [],
         color: taskData.color, // Remove default color to use the one from TaskManagerModal
         completed: taskData.completed || false,
-        assignedTo: Array.isArray(taskData.assignedTo) ? taskData.assignedTo : []
+        assignedTo: Array.isArray(taskData.assignedTo)
+          ? taskData.assignedTo
+          : [],
       };
-      
+
       await createTask({
         ...formattedTaskData,
-        color: formattedTaskData.color || '#000000' // Ensure color is never undefined
+        color: formattedTaskData.color || "#000000", // Ensure color is never undefined
       });
-      
+
       // Fetch tasks after creating a new one to refresh the list
       await fetchTasks();
-      
+
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving task:", error);
@@ -125,7 +133,11 @@ const Dashboard = () => {
             theme === "dark" ? "text-white" : "text-black"
           }`}
         >
-          {translations[language].welcome}
+          {firstName
+            ? translations[language].welcome
+                .replace("Erfan", firstName)
+                .replace("عرفان", firstName)
+            : translations[language].welcome}
         </h1>
         <div className="flex flex-col lg:flex-row gap-6 z-10">
           <p
